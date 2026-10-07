@@ -1,0 +1,183 @@
+% ===========================================================================
+% beamerthemetasti2026.sty -- poster theme for the TASTI 2026 poster
+%
+% A flat, print-oriented beamerposter theme: a solid colour headline, grey
+% column panels with coloured title bars, and a thin footline with the
+% session information. The palette matches the SVG figures in figures/src/
+% (#1a6fb5 blue, #c8641e orange) so the sheet reads as one set.
+%
+% Load through `\usetheme{tasti2026}` AFTER `\usepackage{beamerposter}`.
+% ===========================================================================
+\ProvidesPackage{beamerthemetasti2026}[2026/10/07 TASTI 2026 poster theme]
+
+\RequirePackage{xcolor}
+\RequirePackage{calc}
+
+% ---------------------------------------------------------------------------
+% Palette
+% ---------------------------------------------------------------------------
+\definecolor{tastiBlue}{HTML}{1A6FB5}
+\definecolor{tastiBlueDark}{HTML}{11508A}
+\definecolor{tastiOrange}{HTML}{C8641E}
+\definecolor{tastiInk}{HTML}{333333}
+\definecolor{tastiMuted}{HTML}{777777}
+\definecolor{tastiPanel}{HTML}{F3F6FA}
+\definecolor{tastiRule}{HTML}{DDDDDD}
+\definecolor{tastiCode}{HTML}{EEF2F6}
+
+\mode<presentation>
+
+% ---------------------------------------------------------------------------
+% Colours
+% ---------------------------------------------------------------------------
+\setbeamercolor{normal text}{fg=tastiInk,bg=white}
+\setbeamercolor{structure}{fg=tastiBlue}
+\setbeamercolor{alerted text}{fg=tastiOrange}
+\setbeamercolor{example text}{fg=tastiBlueDark}
+
+\setbeamercolor{headline}{fg=white,bg=tastiBlue}
+\setbeamercolor{title in headline}{fg=white}
+\setbeamercolor{author in headline}{fg=white}
+\setbeamercolor{institute in headline}{fg=white!88!tastiBlue}
+\setbeamercolor{paperno in headline}{fg=tastiBlue,bg=white}
+
+\setbeamercolor{footline}{fg=tastiInk,bg=tastiPanel}
+
+\setbeamercolor{block title}{fg=white,bg=tastiBlue}
+\setbeamercolor{block body}{fg=tastiInk,bg=tastiPanel}
+\setbeamercolor{block title alerted}{fg=white,bg=tastiOrange}
+\setbeamercolor{block body alerted}{fg=tastiInk,bg=tastiOrange!7!white}
+\setbeamercolor{block title example}{fg=white,bg=tastiBlueDark}
+\setbeamercolor{block body example}{fg=tastiInk,bg=tastiPanel}
+
+\setbeamercolor{item}{fg=tastiBlue}
+\setbeamercolor{caption name}{fg=tastiMuted}
+\setbeamercolor{caption}{fg=tastiMuted}
+\setbeamercolor{code box}{fg=tastiInk,bg=tastiCode}
+\setbeamercolor{bignumber}{fg=tastiBlue}
+\setbeamercolor{keypoint}{fg=tastiInk,bg=tastiOrange!10!white}
+
+% ---------------------------------------------------------------------------
+% Fonts
+% ---------------------------------------------------------------------------
+\setbeamerfont{title in headline}{size={\fontsize{66}{76}\selectfont},series=\bfseries}
+\setbeamerfont{author in headline}{size=\LARGE,series=\bfseries}
+\setbeamerfont{institute in headline}{size=\Large}
+\setbeamerfont{paperno in headline}{size=\large,series=\bfseries}
+\setbeamerfont{block title}{size=\Large,series=\bfseries}
+\setbeamerfont{block body}{size=\normalsize}
+\setbeamerfont{caption}{size=\small}
+\setbeamerfont{footline}{size=\normalsize}
+\setbeamerfont{bignumber}{size={\fontsize{78}{86}\selectfont},series=\bfseries}
+
+% ---------------------------------------------------------------------------
+% Layout lengths
+% ---------------------------------------------------------------------------
+\newlength{\tastiBlockSep}   \setlength{\tastiBlockSep}{1.2ex}
+\newlength{\tastiBlockPad}   \setlength{\tastiBlockPad}{1.0em}
+
+% ---------------------------------------------------------------------------
+% Templates
+% ---------------------------------------------------------------------------
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{itemize subitem}{--}
+\setbeamertemplate{caption}{\raggedright\usebeamerfont{caption}\usebeamercolor[fg]{caption}\insertcaption\par}
+
+% Blocks: flat title bar + panel body, no rounding, no shadow.
+\setbeamertemplate{block begin}{
+  \vskip\tastiBlockSep
+  \begin{beamercolorbox}[wd=\linewidth,leftskip=\tastiBlockPad,rightskip=\tastiBlockPad,
+                         sep=0.45ex,dp=0.8ex]{block title}%
+    \usebeamerfont*{block title}\insertblocktitle
+  \end{beamercolorbox}%
+  \nointerlineskip
+  \usebeamerfont{block body}%
+  \begin{beamercolorbox}[wd=\linewidth,leftskip=\tastiBlockPad,rightskip=\tastiBlockPad,
+                         sep=0.9ex,vmode]{block body}%
+    \vskip-0.2ex\vbox{}%
+}
+\setbeamertemplate{block end}{
+  \vskip0.4ex
+  \end{beamercolorbox}
+}
+
+\setbeamertemplate{block alerted begin}{
+  \vskip\tastiBlockSep
+  \begin{beamercolorbox}[wd=\linewidth,leftskip=\tastiBlockPad,rightskip=\tastiBlockPad,
+                         sep=0.45ex,dp=0.8ex]{block title alerted}%
+    \usebeamerfont*{block title}\insertblocktitle
+  \end{beamercolorbox}%
+  \nointerlineskip
+  \usebeamerfont{block body}%
+  \begin{beamercolorbox}[wd=\linewidth,leftskip=\tastiBlockPad,rightskip=\tastiBlockPad,
+                         sep=0.9ex,vmode]{block body alerted}%
+    \vskip-0.2ex\vbox{}%
+}
+\setbeamertemplate{block alerted end}{
+  \vskip0.4ex
+  \end{beamercolorbox}
+}
+
+% Headline: title block on the left, paper number badge + QR code on the right.
+% The right-hand content is supplied by the document through \tastiHeadlineRight.
+\providecommand{\tastiHeadlineRight}{}
+\setbeamertemplate{headline}{
+  \leavevmode
+  \begin{beamercolorbox}[wd=\paperwidth]{headline}
+    \vskip1.6ex
+    \begin{columns}[c]
+      \begin{column}{0.025\paperwidth}\end{column}
+      \begin{column}{0.75\paperwidth}
+        \raggedright
+        {\usebeamercolor[fg]{title in headline}\usebeamerfont{title in headline}\inserttitle\par}
+        \vskip1.2ex
+        {\usebeamercolor[fg]{author in headline}\usebeamerfont{author in headline}\insertauthor\par}
+        \vskip0.5ex
+        {\usebeamercolor[fg]{institute in headline}\usebeamerfont{institute in headline}\insertinstitute\par}
+      \end{column}
+      \begin{column}{0.20\paperwidth}
+        \centering
+        \tastiHeadlineRight
+      \end{column}
+      \begin{column}{0.025\paperwidth}\end{column}
+    \end{columns}
+    \vskip1.6ex
+  \end{beamercolorbox}
+}
+
+% Footline: session information, supplied by the document through \tastiFootline.
+\providecommand{\tastiFootline}{}
+\setbeamertemplate{footline}{
+  \leavevmode
+  \begin{beamercolorbox}[wd=\paperwidth,ht=4ex,dp=2ex,leftskip=0.025\paperwidth,rightskip=0.025\paperwidth]{footline}%
+    \usebeamerfont{footline}\tastiFootline
+  \end{beamercolorbox}
+}
+
+% ---------------------------------------------------------------------------
+% Helpers used by the poster body
+% ---------------------------------------------------------------------------
+% \bignumber{36.4x}{step-level speedup} -- a headline figure with a sub-label.
+\newcommand{\bignumber}[2]{%
+  \begin{center}
+    {\usebeamercolor[fg]{bignumber}\usebeamerfont{bignumber}#1\par}
+    \vskip0.2ex
+    {\usebeamercolor[fg]{caption}\usebeamerfont{caption}#2\par}
+  \end{center}}
+
+% \keypoint{...} -- a one-line takeaway highlighted in a tinted bar.
+\newcommand{\keypoint}[1]{%
+  \vskip0.6ex
+  \begin{beamercolorbox}[wd=\linewidth,sep=0.6ex,leftskip=0.6em,rightskip=0.6em]{keypoint}%
+    \bfseries #1
+  \end{beamercolorbox}
+  \vskip0.4ex}
+
+% \figcaption{...} -- caption below a figure inside a block.
+\newcommand{\figcaption}[1]{%
+  \vskip0.3ex
+  {\usebeamerfont{caption}\usebeamercolor[fg]{caption}\raggedright #1\par}
+  \vskip0.4ex}
+
+\mode<all>
