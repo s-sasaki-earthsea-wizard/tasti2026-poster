@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 400" role="img" aria-labelledby="title desc">
+  <title id="title">1ピクセルぶんの縦長行列(実寸比)</title>
+  <desc id="desc">実測に使った実データの 1 ピクセルぶんの行列を実寸比で描いた図。縦 288 行(観測 = 網の辺)、横 97 列(未知数 = 撮影日 − 1)の縦長の長方形。上から 97 行のところに破線が引かれ、そこまでで方程式の数は未知数と同数になり、残り 191 行は誤差をならして網を頑丈にする余分な観測であることを示す。</desc>
+  <style>
+    text    { font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .mat    { fill: #ffffff; stroke: #0084ff; stroke-width: 2.4; }
+    .dim    { stroke: #888; stroke-width: 1.8; }
+    .cut    { stroke: #e8833a; stroke-width: 2; stroke-dasharray: 6 4; }
+    .brk    { stroke: #aaa; stroke-width: 1.5; fill: none; }
+    .lbl    { fill: #444; font-size: 16px; font-weight: 700; }
+    .lbl-sm { fill: #444; font-size: 13.5px; font-weight: 700; }
+    .sub    { fill: #888; font-size: 12.5px; }
+    .math   { font-family: Georgia, 'Times New Roman', serif; font-style: italic; }
+  </style>
+
+  <defs>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#888"/>
+    </marker>
+    <pattern id="rows" x="200" y="58" patternUnits="userSpaceOnUse" width="97" height="12">
+      <line x1="0" y1="0" x2="97" y2="0" stroke="#0084ff" stroke-opacity="0.18" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- P (columns) dimension -->
+  <text class="lbl" x="248" y="24" text-anchor="middle"><tspan class="math">P</tspan> = 97 列</text>
+  <text class="sub" x="248" y="42" text-anchor="middle">未知数 = 撮影日 − 1</text>
+  <line class="dim" x1="200" y1="50" x2="297" y2="50" marker-start="url(#arw)" marker-end="url(#arw)"/>
+
+  <!-- K (rows) dimension -->
+  <line class="dim" x1="182" y1="58" x2="182" y2="346" marker-start="url(#arw)" marker-end="url(#arw)"/>
+  <text class="lbl" x="170" y="196" text-anchor="end"><tspan class="math">K</tspan> = 288 行</text>
+  <text class="sub" x="170" y="216" text-anchor="end">観測 = 網の辺(画像ペア)</text>
+
+  <!-- the matrix, drawn to true 288x97 scale -->
+  <rect class="mat" x="200" y="58" width="97" height="288"/>
+  <rect x="200" y="58" width="97" height="288" fill="url(#rows)"/>
+
+  <!-- just-determined cut: first P rows -->
+  <line class="cut" x1="200" y1="155" x2="297" y2="155"/>
+  <path class="brk" d="M 305 58 h 8 v 97 h -8"/>
+  <text class="lbl-sm" x="330" y="98">ここまでで方程式の数は足りる</text>
+  <text class="sub" x="330" y="117">未知数と同じ 97 行</text>
+  <path class="brk" d="M 305 163 h 8 v 183 h -8"/>
+  <text class="lbl-sm" x="330" y="245">残り 191 行は「余分」な観測</text>
+  <text class="sub" x="330" y="264">誤差をならして網を頑丈にする厚み</text>
+
+  <text class="sub" x="248" y="368" text-anchor="middle">1 ピクセルぶん</text>
+</svg>

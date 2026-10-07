@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 810 435" role="img" aria-labelledby="title desc">
+  <title id="title">The column-by-column sweep of QR survives batching, one matrix at a time</title>
+  <desc id="desc">Four identical tall-skinny matrices stand side by side, followed by an ellipsis and "times about forty thousand". In every matrix the leftmost columns are already processed, one thin orange column is being processed now, and an arrow applies the transformation built there to all remaining columns on the right. A chain of steps at the top reads column 1, column 2, column 3, ..., column 97: the next column cannot start until the previous one is done. Placing the matrices side by side (batching) does not remove the 97 sequential steps that each matrix still has to walk through. Stacked, the chunk is a 40,000 by 288 by 97 tensor.</desc>
+  <style>
+    text     { font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .border  { fill: none; stroke: #1a6fb5; stroke-width: 2.4; }
+    .done    { fill: #e3e3e3; }
+    .cur     { fill: #c8641e; fill-opacity: 0.9; }
+    .rest    { fill: #1a6fb5; fill-opacity: 0.10; }
+    .sweep   { stroke: #c8641e; stroke-width: 2.2; }
+    .leader  { stroke: #c8641e; stroke-width: 1.2; }
+    .leader2 { stroke: #aaa; stroke-width: 1.2; }
+    .step    { fill: #ffffff; stroke: #888; stroke-width: 1.6; }
+    .chain   { stroke: #888; stroke-width: 1.8; }
+    .lbl-sm  { fill: #333; font-size: 18.9px; font-weight: 700; }
+    .sub     { fill: #777; font-size: 17.5px; }
+    .cur-lbl { fill: #c8641e; font-size: 18.2px; font-weight: 700; }
+    .step-t  { fill: #333; font-size: 16.1px; }
+    .dots    { fill: #888; font-size: 30.8px; font-weight: 700; }
+    .badge   { fill: #c8641e; font-size: 36.4px; font-weight: 700; }
+  </style>
+
+  <defs>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#888"/>
+    </marker>
+    <marker id="arwo" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c8641e"/>
+    </marker>
+    <pattern id="cols" x="60" y="80" patternUnits="userSpaceOnUse" width="7" height="288">
+      <line x1="0" y1="0" x2="0" y2="288" stroke="#1a6fb5" stroke-opacity="0.15" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- step chain: one column at a time, in order -->
+  <rect class="step" x="200" y="18" width="40" height="26"/>
+  <text class="step-t" x="220" y="35" text-anchor="middle">col 1</text>
+  <line class="chain" x1="242" y1="31" x2="252" y2="31" marker-end="url(#arw)"/>
+  <rect class="step" x="254" y="18" width="40" height="26"/>
+  <text class="step-t" x="274" y="35" text-anchor="middle">col 2</text>
+  <line class="chain" x1="296" y1="31" x2="306" y2="31" marker-end="url(#arw)"/>
+  <rect class="step" x="308" y="18" width="40" height="26"/>
+  <text class="step-t" x="328" y="35" text-anchor="middle">col 3</text>
+  <text class="lbl-sm" x="356" y="36">…</text>
+  <rect class="step" x="380" y="18" width="46" height="26"/>
+  <text class="step-t" x="403" y="35" text-anchor="middle">col 97</text>
+  <text class="lbl-sm" x="440" y="36">97 sequential steps</text>
+  <text class="sub" x="200" y="62">the next column cannot start until the previous one is done</text>
+
+  <!-- current-column pointer on the first matrix -->
+  <text class="cur-lbl" x="84" y="56" text-anchor="middle">current column</text>
+  <line class="leader" x1="84" y1="60" x2="84" y2="78"/>
+
+  <!-- the batch: the same tall matrix, side by side -->
+  <g>
+    <rect class="done" x="60" y="80" width="21" height="288"/>
+    <rect class="cur"  x="81" y="80" width="7"  height="288"/>
+    <rect class="rest" x="88" y="80" width="69" height="288"/>
+    <rect x="60" y="80" width="97" height="288" fill="url(#cols)"/>
+    <rect class="border" x="60" y="80" width="97" height="288"/>
+    <line class="sweep" x1="93" y1="108" x2="150" y2="108" marker-end="url(#arwo)"/>
+  </g>
+  <g>
+    <rect class="done" x="172" y="80" width="21" height="288"/>
+    <rect class="cur"  x="193" y="80" width="7"  height="288"/>
+    <rect class="rest" x="200" y="80" width="69" height="288"/>
+    <rect x="172" y="80" width="97" height="288" fill="url(#cols)"/>
+    <rect class="border" x="172" y="80" width="97" height="288"/>
+    <line class="sweep" x1="205" y1="108" x2="262" y2="108" marker-end="url(#arwo)"/>
+  </g>
+  <g>
+    <rect class="done" x="284" y="80" width="21" height="288"/>
+    <rect class="cur"  x="305" y="80" width="7"  height="288"/>
+    <rect class="rest" x="312" y="80" width="69" height="288"/>
+    <rect x="284" y="80" width="97" height="288" fill="url(#cols)"/>
+    <rect class="border" x="284" y="80" width="97" height="288"/>
+    <line class="sweep" x1="317" y1="108" x2="374" y2="108" marker-end="url(#arwo)"/>
+  </g>
+  <g>
+    <rect class="done" x="396" y="80" width="21" height="288"/>
+    <rect class="cur"  x="417" y="80" width="7"  height="288"/>
+    <rect class="rest" x="424" y="80" width="69" height="288"/>
+    <rect x="396" y="80" width="97" height="288" fill="url(#cols)"/>
+    <rect class="border" x="396" y="80" width="97" height="288"/>
+    <line class="sweep" x1="429" y1="108" x2="486" y2="108" marker-end="url(#arwo)"/>
+  </g>
+
+  <!-- and so on, forty thousand times -->
+  <text class="dots" x="506" y="232">…</text>
+  <text class="badge" x="540" y="226">× ~40,000</text>
+  <text class="sub" x="540" y="252">matrices per chunk</text>
+
+  <!-- processed-columns pointer -->
+  <line class="leader2" x1="70" y1="370" x2="70" y2="378"/>
+  <text class="sub" x="70" y="394" text-anchor="middle">processed</text>
+
+  <text class="lbl-sm" x="60" y="416">Batched or not, every matrix still walks through 97 sequential steps</text>
+  <text class="sub" x="60" y="432">stacked, the chunk is a 40,000 × 288 × 97 tensor</text>
+</svg>

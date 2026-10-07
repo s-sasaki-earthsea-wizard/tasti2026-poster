@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" role="img" aria-labelledby="title desc">
+  <title id="title">辺 1 本ぶんのスタンプを 288 枚重ねると 97×97 が 1 枚できる</title>
+  <desc id="desc">左は観測網で、辺 1 本だけを色付きで強調してある。中央はその辺 1 本が作る 97 かける 97 のスタンプで、辺がつなぐ 2 つの頂点にあたる場所だけに値が立ち、残りは空白。スタンプの絵柄は網の形だけで決まるので全ピクセル共通で、辺の数だけ、つまり 288 枚ある。右はそれを 288 枚ぶん重ね合わせた結果で、1 ピクセルぶんの正規行列 X 転置 W X にあたる 97 かける 97 の正方行列。288 行は捨てられたのではなく、重ねられて消えたことを示す。網は 4 日・5 辺の小さな例で描いてある。</desc>
+  <style>
+    text     { font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .head    { fill: #444; font-size: 16px; font-weight: 700; }
+    .lbl-sm  { fill: #444; font-size: 13.5px; font-weight: 700; }
+    .lbl     { fill: #444; font-size: 15px; font-weight: 700; }
+    .sub     { fill: #888; font-size: 12.5px; }
+    .accent  { fill: #e8833a; font-size: 13.5px; font-weight: 700; }
+    .op      { fill: #666; font-size: 30px; font-weight: 700; }
+    .math    { font-family: Georgia, 'Times New Roman', serif; font-style: italic; }
+    .grid    { fill: none; stroke: #0084ff; stroke-opacity: 0.28; stroke-width: 1; }
+    .border  { fill: none; stroke: #0084ff; stroke-width: 2.4; }
+    .ghost   { fill: #fff; stroke: #bbb; stroke-width: 1.6; }
+    .sign    { fill: #8a5a1c; font-size: 19px; font-weight: 700; }
+    .node    { fill: #0084ff; stroke: #fff; stroke-width: 1.5; }
+    .edge    { stroke-width: 4; }
+    .nlbl    { fill: #444; font-size: 22px; font-family: Georgia, 'Times New Roman', serif; font-style: italic; }
+  </style>
+
+  <defs>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#888"/>
+    </marker>
+  </defs>
+
+  <!-- ============ left: one edge of the network ============ -->
+  <text class="head" x="145" y="44" text-anchor="middle">網の辺 1 本</text>
+  <text class="sub"  x="145" y="64" text-anchor="middle">= 観測 1 つ</text>
+
+  <g transform="translate(-6,72) scale(0.62)">
+    <g opacity="0.2">
+      <line class="edge" stroke="#0072B2" x1="80"  y1="210" x2="190" y2="110"/>
+      <line class="edge" stroke="#009E73" x1="300" y1="210" x2="410" y2="110"/>
+      <line class="edge" stroke="#D55E00" x1="80"  y1="210" x2="300" y2="210"/>
+      <line class="edge" stroke="#CC79A7" x1="190" y1="110" x2="410" y2="110"/>
+    </g>
+    <line class="edge" stroke="#E69F00" stroke-width="7" x1="190" y1="110" x2="300" y2="210"/>
+
+    <circle class="node" cx="80"  cy="210" r="9" opacity="0.35"/>
+    <circle class="node" cx="410" cy="110" r="9" opacity="0.35"/>
+    <circle class="node" cx="190" cy="110" r="10"/>
+    <circle class="node" cx="300" cy="210" r="10"/>
+
+    <text class="nlbl" x="80"  y="248" opacity="0.35" text-anchor="middle">t<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">0</tspan></text>
+    <text class="nlbl" x="190" y="88"  text-anchor="middle">t<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">1</tspan></text>
+    <text class="nlbl" x="300" y="248" text-anchor="middle">t<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">2</tspan></text>
+    <text class="nlbl" x="410" y="88"  opacity="0.35" text-anchor="middle">t<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">3</tspan></text>
+  </g>
+
+  <text class="sub" x="145" y="252" text-anchor="middle">図は 4 日・5 辺の小さな例</text>
+  <text class="sub" x="145" y="270" text-anchor="middle">(実際は辺 288 本)</text>
+
+  <line stroke="#888" stroke-width="1.8" x1="272" y1="190" x2="308" y2="190" marker-end="url(#arw)"/>
+
+  <!-- ============ center: the stamp that edge makes ============ -->
+  <text class="head" x="404" y="44" text-anchor="middle">その辺の「スタンプ」1 枚</text>
+  <text class="sub"  x="404" y="64" text-anchor="middle">つないだ 2 点のところだけ値が立つ</text>
+
+  <!-- the other 287 stamps, stacked behind -->
+  <rect class="ghost" x="358" y="112" width="120" height="120"/>
+  <rect class="ghost" x="344" y="126" width="120" height="120"/>
+
+  <rect x="330" y="140" width="120" height="120" fill="#fff"/>
+  <rect x="330" y="140" width="80"  height="80"  fill="#E69F00" fill-opacity="0.45"/>
+  <g class="grid">
+    <line x1="370" y1="140" x2="370" y2="260"/>
+    <line x1="410" y1="140" x2="410" y2="260"/>
+    <line x1="330" y1="180" x2="450" y2="180"/>
+    <line x1="330" y1="220" x2="450" y2="220"/>
+  </g>
+  <rect class="border" x="330" y="140" width="120" height="120"/>
+  <g class="sign" text-anchor="middle">
+    <text x="350" y="167">+</text>
+    <text x="390" y="167">−</text>
+    <text x="350" y="207">−</text>
+    <text x="390" y="207">+</text>
+  </g>
+
+  <text class="sub"    x="390" y="282" text-anchor="middle">97 × 97 が 1 枚</text>
+  <text class="lbl-sm" x="390" y="304" text-anchor="middle">絵柄は網だけで決まる</text>
+  <text class="sub"    x="390" y="322" text-anchor="middle">= 全ピクセル共通</text>
+
+  <!-- ============ operator ============ -->
+  <text class="accent" x="520" y="170" text-anchor="middle">288 枚ぶん</text>
+  <text class="accent" x="520" y="190" text-anchor="middle">重ねると</text>
+  <text class="op"     x="520" y="232" text-anchor="middle">=</text>
+
+  <!-- ============ right: the normal matrix ============ -->
+  <text class="head" x="670" y="44" text-anchor="middle">重ねた結果</text>
+  <text class="sub"  x="670" y="64" text-anchor="middle">1 ピクセルぶんの正規行列</text>
+
+  <g fill="#0084ff">
+    <rect x="580" y="108" width="60" height="60" fill-opacity="0.49"/>
+    <rect x="640" y="108" width="60" height="60" fill-opacity="0.23"/>
+    <rect x="700" y="108" width="60" height="60" fill-opacity="0.23"/>
+    <rect x="580" y="168" width="60" height="60" fill-opacity="0.23"/>
+    <rect x="640" y="168" width="60" height="60" fill-opacity="0.49"/>
+    <rect x="700" y="168" width="60" height="60" fill-opacity="0.23"/>
+    <rect x="580" y="228" width="60" height="60" fill-opacity="0.23"/>
+    <rect x="640" y="228" width="60" height="60" fill-opacity="0.23"/>
+    <rect x="700" y="228" width="60" height="60" fill-opacity="0.36"/>
+  </g>
+  <g class="grid">
+    <line x1="640" y1="108" x2="640" y2="288"/>
+    <line x1="700" y1="108" x2="700" y2="288"/>
+    <line x1="580" y1="168" x2="760" y2="168"/>
+    <line x1="580" y1="228" x2="760" y2="228"/>
+  </g>
+  <rect class="border" x="580" y="108" width="180" height="180"/>
+
+  <text class="lbl-sm" x="670" y="312" text-anchor="middle"><tspan class="math">X</tspan><tspan font-size="10" dy="-7">⊤</tspan><tspan class="math" dy="7">W</tspan><tspan font-size="10" dy="4">k</tspan><tspan class="math" dy="-4">X</tspan></text>
+  <text class="sub"    x="670" y="332" text-anchor="middle">97 × 97 の正方形</text>
+
+  <text class="lbl" x="400" y="368" text-anchor="middle">288 行は<tspan fill="#e8833a">捨てた</tspan>のではない — <tspan fill="#e8833a">重ねて</tspan> 97 × 97 に畳まれた</text>
+</svg>

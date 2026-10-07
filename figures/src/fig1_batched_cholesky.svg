@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 494" role="img" aria-labelledby="title desc">
+  <title id="title">Why the normal-equation path batches and the QR path does not</title>
+  <desc id="desc">Side-by-side comparison drawn to true scale. On the left, the QR path factorizes a K by P tall-skinny design matrix for every pixel, sweeping one column at a time, so batching still leaves a per-matrix sequence of P steps and the chunk costs 3,841,835 GPU kernel launches. On the right, the normal-equation path folds the K rows into a P by P symmetric positive-definite matrix with a single matrix product, and the whole batch of n such matrices is factorized in one batched Cholesky call, costing 57 kernel launches for the same chunk. A dashed ghost outline behind the first square shows the original K rows that the QR path had to carry.</desc>
+  <style>
+    text     { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    .border  { fill: none; stroke: #1a6fb5; stroke-width: 2.4; }
+    .fillq   { fill: #1a6fb5; fill-opacity: 0.10; }
+    .fillc   { fill: #1a6fb5; fill-opacity: 0.24; }
+    .cur     { fill: #c8641e; fill-opacity: 0.9; }
+    .ghost   { fill: none; stroke: #bbb; stroke-width: 1.8; stroke-dasharray: 6 5; }
+    .batch   { fill: none; stroke: #c8641e; stroke-width: 2.4; stroke-dasharray: 8 5; }
+    .divide  { stroke: #ddd; stroke-width: 2; }
+    .rule    { stroke: #e6e6e6; stroke-width: 1.4; }
+    .head    { fill: #333; font-size: 25px; font-weight: 700; }
+    .lbl-sm  { fill: #444; font-size: 20px; font-weight: 700; }
+    .sub     { fill: #777; font-size: 18.8px; }
+    .key     { fill: #888; font-size: 16.2px; }
+    .dots    { fill: #888; font-size: 30px; font-weight: 700; }
+    .badge   { fill: #c8641e; font-size: 23.8px; font-weight: 700; }
+    .metric-lab  { fill: #888; font-size: 16.2px; }
+    .metric-dim  { fill: #999; font-size: 32.5px; font-weight: 700; }
+    .metric-hit  { fill: #1a6fb5; font-size: 37.5px; font-weight: 700; }
+  </style>
+
+  <defs>
+    <pattern id="qcols" x="60" y="82" patternUnits="userSpaceOnUse" width="7" height="288">
+      <line x1="0" y1="0" x2="0" y2="288" stroke="#1a6fb5" stroke-opacity="0.15" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <line class="divide" x1="437" y1="24" x2="437" y2="470"/>
+
+  <!-- ============ left: the QR path ============ -->
+  <text class="head" x="212" y="36" text-anchor="middle">QR path</text>
+  <text class="sub"  x="212" y="60" text-anchor="middle">K &#215; P per pixel, one column at a time</text>
+
+  <g>
+    <rect class="fillq" x="60" y="82" width="97" height="288"/>
+    <rect class="cur"   x="81" y="82" width="7"  height="288"/>
+    <rect x="60" y="82" width="97" height="288" fill="url(#qcols)"/>
+    <rect class="border" x="60" y="82" width="97" height="288"/>
+  </g>
+  <g>
+    <rect class="fillq" x="175" y="82" width="97" height="288"/>
+    <rect class="cur"   x="196" y="82" width="7"  height="288"/>
+    <rect x="175" y="82" width="97" height="288" fill="url(#qcols)"/>
+    <rect class="border" x="175" y="82" width="97" height="288"/>
+  </g>
+  <text class="dots"  x="292" y="234">&#8230;</text>
+  <text class="badge" x="312" y="228">&#215; n pixels</text>
+
+  <text class="lbl-sm" x="212" y="398" text-anchor="middle">Batching leaves the P steps per matrix</text>
+
+  <!-- ============ right: the normal-equation path ============ -->
+  <text class="head" x="660" y="36" text-anchor="middle">Normal equations + Cholesky</text>
+  <text class="sub"  x="660" y="60" text-anchor="middle">P &#215; P, factorized in one batched call</text>
+
+  <rect class="batch" x="475" y="72" width="375" height="126" rx="6"/>
+
+  <!-- what the QR path used to chew on, left as a ghost outline at the same true scale -->
+  <rect x="490" y="82" width="97" height="288" fill="#f4f4f4"/>
+  <rect class="ghost" x="490" y="82" width="97" height="288"/>
+
+  <g>
+    <rect class="fillc"  x="490" y="82" width="97" height="97"/>
+    <rect class="border" x="490" y="82" width="97" height="97"/>
+  </g>
+  <g>
+    <rect class="fillc"  x="605" y="82" width="97" height="97"/>
+    <rect class="border" x="605" y="82" width="97" height="97"/>
+  </g>
+  <text class="dots"  x="722" y="138">&#8230;</text>
+  <text class="badge" x="742" y="132">&#215; n pixels</text>
+
+  <text class="lbl-sm" x="662" y="224" text-anchor="middle">One batched factorization</text>
+
+  <text class="lbl-sm" x="556" y="282">The K rows are folded in first,</text>
+  <text class="lbl-sm" x="556" y="302">by a single matrix product</text>
+  <text class="sub"    x="556" y="324">only the P &#215; P block is factorized</text>
+
+  <text class="lbl-sm" x="662" y="398" text-anchor="middle">Assemble once, factorize once</text>
+
+  <!-- ============ the measured consequence ============ -->
+  <line class="rule" x1="40" y1="416" x2="840" y2="416"/>
+
+  <text class="metric-lab" x="212" y="438" text-anchor="middle">GPU kernel launches per chunk</text>
+  <text class="metric-dim" x="212" y="466" text-anchor="middle">3,841,835</text>
+
+  <text class="metric-lab" x="662" y="438" text-anchor="middle">GPU kernel launches per chunk</text>
+  <text class="metric-hit" x="662" y="468" text-anchor="middle">57</text>
+
+  <!-- ============ symbol key ============ -->
+  <text class="key" x="440" y="490" text-anchor="middle">K = interferograms · P = D − 1 unknowns (D = acquisition dates) · n = pixels per chunk</text>
+</svg>

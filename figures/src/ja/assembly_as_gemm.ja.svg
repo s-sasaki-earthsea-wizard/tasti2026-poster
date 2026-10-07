@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" role="img" aria-labelledby="title desc">
+  <title id="title">共通のスタンプを、ピクセルごとの濃さで重ねる = 行列積</title>
+  <desc id="desc">3つの長方形を掛け算の形に並べた概念図。左は配合表で、行がピクセル、列が観測網の辺 288 本に対応し、辺の色で塗り分けられている。中央はスタンプ帳で、行が観測網の辺 288 本、1 行が辺ごとのスタンプを横に伸ばしたものにあたり、全ピクセル共通で一度作れば終わり。両者は色をそろえた辺の軸で接していて、掛け算はこの 288 の軸で足し合わされ、288 が消える。積が右の長方形で、1 行が 1 ピクセルぶんの正規行列にあたる。その 1 行を折り返すと 97 かける 97 の小さな正方行列になる。</desc>
+  <style>
+    text    { font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .border { fill: none; stroke: #0084ff; stroke-width: 2.4; }
+    .out    { fill: #0084ff; fill-opacity: 0.10; }
+    .op     { fill: #666; font-size: 30px; font-weight: 700; }
+    .lbl    { fill: #444; font-size: 15px; font-weight: 700; }
+    .lbl-sm { fill: #444; font-size: 13.5px; font-weight: 700; }
+    .sub    { fill: #888; font-size: 12.5px; }
+    .next   { fill: #e8833a; font-size: 12.5px; font-weight: 700; }
+    .axis   { fill: #e8833a; font-size: 12.5px; font-weight: 700; }
+    .arule  { stroke: #e8833a; stroke-width: 1.6; }
+    .math   { font-family: Georgia, 'Times New Roman', serif; font-style: italic; }
+  </style>
+
+  <defs>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#888"/>
+    </marker>
+    <pattern id="prows" x="470" y="112" patternUnits="userSpaceOnUse" width="215" height="11">
+      <line x1="0" y1="0" x2="215" y2="0" stroke="#0084ff" stroke-opacity="0.22" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- ============ 配合表 (pixels x edges) ============ -->
+  <text class="lbl" x="105" y="76"  text-anchor="middle">配合表</text>
+  <text class="sub" x="105" y="94"  text-anchor="middle">行 = ピクセル / 列 = 網の辺</text>
+  <g fill-opacity="0.5">
+    <rect x="45"  y="112" width="24" height="176" fill="#0072B2"/>
+    <rect x="69"  y="112" width="24" height="176" fill="#E69F00"/>
+    <rect x="93"  y="112" width="24" height="176" fill="#009E73"/>
+    <rect x="117" y="112" width="24" height="176" fill="#D55E00"/>
+    <rect x="141" y="112" width="24" height="176" fill="#CC79A7"/>
+  </g>
+  <rect class="border" x="45" y="112" width="120" height="176"/>
+
+  <!-- the contracted axis, called out on the 配合表 side -->
+  <g class="arule">
+    <line x1="45"  y1="302" x2="165" y2="302"/>
+    <line x1="45"  y1="297" x2="45"  y2="307"/>
+    <line x1="165" y1="297" x2="165" y2="307"/>
+  </g>
+  <text class="axis"   x="105" y="322" text-anchor="middle">288 本の辺</text>
+  <text class="lbl-sm" x="105" y="348" text-anchor="middle">ピクセルが変えるのは</text>
+  <text class="lbl-sm" x="105" y="366" text-anchor="middle">この濃さだけ</text>
+
+  <text class="op" x="190" y="212">×</text>
+
+  <!-- ============ スタンプ帳 (edges x parts) ============ -->
+  <text class="lbl" x="322" y="102" text-anchor="middle">スタンプ帳</text>
+  <text class="sub" x="322" y="120" text-anchor="middle">行 = 網の辺 <tspan class="axis">288 本</tspan></text>
+  <text class="sub" x="322" y="138" text-anchor="middle">1 行 = 辺 <tspan class="math">e</tspan> のスタンプ 1 枚</text>
+  <g fill-opacity="0.5">
+    <rect x="215" y="148" width="215" height="21" fill="#0072B2"/>
+    <rect x="215" y="169" width="215" height="21" fill="#E69F00"/>
+    <rect x="215" y="190" width="215" height="21" fill="#009E73"/>
+    <rect x="215" y="211" width="215" height="21" fill="#D55E00"/>
+    <rect x="215" y="232" width="215" height="21" fill="#CC79A7"/>
+  </g>
+  <rect class="border" x="215" y="148" width="215" height="105"/>
+
+  <text class="lbl-sm" x="322" y="278" text-anchor="middle">網から決まるので全ピクセル共通</text>
+  <text class="sub"    x="322" y="296" text-anchor="middle">一度作れば終わり</text>
+
+  <text class="op" x="447" y="212">=</text>
+
+  <!-- ============ 出来上がり (pixels x parts) ============ -->
+  <text class="lbl" x="577" y="76" text-anchor="middle">ピクセルごとの正規行列</text>
+  <text class="sub" x="577" y="94" text-anchor="middle">1 行 = 1 ピクセルぶん</text>
+  <rect class="out" x="470" y="112" width="215" height="176"/>
+  <rect x="470" y="112" width="215" height="176" fill="url(#prows)"/>
+  <rect x="470" y="167" width="215" height="11" fill="#e8833a" fill-opacity="0.85"/>
+  <rect class="border" x="470" y="112" width="215" height="176"/>
+
+  <!-- fold one row into a small square -->
+  <line stroke="#888" stroke-width="1.8" x1="692" y1="173" x2="716" y2="173" marker-end="url(#arw)"/>
+  <text class="lbl-sm" x="770" y="116" text-anchor="middle">1 行を折り返すと</text>
+  <rect class="border" x="724" y="128" width="92" height="92"/>
+  <text class="lbl-sm" x="770" y="243" text-anchor="middle"><tspan class="math">X</tspan><tspan font-size="10" dy="-7">⊤</tspan><tspan class="math" dy="7">W</tspan><tspan font-size="10" dy="4">k</tspan><tspan class="math" dy="-4">X</tspan></text>
+  <text class="sub"    x="770" y="262" text-anchor="middle">97 × 97 の小さな正方形</text>
+  <text class="next"   x="770" y="290" text-anchor="middle">↓ Cholesky にかける</text>
+
+  <text class="lbl" x="470" y="348" text-anchor="middle">共通のスタンプを、ピクセルごとの濃さで重ねるだけ = <tspan fill="#e8833a">巨大な行列積 1 発</tspan></text>
+  <text class="lbl-sm" x="470" y="372" text-anchor="middle">足し合わされて消えるのは、<tspan fill="#e8833a">色をそろえた軸 = 網の辺 288 本</tspan></text>
+</svg>

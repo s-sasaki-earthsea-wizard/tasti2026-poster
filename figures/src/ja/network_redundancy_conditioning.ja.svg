@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" role="img" aria-labelledby="title desc">
+  <title id="title">網の冗長さが条件数を決める</title>
+  <desc id="desc">同じ取得日(頂点)でも、干渉ペア(辺)が少ない疎な網は弱い方向が残って細長い楕円(条件数が大きい)を作り、辺が冗長な網はどの方向も支えられて丸い楕円(条件数が小さい)を作る。辺を増やすほど楕円が丸くなり条件数が下がる様子を左右で比較する。</desc>
+  <style>
+    text { font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .shape    { fill: #0084ff; fill-opacity: 0.12; stroke: #0084ff; stroke-width: 2.5; }
+    .shape-bad{ fill: #dc3545; fill-opacity: 0.12; stroke: #dc3545; stroke-width: 2.5; }
+    .node     { fill: #0084ff; stroke: #fff; stroke-width: 1.5; }
+    .node-bad { fill: #dc3545; stroke: #fff; stroke-width: 1.5; }
+    .edge     { stroke: #7fb1e3; stroke-width: 2.2; }
+    .edge-bad { stroke: #e89aa2; stroke-width: 2.2; }
+    .divider  { stroke: #ddd; stroke-width: 1.5; stroke-dasharray: 5 5; }
+    .title    { fill: #444; font-size: 18px; font-weight: 700; }
+    .lbl-s    { fill: #888; font-size: 13px; }
+    .kpa      { fill: #0084ff; font-size: 17px; font-weight: 700; }
+    .kpa-bad  { fill: #dc3545; font-size: 17px; font-weight: 700; }
+    .tie      { fill: #e8833a; font-size: 14px; font-weight: 700; }
+    .sig { font-family: Georgia, serif; font-style: italic; }
+  </style>
+
+  <defs>
+    <marker id="agray3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#888"/>
+    </marker>
+    <marker id="atie3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#e8833a"/>
+    </marker>
+  </defs>
+
+  <!-- center divider (network region only) -->
+  <line class="divider" x1="380" y1="55" x2="380" y2="235"/>
+
+  <!-- ============== LEFT: sparse (chain) network ============== -->
+  <text class="title" x="205" y="32" text-anchor="middle">疎な網(鎖状)</text>
+
+  <!-- edges: pure path A-B-C-D-E -->
+  <line class="edge-bad" x1="95"  y1="150" x2="150" y2="90"/>
+  <line class="edge-bad" x1="150" y1="90"  x2="205" y2="150"/>
+  <line class="edge-bad" x1="205" y1="150" x2="260" y2="90"/>
+  <line class="edge-bad" x1="260" y1="90"  x2="315" y2="150"/>
+  <!-- nodes (acquisition dates) -->
+  <circle class="node-bad" cx="95"  cy="150" r="8"/>
+  <circle class="node-bad" cx="150" cy="90"  r="8"/>
+  <circle class="node-bad" cx="205" cy="150" r="8"/>
+  <circle class="node-bad" cx="260" cy="90"  r="8"/>
+  <circle class="node-bad" cx="315" cy="150" r="8"/>
+  <text class="lbl-s" x="205" y="180" text-anchor="middle">辺が少ない → 弱い方向が残る</text>
+
+  <!-- arrow down to ellipse -->
+  <line x1="205" y1="192" x2="205" y2="222" stroke="#888" stroke-width="2.5" marker-end="url(#agray3)"/>
+
+  <!-- thin ellipse: kappa large -->
+  <ellipse class="shape-bad" cx="205" cy="305" rx="112" ry="18"/>
+  <text class="kpa-bad" x="205" y="358" text-anchor="middle">細長い → <tspan class="sig">&#954;</tspan>(<tspan class="sig">X</tspan>) 大</text>
+  <text class="lbl-s" x="205" y="380" text-anchor="middle">潰れる方向あり</text>
+
+  <!-- ============== RIGHT: redundant (mesh) network ============== -->
+  <text class="title" x="565" y="32" text-anchor="middle">冗長な網</text>
+
+  <!-- edges: chain + cross links -->
+  <line class="edge" x1="455" y1="150" x2="510" y2="90"/>
+  <line class="edge" x1="510" y1="90"  x2="565" y2="150"/>
+  <line class="edge" x1="565" y1="150" x2="620" y2="90"/>
+  <line class="edge" x1="620" y1="90"  x2="675" y2="150"/>
+  <line class="edge" x1="455" y1="150" x2="565" y2="150"/>
+  <line class="edge" x1="510" y1="90"  x2="620" y2="90"/>
+  <line class="edge" x1="565" y1="150" x2="675" y2="150"/>
+  <line class="edge" x1="455" y1="150" x2="620" y2="90"/>
+  <line class="edge" x1="510" y1="90"  x2="675" y2="150"/>
+  <!-- nodes -->
+  <circle class="node" cx="455" cy="150" r="8"/>
+  <circle class="node" cx="510" cy="90"  r="8"/>
+  <circle class="node" cx="565" cy="150" r="8"/>
+  <circle class="node" cx="620" cy="90"  r="8"/>
+  <circle class="node" cx="675" cy="150" r="8"/>
+  <text class="lbl-s" x="565" y="180" text-anchor="middle">辺が冗長 → どの方向も支える</text>
+
+  <!-- arrow down to ellipse -->
+  <line x1="565" y1="192" x2="565" y2="222" stroke="#888" stroke-width="2.5" marker-end="url(#agray3)"/>
+
+  <!-- round ellipse: kappa small -->
+  <ellipse class="shape" cx="565" cy="305" rx="98" ry="72"/>
+  <text class="kpa" x="565" y="402" text-anchor="middle">丸い → <tspan class="sig">&#954;</tspan>(<tspan class="sig">X</tspan>) 小</text>
+
+  <!-- ============== center bridge: adding edges rounds the ellipse ============== -->
+  <line x1="322" y1="305" x2="462" y2="305" stroke="#e8833a" stroke-width="2.5" marker-end="url(#atie3)"/>
+  <text class="tie" x="392" y="293" text-anchor="middle">辺を増やす</text>
+  <text class="tie" x="392" y="326" text-anchor="middle"><tspan class="sig">&#954;</tspan>: 大→小</text>
+</svg>

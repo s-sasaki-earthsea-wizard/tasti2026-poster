@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 320" role="img" aria-labelledby="title desc">
+  <title id="title">誤差の上下関係</title>
+  <desc id="desc">変位のスケールを縦の対数軸に取ると、InSAR で意味のある変位はミリからサブミリの帯にあり、大気の揺らぎが観測の床を決める。条件数の二乗を払った float32 の数値誤差はおよそ 16 マイクロメートルで、その床より下に沈むため、失う桁はもともと観測では読めない桁である。</desc>
+  <style>
+    text        { font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .title      { fill: #444; font-size: 18px; font-weight: 700; }
+    .tick       { fill: #888; font-size: 13px; }
+    .axis       { stroke: #bbb; stroke-width: 1.5; }
+    .band       { fill: #0084ff; fill-opacity: 0.12; }
+    .band-lbl   { fill: #0084ff; font-size: 14px; font-weight: 700; }
+    .band-sub   { fill: #0084ff; font-size: 12.5px; }
+    .floor      { stroke: #e8833a; stroke-width: 2.4; stroke-dasharray: 7 4; }
+    .floor-lbl  { fill: #e8833a; font-size: 13px; font-weight: 700; }
+    .err        { stroke: #999; stroke-width: 2.2; stroke-dasharray: 4 4; }
+    .err-lbl    { fill: #888; font-size: 13px; }
+    .gap        { stroke: #666; stroke-width: 1.6; }
+    .gap-lbl    { fill: #666; font-size: 12.5px; }
+  </style>
+
+  <defs>
+    <marker id="arw2" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#666"/>
+    </marker>
+  </defs>
+
+  <text class="title" x="210" y="36" text-anchor="middle">意味のある変位 と 数値誤差</text>
+
+  <!-- 縦軸 (対数スケール) -->
+  <line class="axis" x1="98" y1="72" x2="98" y2="300"/>
+  <text class="tick" x="90" y="115" text-anchor="end">1 mm</text>
+  <text class="tick" x="90" y="175" text-anchor="end">0.1 mm</text>
+  <text class="tick" x="90" y="235" text-anchor="end">10 µm</text>
+  <text class="tick" x="90" y="295" text-anchor="end">1 µm</text>
+
+  <!-- 意味のある変位の帯 (1 mm 〜 0.1 mm) -->
+  <rect class="band" x="98" y="110" width="272" height="60"/>
+  <text class="band-lbl" x="234" y="133" text-anchor="middle">意味のある変位</text>
+  <text class="band-sub" x="234" y="152" text-anchor="middle">(ミリ 〜 サブミリ)</text>
+
+  <!-- 観測の床 -->
+  <line class="floor" x1="98" y1="170" x2="370" y2="170"/>
+  <text class="floor-lbl" x="102" y="186">観測の床 = 大気の揺らぎ</text>
+
+  <!-- float32 の数値誤差 ≈ 16 µm -->
+  <line class="err" x1="98" y1="218" x2="310" y2="218"/>
+  <text class="err-lbl" x="102" y="212">κ² を払った数値誤差 ≈ 16 µm</text>
+
+  <!-- 床と誤差の隙間 -->
+  <line class="gap" x1="332" y1="172" x2="332" y2="216"
+        marker-start="url(#arw2)" marker-end="url(#arw2)"/>
+  <text class="gap-lbl" x="342" y="190">ここは</text>
+  <text class="gap-lbl" x="342" y="206">桁が余る</text>
+</svg>
