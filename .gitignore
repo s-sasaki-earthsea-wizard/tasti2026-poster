@@ -1,0 +1,33 @@
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.nav
+*.out
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+
+# Generated PDFs (figures/*.pdf and poster.pdf are rebuilt by `make`).
+# The dated copies in print/ are the ones that actually went to the printer.
+*.pdf
+!print/*.pdf
+
+# Rasterised previews
+preview/
+
+# Python
+__pycache__/
+
+# macOS
+.DS_Store
+
+# Agent tooling and local session notes
+.claude/
+.claude-notes/
+.agent/
+.codex/
