@@ -16,73 +16,102 @@
 % without interpreter start-up); its step wall (4.49x) is never quoted.
 %
 % Block-level content plan and the reasoning behind it: docs/poster_plan.md.
+% Look and layout (masthead, blocks, references band): beamerthemetasti2026.sty.
 % ===========================================================================
 \documentclass[final,t]{beamer}
-\usepackage[orientation=portrait,size=a0,scale=1.15]{beamerposter}
+\usepackage[orientation=portrait,size=a0,scale=1.05]{beamerposter}
 \usetheme{tasti2026}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{lmodern}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
+\usepackage{colortbl}
 \usepackage{graphicx}
 \usepackage{qrcode}
 \usepackage{textcomp}
-\usepackage{microtype}
 
+% Text fonts come from the theme; math keeps Computer Modern instead of
+% beamer's sans-serif math.
 \usefonttheme{professionalfonts}
-\renewcommand{\familydefault}{\sfdefault}
-\setlength{\parskip}{0.5ex}
+\setlength{\parskip}{0.45em}
 
 \graphicspath{{figures/}}
-
-% Column geometry: three equal columns with a small gutter.
-\newlength{\colw}
-\setlength{\colw}{0.305\paperwidth}
-\newlength{\gutter}
-\setlength{\gutter}{0.0175\paperwidth}
 
 % Repository and upstream links (also encoded as QR codes).
 \newcommand{\prurl}{https://github.com/insarlab/MintPy/pull/1490}
 \newcommand{\posterurl}{https://github.com/s-sasaki-earthsea-wizard/tasti2026-poster}
 
+% A margin entry of the conditioning table, in the accent colour.
+\newcommand{\margin}[1]{\textcolor{tastiBlue}{\tastiSemibold #1$\times$}}
+
 % ---------------------------------------------------------------------------
-% Title block (title, paper number and author names must be at the top)
+% Masthead (title, paper number and author names must be at the top). The
+% accepted title is set as title + subtitle, split at its colon.
 % ---------------------------------------------------------------------------
-\title{Accelerating Open-Source InSAR Time-Series Analysis on Consumer GPUs:
-  A PyTorch-Based Network Inversion Solver for MintPy}
+\title{Accelerating Open-Source InSAR Time-Series Analysis on Consumer GPUs:}
+\subtitle{A PyTorch-Based Network Inversion Solver for MintPy}
 \author{Syota Sasaki\textsuperscript{*}}
-\institute{Earthsea Wizard, Japan \quad\textbullet\quad
-  \texttt{syota.sasaki@earthsea-wizard.com} \quad\textbullet\quad
+\institute{Earthsea Wizard, Japan \textperiodcentered{}
+  syota.sasaki@earthsea-wizard.com \textperiodcentered{}
   \textsuperscript{*}presenter}
+\logo{\includegraphics[width=98mm]{images/earthsea-wizard-logo.png}}
+\hypersetup{
+  pdftitle={Accelerating Open-Source InSAR Time-Series Analysis on Consumer
+    GPUs: A PyTorch-Based Network Inversion Solver for MintPy},
+  pdfauthor={Syota Sasaki}}
 
 \renewcommand{\tastiHeadlineRight}{%
-  \begin{beamercolorbox}[wd=0.18\paperwidth,sep=0.8ex,center]{paperno in headline}%
-    \usebeamerfont{paperno in headline}Paper No.\ T0043\\[0.2ex]
-    {\normalfont\small Poster \textbullet\ 0201 Earth Observation and Remote Sensing}
-  \end{beamercolorbox}}
+  \tastiBadge{TASTI 2026 \textperiodcentered{} Tainan}{Paper No.}{T0043}
+    {Poster \textperiodcentered{} 0201 Earth Observation and Remote Sensing}}
 
-\renewcommand{\tastiFootline}{%
-  TASTI 2026, Tainan, Taiwan \textbullet\
-  Poster session: 10 November 2026, 11:30--14:00, Room Tayouan D (3F)
-  \hfill
-  Sources and benchmark reports: \texttt{github.com/s-sasaki-earthsea-wizard/tasti2026-poster}}
+% ---------------------------------------------------------------------------
+% References band and footer strip
+% ---------------------------------------------------------------------------
+% References: same seven entries and numbering as the accepted abstract,
+% split over the three grid columns.
+\renewcommand{\tastiReferences}{%
+  \tastiReferenceColumns
+    {\tastiRef{1}{NASA-ISRO SAR (NISAR) Mission Science Users' Handbook,
+       NASA JPL, 2018.}
+     \tastiRef{2}{Z.~Yunjun, H.~Fattahi, F.~Amelung, ``Small baseline InSAR
+       time series analysis: Unwrapping error correction and noise
+       reduction,'' \emph{Comput.\ Geosci.}, 133, 104331, 2019.}
+     \tastiRef{3}{Y.~Yamamoto, Y.~Nakatsukasa, Y.~Yanagisawa, T.~Fukaya,
+       ``Roundoff error analysis of the CholeskyQR2 algorithm,''
+       \emph{ETNA}, 44, 306--326, 2015.}}
+    {\tastiRef{4}{T.~Fukaya, Y.~Nakatsukasa, Y.~Yanagisawa, Y.~Yamamoto,
+       ``CholeskyQR2: A simple and communication-avoiding algorithm for
+       computing a tall-skinny QR factorization on a large-scale parallel
+       system,'' METR 2014--37, The University of Tokyo, 2014.}
+     \tastiRef{5}{A.~Paszke et al., ``PyTorch: An imperative style,
+       high-performance deep learning library,'' \emph{NeurIPS}, 32, 2019.}}
+    {\tastiRef{6}{Taiwan Space Agency (TASA), FORMOSAT-9 mission,
+       \texttt{tasa.org.tw/en-US/missions/detail/FORMOSAT-9}.}
+     \tastiRef{7}{S.~Sasaki, ``Add opt-in torch GPU solver for
+       invert\_network,'' insarlab/MintPy, Pull Request \#1490, 2026
+       (under review).}}}
+
+\renewcommand{\tastiFootlineLeft}{%
+  TASTI 2026, Tainan, Taiwan \textperiodcentered{}
+  Poster session: 10 November 2026, 11:30--14:00, Room Tayouan D (3F)}
+\renewcommand{\tastiFootlineRight}{%
+  Sources and benchmark reports: github.com/s-sasaki-earthsea-wizard/tasti2026-poster}
 
 \begin{document}
 \begin{frame}[t]
-\begin{columns}[t]
+\begin{columns}[T,onlytextwidth]
 
 % ===========================================================================
 % COLUMN 1 -- problem
 % ===========================================================================
-\begin{column}{\colw}
+\begin{column}{\tastiColWidth}
 
 % Block 1: the hotspot and the headline result. 43.5 % is report_baseline.md;
-% 44x is S2 internal (same number as the block 6 big number). Earthquakes
+% 44x is S2 internal (same number as the block 5 big number). Earthquakes
 % appear only as slow inter/post-seismic motion: co-seismic offsets are a
 % single-interferogram problem, not a time-series one.
-\begin{block}{1 \ The bottleneck}
+\begin{posterblock}{1}{The bottleneck}
   InSAR time-series analysis is a standard tool for tracking slow ground
   deformation over months to years: volcanic inflation, motion along active
   faults before and after earthquakes, and land subsidence. With
@@ -94,14 +123,14 @@
     inversion of the interferogram network, solved pixel by pixel on the CPU}
 
   \keypoint{This work: that step now runs 44$\times$ faster on one consumer
-    GeForce GPU (block~6), switched on by a single template option.}
-\end{block}
+    GeForce GPU (block~5), switched on by a single template option.}
+\end{posterblock}
 
 % Block 2: why the inversion exists at all, for readers new to InSAR. No
 % benchmark numbers. Redundancy averages per-interferogram noise only:
 % atmosphere belongs to a date, so it survives the inversion. The last bullet
 % (per-pixel weights forbid a shared factorization) is the bridge to block 3.
-\begin{block}{2 \ Why a least-squares inversion?}
+\begin{posterblock}{2}{Why a least-squares inversion?}
   \begin{itemize}
     \item A radar satellite images the same ground on a fixed repeat cycle
       (12~days for Sentinel-1 and NISAR). An \emph{interferogram}, the phase
@@ -128,11 +157,11 @@
       factorization would serve every pixel; per-pixel weights turn the
       inversion into millions of separate small problems.
   \end{itemize}
-\end{block}
+\end{posterblock}
 
 % Block 3: the shape of the problem. Pixel counts: S2 (3.4 M) and
 % compute_scale.md (NISAR frame). D^3 growth: compute_scale.md.
-\begin{block}{3 \ The problem: millions of small least-squares systems}
+\begin{posterblock}{3}{The problem: millions of small least-squares systems}
   Each pixel $k$ poses the same weighted least-squares problem
   \[
     \hat{x}_k = \arg\min_{x}\,\bigl\lVert W_k^{1/2}\,(G\,x - d_k)\bigr\rVert_2^2 ,
@@ -145,24 +174,22 @@
   $3 \times 10^{8}$ per NISAR frame.
 
   \centering
-  \includegraphics[width=0.95\linewidth]{tall_skinny_matrix.pdf}
+  \includegraphics[width=\linewidth]{tall_skinny_matrix.pdf}
   \figcaption{One pixel's system drawn to scale (Fernandina: $K=288$, $P=97$).
-    The 191 redundant rows are what make the network well-conditioned (block~5).}
+    The 191 redundant rows are what make the network well-conditioned (block~6).}
 
   \raggedright
   Per-pixel cost is $O(KP^2 + P^3/3)$. As the archive lengthens,
   $K \propto D$ and $P^2 \propto D^2$, so the total work grows like $D^3$:
   one to three years of data is about $29\times$ the work.
-\end{block}
+\end{posterblock}
 
 \end{column}
 
-\begin{column}{\gutter}\end{column}
-
 % ===========================================================================
-% COLUMN 2 -- method
+% COLUMN 2 -- method and the speed result
 % ===========================================================================
-\begin{column}{\colw}
+\begin{column}{\tastiColWidth}
 
 % Block 4: the method, framed by the failed direct port. 1.43x is Phase 1
 % (report_torch.md); 3,841,835 launches per chunk of 19,403 pixels and 16.5x
@@ -171,7 +198,7 @@
 % quote the S1 step wall (4.49x): ~47 s of start-up sits on both sides.
 % Digest only: no code box and no implementation tips (chunking, rank flags,
 % opt-in key); those live in docs/qa_prep.md and on GitHub (block 7's QR codes).
-\begin{block}{4 \ Method: reformulate for the GPU, don't just port}
+\begin{posterblock}{4}{Method: reformulate for the GPU, don't just port}
   \keypoint{Porting the CPU solver to a GPU is not enough: the problem has to
     be recast into a shape the GPU is good at.}
 
@@ -208,9 +235,42 @@
   Gram matrix plus Cholesky is an established strategy for
   parallel and GPU settings, at the documented cost of squaring the condition
   number~[3,\,4]; here only the solution is computed, never a QR factor.
-\end{block}
+\end{posterblock}
 
-% Block 5: accuracy. Logic for a non-specialist: what kappa means -> why the
+% Block 5: speed. The chart is the main claim, so this is the feature block
+% (the one tinted panel on the sheet). Big number = S2 internal
+% (MintPy-timed, start-up excluded: 6169.3 s / 139.0 s); the S2 step wall
+% (36.4x) carries ~20-30 s of start-up and is not quoted. Chart = S3 with
+% rows labelled by pixels actually inverted, so its Galapagos (1.29 M px after
+% masking) is not mistaken for the 3.4 M-pixel S2 run. No size dependence!
+% DEM-error (6.2x) and the 18-step run live in docs/qa_prep.md Q4 and the
+% caption.
+\begin{featureblock}{5}{Results: speed}
+  Every speedup is measured against the CPU reference path on one consumer
+  workstation GPU (NVIDIA GeForce RTX~5080, 16~GB).
+
+  \bignumber[68]{6{,}169 s $\rightarrow$ 139 s}{Gal\'apagos scene, 3.4~million
+    pixels $\times$ 475 retained interferograms: \textbf{44.4$\times$} as
+    timed by MintPy (interpreter start-up excluded), within 7.6~GB of GPU
+    memory}
+
+  \centering
+  \includegraphics[width=\linewidth]{fig2_speedup.pdf}
+  \figcaption{Wall time of the network-inversion step in complete 18-step
+    runs on five public scenes (four processors, two radar wavelengths, all on
+    Zenodo), with the pixels left after masking. On the log axis the arrow
+    length is the speedup. No size dependence is claimed: the ranking does not
+    follow pixel count.}
+\end{featureblock}
+
+\end{column}
+
+% ===========================================================================
+% COLUMN 3 -- accuracy and significance
+% ===========================================================================
+\begin{column}{\tastiColWidth}
+
+% Block 6: accuracy. Logic for a non-specialist: what kappa means -> why the
 % normal equations are the textbook bad choice -> the cost matters only if it
 % reaches what InSAR resolves -> measured. Table: report_condition_number.md
 % @ d74df50. Error: S2 Galapagos diff JSON (per-pixel RMS vs CPU, median
@@ -218,7 +278,7 @@
 % products). This block absorbed the former "numerical agreement" block; the
 % radar-coordinate caveat and CholeskyQR2 are left to docs/qa_prep.md.
 % The CPU reference is scipy.linalg.lstsq (default driver gelsd, SVD-based).
-\begin{block}{5 \ The accuracy cost: micrometres, against millimetre signals}
+\begin{posterblock}{6}{The accuracy cost: micrometres, against millimetre signals}
   The \emph{condition number} $\kappa$ of a matrix measures how strongly it can
   amplify small errors, such as rounding, on their way into the solution:
   $\kappa \approx 1$ passes them through, a large $\kappa$ magnifies them.
@@ -236,18 +296,19 @@
   below what InSAR can resolve, so we measured both the conditioning of real
   networks and the error of the result.
 
+  \par\vskip0.4em
   \centering
-  {\small
+  {\small\renewcommand{\arraystretch}{1.25}\arrayrulecolor{tastiNavy}
   \begin{tabular}{lrrr}
-    \toprule
+    \toprule[0.8mm]
     Scene & $\kappa$, unweighted & $\kappa$, worst weighted pixel & margin \\
-    \midrule
-    Fernandina        & 11.0 & 323 & $12.7\times$ \\
-    Gal\'apagos       & 12.7 & 242 & $16.9\times$ \\
-    Kuju              & 28.6 & 81  & $50\times$   \\
-    San Francisco Bay & 55.1 & 721 & $5.7\times$  \\
-    San Francisco     & 51.1 & (run unweighted) & $80\times$ \\
-    \bottomrule
+    \midrule[0.4mm]
+    Fernandina        & 11.0 & 323 & \margin{12.7} \\
+    Gal\'apagos       & 12.7 & 242 & \margin{16.9} \\
+    Kuju              & 28.6 & 81  & \margin{50}   \\
+    San Francisco Bay & 55.1 & 721 & \margin{5.7}  \\
+    San Francisco     & 51.1 & (run unweighted) & \margin{80} \\
+    \bottomrule[0.8mm]
   \end{tabular}\par}
   \figcaption{Float64 SVD on 2{,}100 sampled pixels per scene. Margin is the
     distance from the worst $\kappa$ of the system actually solved to the
@@ -268,41 +329,7 @@
 
   \keypoint{Against the CPU's SVD-based solver, squaring $\kappa$ does leave a
     trace, but at micrometres, buried under InSAR's other error sources.}
-\end{block}
-
-\end{column}
-
-\begin{column}{\gutter}\end{column}
-
-% ===========================================================================
-% COLUMN 3 -- results and significance
-% ===========================================================================
-\begin{column}{\colw}
-
-% Block 6: speed. The chart is the main claim. Big number = S2 internal
-% (MintPy-timed, start-up excluded: 6169.3 s / 139.0 s); the S2 step wall
-% (36.4x) carries ~20-30 s of start-up and is not quoted. Chart = S3 with
-% rows labelled by pixels actually inverted, so its Galapagos (1.29 M px after
-% masking) is not mistaken for the 3.4 M-pixel S2 run. No size dependence!
-% DEM-error (6.2x) and the 18-step run live in docs/qa_prep.md Q4 and the
-% caption.
-\begin{block}{6 \ Results: speed}
-  Every speedup is measured against the CPU reference path on one consumer
-  workstation GPU (NVIDIA GeForce RTX~5080, 16~GB).
-
-  \bignumber{6{,}169 s $\rightarrow$ 139 s}{Gal\'apagos scene, 3.4~million
-    pixels $\times$ 475 retained interferograms: \textbf{44.4$\times$} as
-    timed by MintPy (interpreter start-up excluded), within 7.6~GB of GPU
-    memory}
-
-  \centering
-  \includegraphics[width=0.97\linewidth]{fig2_speedup.pdf}
-  \figcaption{Wall time of the network-inversion step in complete 18-step
-    runs on five public scenes (four processors, two radar wavelengths, all on
-    Zenodo), with the pixels left after masking. On the log axis the arrow
-    length is the speedup. No size dependence is claimed: the ranking does not
-    follow pixel count.}
-\end{block}
+\end{posterblock}
 
 % Block 7: why it matters -- the main push of the closing block. Data growth
 % (NISAR, commercial small-SAR constellations, Taiwan's FORMOSAT-9) makes
@@ -310,8 +337,8 @@
 % resolution figure. No NISAR extrapolation numbers here (repetition of block
 % 3); they live in docs/compute_scale.md and docs/qa_prep.md. Usage details
 % (template keys, install, CPU path unchanged) are left to GitHub via the QR
-% codes. PR status checked 2026-10-07 -- re-check before printing.
-\begin{block}{7 \ Why it matters: SAR data is multiplying}
+% codes, which sit beside the closing sentence. PR status checked 2026-10-07 -- re-check before printing.
+\begin{posterblock}{7}{Why it matters: SAR data is multiplying}
   \begin{itemize}
     \item NISAR~[1] maps nearly all of Earth's land and ice every 12~days.
     \item Commercial constellations of small SAR satellites add dozens more.
@@ -327,45 +354,23 @@
   \keypoint{As SAR archives multiply, a consumer GPU keeps their time-series
     analysis within reach of any research group.}
 
-  The solver is open source and under review for MintPy (pull request
-  \#1490~[7]).
-
-  \begin{columns}[t]
-    \begin{column}{0.48\linewidth}
-      \centering
-      \qrcode[height=0.55\linewidth]{\prurl}\\[0.3ex]
-      {\small Code: PR \#1490}
-    \end{column}
-    \begin{column}{0.48\linewidth}
-      \centering
-      \qrcode[height=0.55\linewidth]{\posterurl}\\[0.3ex]
-      {\small Poster and benchmarks}
-    \end{column}
-  \end{columns}
-\end{block}
-
-% References: same seven entries and numbering as the accepted abstract.
-\begin{block}{References}
-  \scriptsize
-  \begin{enumerate}
-    \item NASA-ISRO SAR (NISAR) Mission Science Users' Handbook, NASA JPL, 2018.
-    \item Z.~Yunjun, H.~Fattahi, F.~Amelung, ``Small baseline InSAR time series
-      analysis: Unwrapping error correction and noise reduction,''
-      \emph{Comput.\ Geosci.}, 133, 104331, 2019.
-    \item Y.~Yamamoto, Y.~Nakatsukasa, Y.~Yanagisawa, T.~Fukaya, ``Roundoff error
-      analysis of the CholeskyQR2 algorithm,'' \emph{ETNA}, 44, 306--326, 2015.
-    \item T.~Fukaya, Y.~Nakatsukasa, Y.~Yanagisawa, Y.~Yamamoto, ``CholeskyQR2:
-      A simple and communication-avoiding algorithm for computing a tall-skinny
-      QR factorization on a large-scale parallel system,'' METR 2014--37,
-      The University of Tokyo, 2014.
-    \item A.~Paszke et al., ``PyTorch: An imperative style, high-performance
-      deep learning library,'' \emph{NeurIPS}, 32, 2019.
-    \item Taiwan Space Agency (TASA), FORMOSAT-9 mission,
-      \texttt{tasa.org.tw/en-US/missions/detail/FORMOSAT-9}.
-    \item S.~Sasaki, ``Add opt-in torch GPU solver for invert\_network,''
-      insarlab/MintPy, Pull Request \#1490, 2026 (under review).
-  \end{enumerate}
-\end{block}
+  \par\vskip0.4em
+  \begin{minipage}[c]{\linewidth-150mm}
+    \raggedright
+    The solver is open source and under review for MintPy (pull request
+    \#1490~[7]).
+  \end{minipage}\hfill
+  \begin{minipage}[c]{68mm}
+    \centering
+    \qrcode[height=52mm]{\prurl}\\[0.6ex]
+    {\footnotesize Code: PR \#1490}
+  \end{minipage}\hspace{4mm}%
+  \begin{minipage}[c]{68mm}
+    \centering
+    \qrcode[height=52mm]{\posterurl}\\[0.6ex]
+    {\footnotesize Poster and benchmarks}
+  \end{minipage}
+\end{posterblock}
 
 \end{column}
 \end{columns}
