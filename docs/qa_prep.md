@@ -285,7 +285,7 @@
 
 ## 11. "Who are you with?"
 
-> I'm an independent researcher and software engineer; Earthsea Wizard is my
+> I'm an independent researcher and software engineer; Earthsea Wizard Tech Lab is my
 > practice. Earlier I did postdoc work with JAXA-funded satellite imagery for
 > disaster response, which is where the InSAR interest comes from.
 

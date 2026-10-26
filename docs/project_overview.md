@@ -13,7 +13,7 @@ PyTorch GPU solver) の成果を、**TASTI 2026 のポスターセッション**
 | セッション | **ポスター、2026-11-10 11:30–14:00、Tayouan D (3F)** |
 | トピック | 02 Space Applications and Services / **0201 Earth Observation and Remote Sensing** |
 | サイズ | **A0 (84.1 cm × 118.9 cm)** |
-| 発表者 | Syota Sasaki (Earthsea Wizard, Japan) |
+| 発表者 | Syota Sasaki (Earthsea Wizard Tech Lab, Japan) |
 
 ## 聴衆と核心メッセージ
 
