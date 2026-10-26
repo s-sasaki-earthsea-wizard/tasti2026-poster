@@ -61,7 +61,7 @@ python3 scripts/estimate_scale.py --pixels 305360000 --dates 30 --conn 5
   (~0.3 billion pixels) maps to minutes rather than hours on one consumer GPU」**
   のような but 外挿である旨を添えた形。
 - **ポスターには外挿の数字を載せない** (2026-10-26、block 7 を「データが増える → 民生 GPU の意義」に
-  絞ったため。$D^3$ の話は block 3 と重複)。Q&A で聞かれたら 1 frame-year (conn5) の行を使い、
+  絞ったため)。$D^3$ の話も 2026-10-26 に block 3 から Q&A ([qa_prep.md](qa_prep.md) Q8a) へ移した。Q&A で聞かれたら 1 frame-year (conn5) の行を使い、
   **"extrapolated from the measured throughput (not measured)"** を添えて「CPU 約 4 h、GPU 5〜20 min」。
   表のフル版はスライドで。全球外挿 (0.44 EFLOP/yr) は仮定が
   粗いので**本編では使わない** (元 doc の判断を踏襲)。

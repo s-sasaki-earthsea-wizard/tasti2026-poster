@@ -181,7 +181,8 @@
 \end{posterblock}
 
 % Block 3: the shape of the problem. Pixel counts: S2 (3.4 M) and
-% compute_scale.md (NISAR frame). D^3 growth: compute_scale.md.
+% compute_scale.md (NISAR frame). The per-pixel cost O(KP^2 + P^3/3) and the
+% D^3 growth (1 -> 3 years ~ 29x) moved to docs/qa_prep.md Q8a on 2026-10-26.
 \begin{posterblock}{3}{The problem: millions of small least-squares systems}
   Each pixel $k$ finds the bottom of its own bowl (block~2),
   \[
@@ -195,11 +196,6 @@
   \centering
   \includegraphics[width=\linewidth]{tall_skinny_matrix.pdf}
   \figcaption{One pixel's system, to scale (Fernandina: $K=288$, $P=97$).}
-
-  \raggedright
-  Per-pixel cost is $O(KP^2 + P^3/3)$. As the archive lengthens,
-  $K \propto D$ and $P^2 \propto D^2$, so the total work grows like $D^3$:
-  one to three years of data is about $29\times$ the work.
 \end{posterblock}
 
 \end{column}
@@ -371,9 +367,9 @@
     \item Commercial constellations of small SAR satellites add dozens more.
     \item Taiwan's own SAR satellites, FORMOSAT-9~[6], are planned.
   \end{itemize}
-  More acquisitions mean longer archives, whose inversion cost grows like
-  $D^3$ (block~3), and every new acquisition means inverting the whole network
-  again.
+  More acquisitions mean longer archives, whose inversion cost grows roughly
+  with the cube of their length, and every new acquisition means inverting the
+  whole network again.
   Turning that step from hours on a CPU into minutes on one consumer GPU makes
   routine wide-area monitoring and archive reprocessing practical without an
   HPC cluster.

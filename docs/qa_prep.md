@@ -125,6 +125,20 @@
   デコリレーションが速いので、都市部・インフラ監視が主戦場になるだろう。ソルバ自体は
   網しか見ないので使える」と答える。分解能の数字は言わない。
 
+## 8a. "How does the cost grow as the archive gets longer?"
+
+> Roughly with the cube of the number of dates. Each pixel costs about K·P² to
+> build its normal matrix plus P³/3 to factorize it; with a fixed number of
+> connections per date, K grows like D and P like D, so the total grows like D³.
+> Going from one year to three years of acquisitions is about 29 times the work.
+
+- 2026-10-26 にポスターの block 3 から移した (Syota さんの判断: 他のブロックに比べて重要度が低く、聞かれたら答えれば十分)。
+  block 7 は「アーカイブの長さのおおよそ 3 乗で伸びる」の 1 句だけ残している。
+- 数式: per-pixel $O(KP^2 + P^3/3)$、$K \propto D$ (逐次網 conn 一定)、$P = D - 1$ → $D^3$。
+- 29× は [compute_scale.md](compute_scale.md) の conn5 の 1 年 (76 TFLOP) → 3 年 (2216 TFLOP)。$3^3 = 27$ との差は $K$ と $P$ の端の項。
+- 支配項は Cholesky ではなく **Gram 行列の組み立て $O(KP^2)$** (Galápagos $P = 97$ で約 95%、
+  [numerical_method.md](numerical_method.md) §5)。
+
 ## 9. "Is it merged upstream? How do I use it today?"
 
 > Submitted as insarlab/MintPy PR #1490, under review; the branch is rebased on the
