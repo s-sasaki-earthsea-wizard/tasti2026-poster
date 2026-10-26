@@ -238,11 +238,18 @@
 % ===========================================================================
 \begin{column}{\tastiColWidth}
 
-% Block 4: the method, framed by the failed direct port. 1.43x is Phase 1
-% (report_torch.md); 3,841,835 launches per chunk of 19,403 pixels and 16.5x
-% are S1 (report_solver_comparison.md). Both ratios are MintPy-reported step
+% Block 4: the method, framed by the failed direct port. Both figures draw
+% one chunk on the same grid, pixels by ordered steps: the QR port fills it
+% one cell at a time, the normal-equation path covers each step for every
+% pixel at once. Checked against the code: PyTorch 2.11 linalg.lstsq uses
+% cuBLAS gelsBatched only up to 256 rows, so at K = 288 it loops over the
+% pixels (geqrf + ormqr per pixel); PR #1490 (_solve_cholesky @ 086d162)
+% builds every N_k with one batched GEMM, then cholesky_ex + cholesky_solve.
+% Launch counts are S1 (report_solver_comparison.md section 4). 1.43x is
+% Phase 1 (report_torch.md), 16.5x is S1; both are MintPy-reported step
 % times with interpreter start-up excluded, NOT solver-only numbers. Never
-% quote the S1 step wall (4.49x): ~47 s of start-up sits on both sides.
+% quote the S1 step wall (4.49x): ~47 s of start-up sits on both sides. The
+% GEMM's share of the arithmetic stays qualitative (numbers: docs/qa_prep.md).
 % Digest only: no code box and no implementation tips (chunking, rank flags,
 % opt-in key); those live in docs/qa_prep.md and on GitHub (block 7's QR codes).
 \begin{posterblock}{4}{Method: reformulate for the GPU, don't just port}
@@ -250,30 +257,27 @@
     be recast into a shape the GPU is good at.}
 
   \textbf{A direct port falls short.}
-  Replacing the per-pixel \texttt{lstsq} with a batched QR solver on the GPU
-  reached only \alert{1.43$\times$} over the CPU path (Fernandina).
-  QR sweeps the $P$ columns of every matrix one after another, so a chunk of
-  about 19{,}400 pixels issued \alert{3{,}841{,}835 kernel launches}, and a
-  GPU is at its worst on many tiny, ordered operations.
+  Handing the pixels to PyTorch's QR least-squares solver on the GPU reached
+  only \alert{1.43$\times$} over the CPU path (Fernandina).
 
+  \centering
+  \includegraphics[width=\linewidth]{qr_launch_grid.pdf}
+  \figcaption{One chunk of 19{,}403 pixels ($K = 288$, $P = 97$). At this
+    matrix height PyTorch's QR solver works through the pixels one at a time.}
+
+  \raggedright
   \textbf{Recast around the normal equations,}
   \[
     N_k\,x_k = r_k, \qquad N_k = G^{\!\top} W_k\, G, \quad r_k = G^{\!\top} W_k\, d_k ,
   \]
-  where $N_k$ is a small $P \times P$ symmetric positive-definite block.
-  In exact arithmetic this is the same least-squares solution, but now every
-  $N_k$ of a chunk is built by one batched matrix product (GEMM) and
-  factorized by one batched Cholesky call, in single precision with
-  PyTorch~[5] and no custom GPU code.
-  Missing interferograms enter as zero weights, which is exactly row
-  deletion, so every pixel keeps the same shape and a chunk stays one batch.
+  the same least-squares solution in exact arithmetic (its accuracy cost:
+  block~6), in single precision with PyTorch~[5] and no custom GPU code.
 
   \centering
-  \includegraphics[width=0.98\linewidth]{fig1_batched_cholesky.pdf}
-  \figcaption{The same chunk on both paths: QR keeps $P$ dependent steps
-    inside every matrix, while the normal-equation path is a handful of
-    batched calls. Kernel launches per chunk measured on Fernandina
-    ($K=288$, $P=97$).}
+  \includegraphics[width=\linewidth]{normal_equations_batched.pdf}
+  \figcaption{The same chunk, with $G_w = W_k^{1/2} G$. Missing interferograms
+    enter as zero weights, so every pixel keeps the same shape and the chunk
+    stays one batch.}
 
   \raggedright
   \textbf{Same GPU, same scene (Fernandina):} QR 228~s $\rightarrow$ Cholesky

@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 420" role="img" aria-labelledby="title desc">
+  <title id="title">The direct QR port: one pixel and one step at a time</title>
+  <desc id="desc">Left: one pixel's K by P design matrix (288 by 97, to scale), with the processed columns grey, the current column orange and an arrow to the right: QR applies 97 reflections, each after the last. Right: a grid with pixels as rows (pixel 1, 2, 3 down to 19,403) and the 97 ordered steps as columns. Every cell holds two small orange ticks, the two GPU kernel launches that one step of one pixel costs, and dashed arrows show the cells being issued row after row. Below, a timeline with two lanes: the CPU lane is a continuous run of launch boxes, the GPU lane has short compute bursts separated by idle gaps, because launching each tiny kernel takes longer than running it. Bottom: 3,841,835 GPU kernel launches per chunk.</desc>
+  <!-- Measured facts behind the drawing (report_solver_comparison.md @ 039d176, section 4.3;
+       PyTorch v2.11.0 lstsq_kernel): K = 288 > 256, so torch.linalg.lstsq loops over the
+       pixels; per pixel one geqr2 kernel + 2 kernels for each of the 97 reflections applied by
+       ormqr + 3 bookkeeping kernels, 19,403 x 198 + 41 = 3,841,835. Lane widths follow the
+       per-chunk averages: host launch 18.2 s / 3.86 M = 4.7 us, kernel 10.4 s / 3.84 M = 2.7 us. -->
+  <style>
+    text      { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    .head     { fill: #333; font-size: 23px; font-weight: 700; }
+    .sub      { fill: #555; font-size: 18px; }
+    .axis     { fill: #555; font-size: 17.5px; }
+    .key      { fill: #555; font-size: 16.5px; }
+    .dots     { fill: #666; font-size: 26px; font-weight: 700; }
+    .note     { fill: #a9531a; font-size: 18px; font-weight: 700; }
+    .mfill    { fill: #c8641e; fill-opacity: 0.07; }
+    .done     { fill: #1d2a35; fill-opacity: 0.10; }
+    .cur      { fill: #c8641e; fill-opacity: 0.9; }
+    .mborder  { fill: none; stroke: #c8641e; stroke-width: 2.4; }
+    .tick     { fill: #c8641e; fill-opacity: 0.85; }
+    .order    { fill: none; stroke: #888; stroke-width: 1.6; stroke-dasharray: 5 4; }
+    .launch   { fill: #c8641e; fill-opacity: 0.12; stroke: #c8641e; stroke-width: 1.5; }
+    .run      { fill: #c8641e; fill-opacity: 0.85; }
+    .base     { stroke: #999; stroke-width: 1.2; }
+    .rule     { stroke: #d8cfbf; stroke-width: 1.4; }
+    .metric   { fill: #a9531a; font-size: 40px; font-weight: 700; }
+    .metric-lab { fill: #555; font-size: 18px; }
+  </style>
+
+  <defs>
+    <pattern id="qcols4a" x="52" y="66" patternUnits="userSpaceOnUse" width="6" height="173">
+      <line x1="0" y1="0" x2="0" y2="173" stroke="#c8641e" stroke-opacity="0.16" stroke-width="1"/>
+    </pattern>
+    <marker id="arw4a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#888"/>
+    </marker>
+    <marker id="arw4a-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c8641e"/>
+    </marker>
+  </defs>
+
+  <!-- ============ left: what one step is, inside one pixel ============ -->
+  <text class="head" x="81" y="30" text-anchor="middle">One pixel</text>
+
+  <!-- 288 x 97 at 0.6 scale -->
+  <rect class="mfill" x="52" y="66" width="58" height="173"/>
+  <rect class="done"  x="52" y="66" width="18" height="173"/>
+  <rect class="cur"   x="70" y="66" width="6"  height="173"/>
+  <rect x="52" y="66" width="58" height="173" fill="url(#qcols4a)"/>
+  <rect class="mborder" x="52" y="66" width="58" height="173"/>
+  <line x1="80" y1="152" x2="104" y2="152" stroke="#c8641e" stroke-width="2.6" marker-end="url(#arw4a-o)"/>
+  <text class="key" x="81" y="58" text-anchor="middle">288 × 97</text>
+
+  <text class="sub" x="81" y="266" text-anchor="middle">97 reflections,</text>
+  <text class="sub" x="81" y="288" text-anchor="middle">each after the last</text>
+
+  <!-- ============ right: the chunk as a pixels x steps grid ============ -->
+  <text class="head" x="528" y="30" text-anchor="middle">The chunk: pixel after pixel</text>
+
+  <!-- step header; cells start at x = 350 with a 56 px pitch, two 9 px ticks per cell -->
+  <text class="axis" x="330" y="74" text-anchor="end">step</text>
+  <text class="axis" x="361.5" y="74" text-anchor="middle">1</text>
+  <text class="axis" x="417.5" y="74" text-anchor="middle">2</text>
+  <text class="axis" x="473.5" y="74" text-anchor="middle">3</text>
+  <text class="axis" x="529.5" y="74" text-anchor="middle">4</text>
+  <text class="axis" x="585.5" y="74" text-anchor="middle">5</text>
+  <text class="axis" x="641.5" y="74" text-anchor="middle">…</text>
+  <text class="axis" x="697.5" y="74" text-anchor="middle">97</text>
+
+  <!-- row labels -->
+  <text class="axis" x="330" y="102" text-anchor="end">pixel 1</text>
+  <text class="axis" x="330" y="138" text-anchor="end">pixel 2</text>
+  <text class="axis" x="330" y="174" text-anchor="end">pixel 3</text>
+  <text class="dots" x="318" y="208" text-anchor="middle">⋮</text>
+  <text class="axis" x="330" y="244" text-anchor="end">pixel 19,403</text>
+
+  <!-- rows: top at y = 85, 121, 157 and 227; ticks are 22 px tall -->
+  <g id="qrow">
+    <rect class="tick" x="350" y="85" width="9" height="22"/><rect class="tick" x="364" y="85" width="9" height="22"/>
+    <rect class="tick" x="406" y="85" width="9" height="22"/><rect class="tick" x="420" y="85" width="9" height="22"/>
+    <rect class="tick" x="462" y="85" width="9" height="22"/><rect class="tick" x="476" y="85" width="9" height="22"/>
+    <rect class="tick" x="518" y="85" width="9" height="22"/><rect class="tick" x="532" y="85" width="9" height="22"/>
+    <rect class="tick" x="574" y="85" width="9" height="22"/><rect class="tick" x="588" y="85" width="9" height="22"/>
+    <text class="dots" x="641.5" y="104" text-anchor="middle">…</text>
+    <rect class="tick" x="686" y="85" width="9" height="22"/><rect class="tick" x="700" y="85" width="9" height="22"/>
+  </g>
+  <use href="#qrow" y="36"/>
+  <use href="#qrow" y="72"/>
+  <text class="dots" x="529.5" y="208" text-anchor="middle">⋮</text>
+  <use href="#qrow" y="142"/>
+
+  <!-- issue order: each row runs to step 97, then the next pixel starts over -->
+  <path class="order" d="M 714 96 Q 734 96 734 105 Q 734 114 714 114 L 352 114 Q 342 114 342 120" marker-end="url(#arw4a)"/>
+  <path class="order" d="M 714 132 Q 734 132 734 141 Q 734 150 714 150 L 352 150 Q 342 150 342 156" marker-end="url(#arw4a)"/>
+
+  <!-- key -->
+  <rect class="tick" x="752" y="160" width="9" height="22"/><rect class="tick" x="766" y="160" width="9" height="22"/>
+  <text class="key" x="752" y="204">one step of</text>
+  <text class="key" x="752" y="224">one pixel:</text>
+  <text class="key" x="752" y="244">2 GPU launches</text>
+
+  <!-- ============ timeline: launching sets the pace ============ -->
+  <line class="rule" x1="20" y1="308" x2="860" y2="308"/>
+
+  <text class="axis" x="330" y="339" text-anchor="end">CPU launches</text>
+  <text class="axis" x="330" y="375" text-anchor="end">GPU computes</text>
+
+  <!-- launch boxes 44 px (4.7 us), compute bursts 25 px (2.7 us) right after each launch -->
+  <g>
+    <rect class="launch" x="350" y="324" width="44" height="22"/>
+    <rect class="launch" x="394" y="324" width="44" height="22"/>
+    <rect class="launch" x="438" y="324" width="44" height="22"/>
+    <rect class="launch" x="482" y="324" width="44" height="22"/>
+    <rect class="launch" x="526" y="324" width="44" height="22"/>
+    <rect class="launch" x="570" y="324" width="44" height="22"/>
+    <rect class="launch" x="614" y="324" width="44" height="22"/>
+  </g>
+  <line class="base" x1="350" y1="382" x2="670" y2="382"/>
+  <g>
+    <rect class="run" x="394" y="360" width="25" height="22"/>
+    <rect class="run" x="438" y="360" width="25" height="22"/>
+    <rect class="run" x="482" y="360" width="25" height="22"/>
+    <rect class="run" x="526" y="360" width="25" height="22"/>
+    <rect class="run" x="570" y="360" width="25" height="22"/>
+    <rect class="run" x="614" y="360" width="25" height="22"/>
+  </g>
+  <text class="dots" x="684" y="343" text-anchor="middle">…</text>
+  <text class="dots" x="684" y="379" text-anchor="middle">…</text>
+  <text class="key" x="472.5" y="408" text-anchor="middle">idle</text>
+  <line x1="463" y1="390" x2="482" y2="390" stroke="#999" stroke-width="1.4"/>
+
+  <text class="note" x="712" y="340">Launching</text>
+  <text class="note" x="712" y="362">takes longer</text>
+  <text class="note" x="712" y="384">than computing</text>
+
+  <!-- ============ left of the timeline: the measured total ============ -->
+  <text class="metric" x="20" y="388">3,841,835</text>
+  <text class="metric-lab" x="20" y="412">launches per chunk</text>
+</svg>
