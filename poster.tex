@@ -68,8 +68,11 @@
 % ---------------------------------------------------------------------------
 % References band and footer strip
 % ---------------------------------------------------------------------------
-% References: same seven entries and numbering as the accepted abstract,
-% split over the three grid columns.
+% References: the accepted abstract's seven entries, renumbered in order of
+% first appearance on the poster (the abstract numbers them differently),
+% split over the three grid columns. The benchmark data follow the
+% references as an unnumbered entry keyed by the scene names used in block 5
+% and block 6; full data citations are in docs/sources.md.
 \renewcommand{\tastiReferences}{%
   \tastiReferenceColumns
     {\tastiRef{1}{NASA-ISRO SAR (NISAR) Mission Science Users' Handbook,
@@ -77,20 +80,24 @@
      \tastiRef{2}{Z.~Yunjun, H.~Fattahi, F.~Amelung, ``Small baseline InSAR
        time series analysis: Unwrapping error correction and noise
        reduction,'' \emph{Comput.\ Geosci.}, 133, 104331, 2019.}
-     \tastiRef{3}{Y.~Yamamoto, Y.~Nakatsukasa, Y.~Yanagisawa, T.~Fukaya,
+     \tastiRef{3}{A.~Paszke et al., ``PyTorch: An imperative style,
+       high-performance deep learning library,'' \emph{NeurIPS}, 32, 2019.}}
+    {\tastiRef{4}{Y.~Yamamoto, Y.~Nakatsukasa, Y.~Yanagisawa, T.~Fukaya,
        ``Roundoff error analysis of the CholeskyQR2 algorithm,''
-       \emph{ETNA}, 44, 306--326, 2015.}}
-    {\tastiRef{4}{T.~Fukaya, Y.~Nakatsukasa, Y.~Yanagisawa, Y.~Yamamoto,
+       \emph{ETNA}, 44, 306--326, 2015.}
+     \tastiRef{5}{T.~Fukaya, Y.~Nakatsukasa, Y.~Yanagisawa, Y.~Yamamoto,
        ``CholeskyQR2: A simple and communication-avoiding algorithm for
        computing a tall-skinny QR factorization on a large-scale parallel
-       system,'' METR 2014--37, The University of Tokyo, 2014.}
-     \tastiRef{5}{A.~Paszke et al., ``PyTorch: An imperative style,
-       high-performance deep learning library,'' \emph{NeurIPS}, 32, 2019.}}
-    {\tastiRef{6}{Taiwan Space Agency (TASA), FORMOSAT-9 mission,
+       system,'' METR 2014--37, The University of Tokyo, 2014.}}
+    {\tastiRef{6}{Taiwan Space Agency, FORMOSAT-9,
        \texttt{tasa.org.tw/en-US/missions/detail/FORMOSAT-9}.}
      \tastiRef{7}{S.~Sasaki, ``Add opt-in torch GPU solver for
        invert\_network,'' insarlab/MintPy, Pull Request \#1490, 2026
-       (under review).}}}
+       (under review).}
+     \tastiData{Benchmark data}{InSAR stacks on Zenodo by Z.~Yunjun and
+       co-authors, DOI 10.5281/zenodo.$\langle n\rangle$: Fernandina
+       3952953, Gal\'apagos 4743058 (data of [2]), Kuju 3952917,
+       San Francisco 4265413, San Francisco Bay 15814132.}}}
 
 \renewcommand{\tastiFootlineLeft}{%
   TASTI 2026, Tainan, Taiwan \textperiodcentered{}
@@ -271,7 +278,7 @@
     N_k\,x_k = r_k, \qquad N_k = G^{\!\top} W_k\, G, \quad r_k = G^{\!\top} W_k\, d_k ,
   \]
   the same solution in exact arithmetic (its accuracy cost:
-  block~6), in single precision with PyTorch~[5] and no custom GPU code.
+  block~6), in single precision with PyTorch~[3] and no custom GPU code.
 
   \centering
   \includegraphics[width=\linewidth]{normal_equations_batched.pdf}
@@ -285,7 +292,7 @@
   reported by MintPy, with interpreter start-up excluded.
   Gram matrix plus Cholesky is an established strategy for
   parallel and GPU settings, at the documented cost of squaring the condition
-  number~[3,\,4]; here only the solution is computed, never a QR factor.
+  number~[4,\,5]; here only the solution is computed, never a QR factor.
 \end{posterblock}
 
 % Block 5: speed. The chart is the main claim, so this is the feature block

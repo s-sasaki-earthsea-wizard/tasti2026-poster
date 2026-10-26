@@ -243,4 +243,10 @@
   \par\raggedright\hangindent2em\hangafter1\noindent
   \makebox[2em][l]{[#1]}#2\par\vskip1.5mm}
 
+% \tastiData{label}{entry} -- an unnumbered entry with a run-in label, for the
+% data sets that follow the numbered references.
+\newcommand{\tastiData}[2]{%
+  \par\raggedright\noindent
+  {\color{tastiNavy}\tastiSemibold #1:} #2\par\vskip1.5mm}
+
 \mode<all>
