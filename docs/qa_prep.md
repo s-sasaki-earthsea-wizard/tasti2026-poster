@@ -116,6 +116,37 @@
 - 引用 [3,4] から引けるのは「Gram + Cholesky は level-3 BLAS のみで並列向き」と
   「κ² の代償は既知」まで。**「CholeskyQR2 と同じだから安全」とは言わない**。
 
+## 2a. "Why is QR so slow on a GPU? Wouldn't a properly batched QR do as well?" (block 4)
+
+> What we measured was a direct port: PyTorch's least-squares solver, which at
+> our matrix height (288 rows) loops over the pixels and applies each pixel's 97
+> Householder reflections one at a time, two tiny kernels per reflection. That is
+> 3.8 million launches per chunk, and launching them took longer than running
+> them. A truly batched QR would remove the per-pixel loop, but it still sweeps
+> the tall 288 × 97 matrix step by step with small matrix-vector work. The normal
+> equations hand the K-long part of the work to one matrix product, and leave
+> only a 97 × 97 factorization to do step by step, for all pixels at once.
+> They actually do slightly more arithmetic; the gain is the shape of the work.
+
+- **PyTorch のディスパッチ** (`v2.11.0` `lstsq_kernel`): cuBLAS の `gelsBatched` は K ≤ 256 (かつ batch ≥ max(2, K/16)) のときだけ。
+  K = 288 では `geqrf` + `ormqr` を画素ごとに呼ぶ。1 画素 198 kernel (分解 1 + 反射 97 × 2 + bookkeeping 3)。
+  詳細は [results.md](results.md) §kernel の内訳と実装の裏取り
+- **「K ≤ 256 なら QR でも速いのでは?」**: 未計測。言えるのは「画素方向のループは消えるが、列ごとの逐次と
+  メモリ律速の小さな演算は残る」まで。NISAR 1 年 (K ≈ 135) なら gelsBatched 側に入るはずだが、試していない。
+  「QR は原理的に GPU に乗らない」とは**言わない**
+- **launch 律速の数字** (S1、チャンクあたり): launch のホスト時間 18.2 s、kernel 時間 10.4 s、wall 19.9 s。
+  平均 launch 4.7 µs、kernel 2.7 µs。ポスターは「Launching takes longer than computing」の定性表現だけ
+- **GEMM の割合** (ポスターは「most of the arithmetic」のみ): 教科書の flop 数で 1 画素あたり正規方程式 5.80 Mflop
+  (うち GEMM 5.42 M = **93.5 %**、Cholesky 0.30 M)、Householder QR 4.91 Mflop。**正規方程式のほうが約 18 % 多い**。
+  GEMM は 2KP² の密な数え方 (実装の `Gwᵀ @ Gw` は対称性を使わない)。対称性を使えば KP² + P³/3 ≈ 3.0 M
+- **スループット (概算)**: GEMM 1 本 ≈ 14.6 TFLOP/s、QR の分解 kernel `geqr2` ≈ 25 GFLOP/s (実測の kernel 時間と
+  上の flop 数から導出)。RTX 5080 の FP32 ピークは約 56 TFLOP/s なので、GEMM は約 1/4 (tensor core ではなく SIMT の sgemm)
+- **「Cholesky も逐次では?」**: そう。cuSOLVER `potrfBatched` は 16 列幅のパネルで 7 段進む (`potrf_cta_lower_batch` × 7)。
+  違いは 1 段 = 1 回の起動で全 19,403 画素を処理すること。block 4 の図の縦の帯 7 本がこれ
+- **スタンプ帳の見方** (LT の `edge_stamp` / `assembly_as_gemm`、$N_k = \sum_e w_{k,e}\, g_e g_e^\top$ を
+  `[n × K] @ [K × P²]` 1 発にする) は**実装ではない**。実装は画素ごとの $G_w$ を積んだバッチ GEMM。
+  「重みに線形なので共通の $G$ を外に出せる」は QR との構造の違いの説明としては正しいので、口頭なら使える
+
 ## 3. "Why do the five scenes spread from 5× to 94×? Does it scale with size?"
 
 > No size dependence: the ranking does not follow pixel count. What varies is the
@@ -288,9 +319,9 @@
 | 数字 | 意味 | 系列 |
 | --- | --- | --- |
 | 43.5 % | `invert_network` の占有率 (Fernandina baseline、internal)。2 位 load_data 17.7 % (NAS の I/O)。全体の短縮の上限 ≈ 1.8× | — |
-| 1.43× | GPU batched QR の CPU 比 (internal、Fernandina) | Phase 1 |
+| 1.43× | GPU QR (`torch.linalg.lstsq`、K = 288 では画素ごとのループ) の CPU 比 (internal、Fernandina) | Phase 1 |
 | 16.5× | 同一 GPU の QR→Cholesky、MintPy の step 時間 (起動除く、Fernandina) | S1 |
-| 3,841,835 → 57 | kernel launches / chunk (19,403 px) | S1 |
+| 3,841,835 → 57 | kernel launches / chunk (19,403 px)。QR は 1 画素 198 本、Cholesky は全 kernel が全画素 | S1 |
 | 6,169 s → 139 s、44.4× | Galápagos 3.4 M px × 475 ifgs、CPU 比 (internal、ポスターの見出し)。step wall だと 6,189 → 170 s、36.4× | S2 |
 | 5.3–93.8× | 5 シーン E2E step wall、CPU 比 | S3 |
 | 6.15× | `correct_topography` Galápagos | — |

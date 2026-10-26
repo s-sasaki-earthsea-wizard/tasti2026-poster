@@ -1,6 +1,6 @@
 # 申し送り — TASTI 2026 ポスター (T0043)
 
-最終更新: 2026-10-27 (block 1 の 43.5 % を 18 step の横棒に・地色を暖色に・入稿は 10/27〜28) / 華扇 (Claude Code)
+最終更新: 2026-10-27 (block 4 を図 2 枚に・block 1 の 43.5 % を 18 step の横棒に・地色を暖色に・入稿は 10/27〜28) / 華扇 (Claude Code)
 
 > 数字を触るときは [docs/results.md](docs/results.md) (系列混同の禁止事項) を、
 > 構成を触るときは [docs/poster_plan.md](docs/poster_plan.md) を先に読むこと。
@@ -34,14 +34,15 @@
   発送から到着に 2〜3 日見ても、10/28 入稿で出発 11/6 (金) に間に合う (→ §3)。
 - 2026-10-27: **地色を白から暖色 `#F6F1E7` に**。Design キャンバス (<https://claude.ai/artifact/QvYydebUjnjpBA6sngrUWC>、非公開) で 4 案を比べて Oat を採用し、keypoint・featureblock の色と図の白い塗りも合わせた ([docs/poster_plan.md](docs/poster_plan.md) 判断 31)。テカリ対策の本命は紙 (マット) の指定
 - 2026-10-27: **block 1 の big number を 18 step の 100% 積み上げ横棒に**。invert_network だけ橙で名指しし、その真上に 43.5 %。残り 17 step は灰の区画で "the other 17 steps" (load_data は名指ししない)。秒数は載せず、44× を掛けた「after」の棒も描かない ([docs/poster_plan.md](docs/poster_plan.md) 判断 32、内訳は [docs/results.md](docs/results.md) §Baseline 18 step の内訳、Q&A は [docs/qa_prep.md](docs/qa_prep.md) Q15)
+- 2026-10-27: **block 4 を図 2 枚に分けて文章を半分以下に**。`qr_launch_grid` (QR: 画素ごと・反射 1 つずつ、起動のほうが計算より長い、3,841,835) と `normal_equations_batched` (① GEMM で K 行を畳む ② 97 × 97 のバッチ Cholesky ③ 解く、どの段も全画素を 1 発、57) を同じ「画素 × 段」の格子で描いた。Syota さんの依頼で LT ではなく **PR #1490 の実装と PyTorch 2.11 のソースで裏取り**: `lstsq` は K ≤ 256 でしか cuBLAS のバッチ QR を使わず、K = 288 では画素ごとのループ (旧図の "Batching leaves the P steps per matrix" は不正確)、Gram は `Gw_T @ Gw` のバッチ GEMM (スタンプ帳ではない)。GEMM の割合 (93.5 %) などは Q&A Q2a ([docs/poster_plan.md](docs/poster_plan.md) 判断 33、[docs/results.md](docs/results.md) §kernel の内訳と実装の裏取り)
 
-## 1. 現在の状態 — **全 7 ブロックの内容が揃った。block 2・6 の改訂版をレビュー待ち → 10/27〜28 入稿**
+## 1. 現在の状態 — **全 7 ブロックの内容が揃った。block 1・2・4・6 の改訂版をレビュー待ち → 10/27〜28 入稿**
 
 | 項目 | 状態 |
 | --- | --- |
 | ポスターサイズ | **A0 縦 (84.1 × 118.9 cm)**。公式要件 ([docs/poster_requirements.md](docs/poster_requirements.md)) |
 | 本体 | `poster.tex` (beamerposter + 自作テーマ `beamerthemetasti2026.sty`)、3 カラム 7 ブロック + References 帯。本文 `scale=1.05` (≈ 26 pt) で 3 カラムとも収まる |
-| 図 | 7 枚 + block 1 の横棒 (`poster.tex` 内の TikZ): ネットワーク例 (+ 辺ごとの方程式と代表 1 画素の重み)、最小二乗のお椀 (代表 1 画素、三角形 t₀–t₁–t₂)、tall-skinny 行列、Fig. 1 (QR vs 正規方程式)、条件数の概念図 (潰して戻す)、誤差バジェット (実測値で再作図)、Fig. 2 (5 シーンの CPU→GPU ダンベル、`make figures`)。`qr_column_sweep` は不使用 |
+| 図 | 8 枚 + block 1 の横棒 (`poster.tex` 内の TikZ): ネットワーク例 (+ 辺ごとの方程式と代表 1 画素の重み)、最小二乗のお椀 (代表 1 画素、三角形 t₀–t₁–t₂)、tall-skinny 行列、QR の launch 格子 (`qr_launch_grid`)、正規方程式の 3 段 (`normal_equations_batched`)、条件数の概念図 (潰して戻す)、誤差バジェット (実測値で再作図)、Fig. 2 (5 シーンの CPU→GPU ダンベル、`make figures`)。`qr_column_sweep` と `fig1_batched_cholesky` は不使用 |
 | 数字 | 抄録と同じ系列ルール + **投稿後の新結果** (5 シーン条件数サーベイ、PR の rebase) を反映 |
 | ビルド | `make` → `poster.pdf`。`make preview` で PNG、`make check` で A0 / フォント埋め込み確認 |
 | 印刷 | **未**。**2026-10-27〜28 入稿**の予定。10/27 入稿 → 11/1 発送 (業者の計算) (→ §3) |
@@ -54,7 +55,7 @@
 | 1 | 1 The bottleneck | 43.5% を 18 step の横棒 (invert_network だけ橙) の上に、結論先出しの keypoint ("This work: 44×"、block 5 を参照) | 横棒 (TikZ) |
 | 1 | 2 Why a least-squares inversion? | 初見向けの導入: 干渉縞 → ネットワーク → 加重最小二乗 → 重み = コヒーレンスから見積もった位相分散の逆数 (MintPy の既定) → 画素ごとに違うので分解を共有できない。「3 日なら $d_{01} + d_{12} = d_{02}$ のはずが合わない → 最適化」の段落、2 枚目の図で「方程式が食い違う → お椀 ∑wr² の底を取る → 重みが底を動かす」 | observation_network_example (網 + 辺ごとの方程式 + 2 画素の重みのバー) + least_squares_bowl |
 | 1 | 3 The problem | 「各画素が自分のお椀の底を探す」→ per-pixel WLS、$K \times P$、$n$ の規模 ($D^3$ は Q&A Q8a へ) | tall_skinny (viewBox を描画範囲に詰めてカラム幅いっぱい) |
-| 2 | 4 Method: reformulate for the GPU | 素朴な移植 (QR) は **1.43×**・384 万 launches → 正規方程式 + batched Cholesky (厳密算術では同じ解、GEMM + batched Cholesky)、**S1 16.5× (条件つき)** | fig1 |
+| 2 | 4 Method: reformulate for the GPU | 素朴な移植 (`torch.linalg.lstsq` の QR) は **1.43×** → 4a: 画素ごと・反射 1 つずつで 3,841,835 launches、起動のほうが計算より長い → 正規方程式 (厳密算術では同じ解) → 4b: ① GEMM ② 97 × 97 のバッチ Cholesky ③ 解く、どの段も全画素を 1 発で 57 launches → **S1 16.5× (条件つき)** | qr_launch_grid + normal_equations_batched |
 | 2 | 5 Results: speed | **グラフが主役** (5 シーンの CPU→GPU wall、ダンベル)、見出し **6,169 s → 139 s (44.4×)**。唯一の淡青の面 (`featureblock`) | fig2 (矢印を青・太線に) |
 | 3 | 6 The accuracy cost | κ = 潰れの偏り (長軸 / 短軸)、解く = 引き伸ばして戻す (まるめのぼけも最大 κ 倍、薄すぎると戻らない) → 正規方程式は 2 回潰す (κ²) → fp32 Cholesky は κ(G_w) ≈ 4.1e3 で破綻 → **実測 κ (5 シーン)** → 誤差 0.06 µm (中央値) / 16 µm (最大)、5 シーンとも gate 通過 | condition_number_flatten_restore + error_budget |
 | 3 | 7 Why it matters | NISAR・小型 SAR・FORMOSAT-9 でデータ増 → 民生 GPU の意義、PR は under review、QR ×2 | QR |
@@ -86,13 +87,14 @@
 ## 3. 次にやること
 
 1. **登録** (2026-10-13 まで): <https://tasti2026.conf.tw/site/mypage53.aspx?pid=127&lang=en&sid=1691>
-2. **block 2・6 改訂版のレビュー (10/27 中)**: Syota さんの確認後にコミット。通ったらカラスノエンドウ・ルスダンに agmsg で回す
+2. **block 1・2・4・6 改訂版のレビュー (10/27 中)**: Syota さんの確認後にコミット (block 1 と block 4 は別コミットに分ける)。通ったらカラスノエンドウ・ルスダンに agmsg で回す
    (特にルスダンに「図の比喩が数学的に言い過ぎていないか」を突いてもらう。論点は §5。block 2 は
    「方程式は変位形、MintPy と κ は速度形」の扱いを見てもらう → [docs/qa_prep.md](docs/qa_prep.md) Q1b)
 3. **図の追加検討** (10/27〜28 入稿なら見送りが現実的): Galapagos の velocity map (MintPy fork で `view.py velocity.h5`) を
-   block 1 か 6 の目玉にする案。`figures/src/ja/` の `edge_stamp` / `assembly_as_gemm` は
-   「Gram 行列の組み立てが行列積 1 発」の説明用。入れるなら英語化して block 4。ただし `edge_stamp` の
-   「辺がつなぐ 2 頂点だけに値が立つ」は変位形 (A) でしか成り立たない (GPU 経路は速度形 B)
+   block 1 か 6 の目玉にする案。`edge_stamp` / `assembly_as_gemm` は 2026-10-27 に**不採用** (実装の縮約ではない、判断 33)
+   - 付随して見つけたこと (ポスターの外、Syota さんの判断待ち): PR #1490 の `_solve_cholesky` の docstring にある「~5 kernel launches per chunk」は、
+     実測では 57 kernel (「~5 batched calls」なら正確)。mintpy-benchmark の `report_solver_comparison.md` §4.3・§5 は `ormtr_*` を "back-substitution"、
+     画素ごとのループを「cuSolver gels の内部」と書いているが、正しくは Qᵀ を右辺に当てる処理で、ループは PyTorch 側
 4. **印刷の段取り** ([docs/poster_requirements.md](docs/poster_requirements.md) §印刷):
    日本で印刷して筒で持参が無難。合成紙 or マット紙、A0。業者は入稿から印刷・発送まで **5 営業日**
    (即日対応は割増なので避ける)。業者の計算で **10/27 入稿 → 11/1 発送**。発送から到着に 2〜3 日見ても

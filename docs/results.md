@@ -46,11 +46,56 @@ speedup には**測定条件の違う 3 系列**があり、混ぜると誤り�
 - **chunk は自動設定の 19,403 px** (14 chunk)。3,841,835 ≈ 19,403 + 2 × 1,882,091 + 58,209
   (`report_solver_comparison.md` §4.3)。旧ポスターの "about 40,000 pixels" と
   `qr_column_sweep.svg` の "~40,000" は誤り (40,000 は chunk sweep の 1 点)。
-- 素朴な移植 (Phase 1、batched QR) の **1.43×** も internal 同士の比
+- 素朴な移植 (Phase 1、`torch.linalg.lstsq` の QR。API はバッチだが K = 288 では画素ごとに実行) の **1.43×** も internal 同士の比
   (CPU 367.0 s / torch QR 257.4 s、269,999 px)。wall だと 1.38× (386.09 / 280.39 s)。
   出典 `report_torch.md`。
 - RMS 1.19e-5 は**条件数二乗の代償だけ**を分離した実測
   ([numerical_method.md](numerical_method.md) §3)。
+
+### kernel の内訳と実装の裏取り (2026-10-27)
+
+block 4 の図 (`qr_launch_grid` / `normal_equations_batched`) の根拠。kernel の数は
+`report_solver_comparison.md` @ `039d176` §4、実装は PR #1490 head `086d162` と PyTorch `v2.11.0` のソースで確認
+(リンクは [sources.md](sources.md))。
+
+#### QR 経路 (`torch.linalg.lstsq`、Phase 1 と S1 の QR 側)
+
+- PyTorch の `lstsq_kernel` は cuBLAS の本当のバッチ QR (`gelsBatched`) を
+  **K ≤ 256 かつ batch ≥ max(2, K/16) のときだけ**使う。Fernandina は K = 288 なので
+  `linalg_lstsq_gels` に落ち、`geqrf` / `ormqr` が**ホスト側で画素ごとにループ**する
+  (`apply_geqrf` / `apply_ormqr` の `for i < batch_size`)。API はバッチだが、実行はバッチになっていない
+- 1 画素あたりの kernel は 198 本:
+  - `geqr2_smem_domino_fast` (分解) 1 本
+  - `ormtr_gemv_c` + `ormtr_gerc` (反射 97 個を 1 個ずつ右辺に当てる、Qᵀb) 2 本 × 97
+  - `copy_info_kernel` 3 本
+  - 19,403 × 198 = 3,841,794、実測 3,841,835 との差 41 はチャンクで 1 回の kernel (三角ソルブ 2 本など)
+- report は `ormtr_*` を "back-substitution"、画素ごとのループを「cuSolver gels の内部」と書いているが、
+  正しくは **Qᵀ を右辺に当てる処理**で、ループは **PyTorch 側**
+- チャンクあたり: launch のホスト時間 18.21 s、kernel 時間 10.41 s、wall 19.87 s → **launch 律速**。
+  平均で launch 4.7 µs / kernel 2.7 µs (`qr_launch_grid` のタイムラインの箱の幅はこの比)
+
+#### 正規方程式経路 (PR #1490 `_solve_cholesky`)
+
+- `Gw = w ⊙ G` (ブロードキャスト) → `N = Gwᵀ @ Gw` (**バッチ GEMM**) → `r = Gwᵀ @ yw` (バッチ GEMV) →
+  `cholesky_ex` (cuSOLVER `potrfBatched`) → `cholesky_solve` (バッチ trsv 2 本)
+- スタンプ帳型の `[n × K] @ [K × P²]` (LT の `assembly_as_gemm`) は**実装ではない** (数学的に等価な別の縮約)
+- 57 本の内訳:
+  - GEMM 1 本 (7.18 ms、最大)
+  - Cholesky 関連 19 本 (`potrf_cta_lower_batch` × 7 = 16 列幅のパネル 7 段、trsm × 6、syrk × 6)
+  - weight の Mul 3 本、GEMV 1 本、triu/tril 1 本、trsv 2 本など
+  - **どの kernel もチャンクの全画素を 1 発で処理する**。Cholesky も段ごとに逐次だが、1 段 = 全画素
+- PR の docstring の「~5 kernel launches per chunk」は「~5 回のバッチ呼び出し」の意味。kernel の数は実測 57
+
+#### 演算量 (教科書の flop 数、K = 288, P = 97、1 画素あたり。ポスターには載せず Q&A 用)
+
+| 経路 | 内訳 | flop |
+| --- | --- | ---: |
+| 正規方程式 (実装の密 GEMM) | GEMM 2KP² 5.42M + Cholesky P³/3 0.30M + GEMV・trsv 0.07M | **5.80M** (GEMM が **93.5 %**) |
+| Householder QR | 分解 2KP² − 2P³/3 4.81M + Qᵀb 0.09M + 三角ソルブ 0.01M | **4.91M** |
+
+- **正規方程式のほうが約 18 % 多い**。速さの源は演算の量ではなく形
+- スループット (実測 kernel 時間 ÷ 上の flop 数): GEMM 1.05e11 flop / 7.18 ms ≈ **14.6 TFLOP/s**。
+  QR の分解 kernel `geqr2` 9.3e10 flop / 3.669 s ≈ **25 GFLOP/s**。導出値なので Q&A でも「概算」と添える
 
 ## S2: CPU 経路との比較 (Galapagos 大シーン)
 
@@ -199,7 +244,7 @@ SanFranSen [4265413](https://zenodo.org/records/4265413)
 | 主張 | 出典 |
 | --- | --- |
 | `invert_network` が baseline の 43.5% を占有 | mintpy-benchmark `report_baseline.md` |
-| GPU batched QR (Phase 1) は CPU 比 1.43× 止まり | `report_torch.md` + `report_profile.md` @ `cea7573` |
+| GPU QR (`torch.linalg.lstsq`、Phase 1) は CPU 比 1.43× 止まり | `report_torch.md` + `report_profile.md` @ `cea7573` |
 | 全 18 step の smallbaselineApp が solver=torch で完走 | fork Wiki "GPU Quick Start" + PR #1490 記載の E2E 実測 |
 | ハードウェア: RTX 5080 16 GB (コンシューマ) | 全 report 共通の環境欄 |
 

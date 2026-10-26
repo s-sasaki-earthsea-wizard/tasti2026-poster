@@ -20,9 +20,10 @@ upstream (insarlab/MintPy) と Zenodo は消えない前提。
 | 内容 | ポスターでの使用 | permalink |
 | --- | --- | --- |
 | 18 step baseline、`invert_network` 43.5% と 18 step の internal 内訳 (横棒) | block 1 | [report_baseline.md @ 0a60cd4](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/0a60cd4/reports/report_baseline.md) |
-| GPU batched QR 1.43× | block 4 | [report_torch.md @ 039d176](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/039d176/reports/report_torch.md) |
+| GPU QR (`torch.linalg.lstsq`) 1.43× | block 4 | [report_torch.md @ 039d176](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/039d176/reports/report_torch.md) |
 | プロファイル (82% が QR、384 万 launches) | block 4 | [report_profile.md @ 039d176](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/039d176/reports/report_profile.md) |
 | **S1** QR vs Cholesky 同一 GPU、16.5× | block 4 | [report_solver_comparison.md @ 039d176](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/039d176/reports/report_solver_comparison.md) |
+| S1 の kernel 内訳 (QR 1 画素 198 本、Cholesky 57 本、launch 18.2 s vs kernel 10.4 s) | block 4 の図 2 枚 | [report_solver_comparison.md §4 @ 039d176](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/039d176/reports/report_solver_comparison.md#4-gpu-kernel-breakdown-per-chunk) |
 | **S2** Galápagos 大シーン、36.4× / 44.4× | block 5 | [report_large_scene.md @ 8bd51d0](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/8bd51d0/reports/report_large_scene.md) |
 | **S3** 5 シーン E2E、5.3–93.8×、数値 gate | block 5, 6 | [report_end_to_end_bench.md @ 0fbf71b](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/0fbf71b/reports/report_end_to_end_bench.md) |
 | `correct_topography` 5 シーン、6.15× | block 5 | [dem_error/report_bench_survey.md @ 3f4b8ea](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/3f4b8ea/reports/dem_error/report_bench_survey.md) |
@@ -31,12 +32,24 @@ upstream (insarlab/MintPy) と Zenodo は消えない前提。
 
 ## 実装 (フォーク)
 
+フォーク `main` は `src/mintpy/gpu/` に分離。upstream PR #1490 (`gpu_torch_solver`) は同じ計算を単一モジュールに置いている。
+
 | ファイル | 中身 |
 | --- | --- |
+| [PR #1490 `src/mintpy/ifgram_inversion_gpu.py` L111–127 @ 086d162](https://github.com/s-sasaki-earthsea-wizard/MintPy/blob/086d16217ef7052766f80f62e8bc7b88c80fa262/src/mintpy/ifgram_inversion_gpu.py#L111-L127) | `_solve_cholesky`: `Gw_T @ Gw` (バッチ GEMM) → `cholesky_ex` → `cholesky_solve`。block 4 の `normal_equations_batched` の根拠 |
 | `src/mintpy/gpu/ifgram_inversion.py` | `estimate_timeseries_batch`, `_solve_cholesky` |
 | `src/mintpy/gpu/_common.py` | `solve_normal_equations_batched`, `auto_chunk_size` |
 | `src/mintpy/gpu/dem_error.py` | `correct_topography` の GPU 経路 |
 | `docs/gpu.md` | ユーザー向け設定方法 (block 7 "Try it" の出典) |
+
+## PyTorch (QR 経路のディスパッチ、計測環境の torch 2.11.0)
+
+| 箇所 | 中身 |
+| --- | --- |
+| [`lstsq_kernel` @ v2.11.0](https://github.com/pytorch/pytorch/blob/v2.11.0/aten/src/ATen/native/cuda/linalg/BatchLinearAlgebra.cpp#L2098-L2117) | cuBLAS `gelsBatched` は K ≤ 256 かつ batch ≥ max(2, K/16) のときだけ。それ以外は `linalg_lstsq_gels` (geqrf + ormqr + 三角ソルブ) |
+| [`apply_geqrf` のループ @ v2.11.0](https://github.com/pytorch/pytorch/blob/v2.11.0/aten/src/ATen/native/cuda/linalg/BatchLinearAlgebraLib.cpp#L1002) | cuSOLVER `geqrf` を画素ごとに呼ぶ |
+| [`apply_ormqr` のループ @ v2.11.0](https://github.com/pytorch/pytorch/blob/v2.11.0/aten/src/ATen/native/cuda/linalg/BatchLinearAlgebraLib.cpp#L1098) | cuSOLVER `ormqr` を画素ごとに呼ぶ |
+| [`cholesky_helper_cusolver` @ v2.11.0](https://github.com/pytorch/pytorch/blob/v2.11.0/aten/src/ATen/native/cuda/linalg/BatchLinearAlgebraLib.cpp#L800-L814) | batch > 1 なら cuSOLVER `potrfBatched` (1 回の呼び出しで全画素) |
 
 ## データ (Zenodo、5 シーン)
 
