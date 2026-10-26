@@ -16,6 +16,22 @@
   見積もった上で選んだ」が正しい言い方。
 - 将来 κ の大きい網に当たったら fp64 (破綻域が 6.7e7 まで上がる) か QR/SVD 経路に逃がせる設計。
 
+## 1a. "Which pixels are the badly conditioned ones? Does a denser network help?"
+
+> The network itself is benign: unweighted κ is 11 to 55. The tail comes from the
+> weights. The worst pixels mix strong interferograms with ones near the
+> coherence floor, so their weights differ by roughly a factor of 10⁴. Those
+> are low-coherence pixels that the temporal-coherence mask removes anyway.
+
+- 正典: [results.md](results.md) §設計行列の条件数サーベイ (max(w)/min(w) = 6.6e3〜8.6e4)。
+  ポスターの表のキャプションに入れかけたが、列 3 の高さの都合で口頭に回した。
+- 「網を密にすると κ が下がる」は**経験則**として言うに留める。ポスターの旧概念図はこれを主張していたが
+  2026-10-26 に「潰して戻す」の図に差し替えた ([poster_plan.md](poster_plan.md) 判断 24)。
+- 専門家から「浮動小数点の丸めは成分ごとの相対誤差なのに、ぼけを全方向同じ幅に描くのはおかしい」と
+  来たら: 図はノルムでの後退誤差 (計算結果は $\lVert\delta G\rVert \lesssim u\lVert G\rVert$ だけずれた
+  行列の厳密解) のモデル。細い方向が座標軸と斜めなら、短軸の情報は大きな数どうしの差 (桁落ち) に
+  しか残らないので、実際に失われるのは長軸の $u$ 倍の大きさ。
+
 ## 2. "Why not CholeskyQR2 / a QR-based scheme?"
 
 > CholeskyQR2 needs the same Gram Cholesky to succeed, so it has the same
