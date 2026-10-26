@@ -1,20 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 320" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 410" role="img" aria-labelledby="title desc">
   <title id="title">Where the numerical error sits relative to the signal</title>
-  <desc id="desc">On a vertical log axis of displacement, the displacements InSAR is meant to recover occupy the millimetre to sub-millimetre band, and atmospheric noise sets the observation floor. The float32 numerical error after paying the squared condition number is about 16 micrometres, which sits below that floor: the digits lost were never readable in the observation.</desc>
+  <desc id="desc">A vertical log axis of displacement from 100 millimetres down to 0.01 micrometres, measured on the Galápagos scene. The time series of the median pixel varies by 16 millimetres, and typical InSAR precision is about one millimetre. The float32 numerical error against the CPU reference is 16 micrometres for the worst pixel, about sixty times below that precision, and 0.06 micrometres for the median pixel, about five orders of magnitude below the signal.</desc>
   <style>
     text        { font-family: 'Helvetica Neue', Arial, sans-serif; }
     .title      { fill: #333; font-size: 25px; font-weight: 700; }
-    .tick       { fill: #777; font-size: 18px; }
+    .tick       { fill: #777; font-size: 17px; }
     .axis       { stroke: #bbb; stroke-width: 1.5; }
-    .band       { fill: #1a6fb5; fill-opacity: 0.12; }
-    .band-lbl   { fill: #1a6fb5; font-size: 20px; font-weight: 700; }
-    .band-sub   { fill: #1a6fb5; font-size: 17px; }
-    .floor      { stroke: #c8641e; stroke-width: 2.4; stroke-dasharray: 7 4; }
-    .floor-lbl  { fill: #c8641e; font-size: 18px; font-weight: 700; }
-    .err        { stroke: #999; stroke-width: 2.2; stroke-dasharray: 4 4; }
-    .err-lbl    { fill: #777; font-size: 18px; }
+    .grid       { stroke: #eee; stroke-width: 1; }
+    .sig        { stroke: #1a6fb5; stroke-width: 3; }
+    .sig-lbl    { fill: #1a6fb5; font-size: 18px; font-weight: 700; }
+    .prec       { stroke: #c8641e; stroke-width: 2.4; stroke-dasharray: 7 4; }
+    .prec-lbl   { fill: #c8641e; font-size: 18px; font-weight: 700; }
+    .err        { stroke: #888; stroke-width: 2.4; }
+    .err-lbl    { fill: #555; font-size: 18px; }
     .gap        { stroke: #666; stroke-width: 1.6; }
-    .gap-lbl    { fill: #666; font-size: 17px; }
+    .gap-lbl    { fill: #444; font-size: 17px; font-weight: 700; }
   </style>
 
   <defs>
@@ -24,30 +24,50 @@
     </marker>
   </defs>
 
-  <text class="title" x="270" y="36" text-anchor="middle">Signal vs numerical error</text>
+  <text class="title" x="300" y="36" text-anchor="middle">Signal vs numerical error (Galápagos)</text>
 
-  <!-- vertical log axis -->
-  <line class="axis" x1="98" y1="72" x2="98" y2="300"/>
-  <text class="tick" x="90" y="115" text-anchor="end">1 mm</text>
-  <text class="tick" x="90" y="175" text-anchor="end">0.1 mm</text>
-  <text class="tick" x="90" y="235" text-anchor="end">10 µm</text>
-  <text class="tick" x="90" y="295" text-anchor="end">1 µm</text>
+  <!-- vertical log axis: 44 px per decade, 100 mm at y=80 down to 0.01 µm at y=388 -->
+  <line class="axis" x1="110" y1="72" x2="110" y2="396"/>
+  <g>
+    <line class="grid" x1="110" y1="80"  x2="430" y2="80"/>
+    <line class="grid" x1="110" y1="124" x2="430" y2="124"/>
+    <line class="grid" x1="110" y1="168" x2="430" y2="168"/>
+    <line class="grid" x1="110" y1="212" x2="430" y2="212"/>
+    <line class="grid" x1="110" y1="256" x2="430" y2="256"/>
+    <line class="grid" x1="110" y1="300" x2="430" y2="300"/>
+    <line class="grid" x1="110" y1="344" x2="430" y2="344"/>
+    <line class="grid" x1="110" y1="388" x2="430" y2="388"/>
+  </g>
+  <text class="tick" x="100" y="86"  text-anchor="end">100 mm</text>
+  <text class="tick" x="100" y="130" text-anchor="end">10 mm</text>
+  <text class="tick" x="100" y="174" text-anchor="end">1 mm</text>
+  <text class="tick" x="100" y="218" text-anchor="end">0.1 mm</text>
+  <text class="tick" x="100" y="262" text-anchor="end">10 µm</text>
+  <text class="tick" x="100" y="306" text-anchor="end">1 µm</text>
+  <text class="tick" x="100" y="350" text-anchor="end">0.1 µm</text>
+  <text class="tick" x="100" y="394" text-anchor="end">0.01 µm</text>
 
-  <!-- band of displacements the analysis is meant to recover (1 mm to 0.1 mm) -->
-  <rect class="band" x="98" y="110" width="330" height="60"/>
-  <text class="band-lbl" x="263" y="135" text-anchor="middle">Displacement to recover</text>
-  <text class="band-sub" x="263" y="157" text-anchor="middle">(millimetre to sub-millimetre)</text>
+  <!-- signal: per-pixel standard deviation of the CPU time series, median pixel 16 mm (measured, S2) -->
+  <line class="sig" x1="110" y1="115" x2="430" y2="115"/>
+  <text class="sig-lbl" x="118" y="107">Signal, median pixel: 16 mm</text>
 
-  <!-- observation floor -->
-  <line class="floor" x1="98" y1="170" x2="428" y2="170"/>
-  <text class="floor-lbl" x="102" y="190">Observation floor (atmosphere)</text>
+  <!-- typical InSAR time-series precision, about 1 mm (reference level, not measured here) -->
+  <line class="prec" x1="110" y1="168" x2="430" y2="168"/>
+  <text class="prec-lbl" x="118" y="160">Typical InSAR precision: ~1 mm</text>
 
-  <!-- float32 numerical error, about 16 µm -->
-  <line class="err" x1="98" y1="218" x2="428" y2="218"/>
-  <text class="err-lbl" x="102" y="242">Numerical error after κ² ≈ 16 µm</text>
+  <!-- float32 numerical error vs the CPU reference, per-pixel RMS (measured, S2) -->
+  <line class="err" x1="110" y1="246" x2="430" y2="246"/>
+  <text class="err-lbl" x="118" y="238">Error, worst pixel: 16 µm</text>
+  <line class="err" x1="110" y1="352" x2="430" y2="352"/>
+  <text class="err-lbl" x="118" y="344">Error, median pixel: 0.06 µm</text>
 
-  <!-- margin between the floor and the error -->
-  <line class="gap" x1="462" y1="172" x2="462" y2="216"
+  <!-- worst error vs precision -->
+  <line class="gap" x1="448" y1="170" x2="448" y2="244"
         marker-start="url(#arw2)" marker-end="url(#arw2)"/>
-  <text class="gap-lbl" x="472" y="200">margin</text>
+  <text class="gap-lbl" x="458" y="213">~60×</text>
+
+  <!-- median error vs median signal -->
+  <line class="gap" x1="520" y1="117" x2="520" y2="350"
+        marker-start="url(#arw2)" marker-end="url(#arw2)"/>
+  <text class="gap-lbl" x="530" y="228">~10⁵×</text>
 </svg>

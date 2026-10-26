@@ -1,11 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 55 410 205" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 55 410 275" role="img" aria-labelledby="title desc">
   <title id="title">Example observation network (4 dates, 5 pairs)</title>
-  <desc id="desc">A small network of four acquisition dates (vertices t0 to t3) and five interferometric pairs (edges). Besides consecutive dates, two skip pairs (t0 with t2, t1 with t3) are also edges. One edge is one observation.</desc>
+  <desc id="desc">A small network of four acquisition dates (vertices t0 to t3) and five interferometric pairs (edges). Besides consecutive dates, two skip pairs (t0 with t2, t1 with t3) are also edges. One edge is one observation. Dates are placed left to right in time; a legend names the two symbols.</desc>
   <style>
     text { font-family: Georgia, 'Times New Roman', serif; font-style: italic; }
     .node { fill: #1a6fb5; stroke: #fff; stroke-width: 1.5; }
     .edge { stroke-width: 4; }
     .lbl  { fill: #444; font-size: 22px; }
+    .key  { fill: #444; font-size: 18px; font-style: normal; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .axis { stroke: #888; stroke-width: 2; }
   </style>
 
   <!-- edges (interferometric pairs), Okabe-Ito colors matching the matrix row chips -->
@@ -28,4 +30,15 @@
   <text class="lbl" x="190" y="88"  text-anchor="middle">t<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">1</tspan></text>
   <text class="lbl" x="300" y="248" text-anchor="middle">t<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">2</tspan></text>
   <text class="lbl" x="410" y="88"  text-anchor="middle">t<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">3</tspan></text>
+
+  <!-- time axis: dates are laid out left to right in acquisition order -->
+  <line class="axis" x1="60" y1="275" x2="434" y2="275"/>
+  <polygon fill="#888" points="446,275 432,269 432,281"/>
+  <text class="key" x="446" y="265" text-anchor="end">time</text>
+
+  <!-- legend -->
+  <circle class="node" cx="70" cy="310" r="9"/>
+  <text class="key" x="86" y="316">acquisition date</text>
+  <line class="edge" stroke="#444" x1="252" y1="310" x2="292" y2="310"/>
+  <text class="key" x="302" y="316">interferogram</text>
 </svg>
