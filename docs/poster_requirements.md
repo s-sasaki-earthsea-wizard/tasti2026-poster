@@ -54,12 +54,12 @@ block 7 の 2 つ目の QR は、ポスター PDF の Zenodo の記録の **conc
 | 版 | version DOI | ファイル | 中身 |
 | --- | --- | --- | --- |
 | v1 | 10.5281/zenodo.23669875 | `poster.pdf` (md5 `b5dcb701…`) | 旧所属 "Earthsea Wizard, Japan"、QR → v1 |
-| **v2 (最新)** | 10.5281/zenodo.23673961 | `print/poster_2026-10-27.pdf` (md5 `d14b0f218892b24c91b63993020c8ac5`) に差し替える | 所属 "Earthsea Wizard Tech Lab, Japan"、QR → concept DOI |
+| **v2 (最新)** | 10.5281/zenodo.23673961 | `poster_2026-10-27.pdf` = `print/poster_2026-10-27.pdf` (md5 `d14b0f218892b24c91b63993020c8ac5`、2026-10-27 に差し替えて API で照合) | 所属 "Earthsea Wizard Tech Lab, Japan"、QR → concept DOI |
 
 - 経緯 (2026-10-27): v1 の DOI を下書きで予約し、QR をその version DOI にして publish した。
   所属を直したあと、ファイルの差し替えのつもりが New version (v2) になり、QR (v1) と印刷する PDF (v2) が
   ずれた。concept DOI はもう決まっていたので、QR を concept DOI にした PDF を作り直し、v2 のファイルを
-  Edit published files で差し替える ([poster_plan.md](poster_plan.md) 判断 36・37)
+  Edit published files で差し替えた (版は v1・v2 の 2 つのまま。[poster_plan.md](poster_plan.md) 判断 36・37)
 - 予約で取れるのは version DOI で、concept DOI は初版の publish で決まる。予約した DOI は
   **publish するまで解決しない** (QR を読むと 404) し、保証もされない。**下書きを消すと DOI は戻らない**
 - これから: QR は concept DOI なので、New version を出しても QR は最新版に着く。
@@ -108,7 +108,7 @@ block 7 の 2 つ目の QR は、ポスター PDF の Zenodo の記録の **conc
 - [ ] 所属 "Earthsea Wizard Tech Lab, Japan" (Zenodo の所属と同じ) とメールアドレスがある
 - [ ] 数値の系列が [results.md](results.md) と一致 (S1 の 3 条件、規模依存なし)
 - [ ] block 7 の PR #1490 の記述が現状と一致 (`gh pr view 1490 --repo insarlab/MintPy`)
-- [ ] 印刷する PDF が Zenodo の最新版 (concept DOI 10.5281/zenodo.23669874 → v2) のファイルと md5 で一致する (→ §Zenodo)
+- [x] 印刷する PDF が Zenodo の最新版 (concept DOI 10.5281/zenodo.23669874 → v2) のファイルと md5 で一致する (2026-10-27、→ §Zenodo)
 - [ ] QR コード 2 つが実機で読める (PR / Zenodo のポスター PDF)。Zenodo 側は publish 前だと 404
 - [ ] 1 m 離れて本文が読める (目安: 本文 ≥ 24 pt、キャプション ≥ 18 pt)
 - [ ] 参加登録済み (2026-10-13 まで)

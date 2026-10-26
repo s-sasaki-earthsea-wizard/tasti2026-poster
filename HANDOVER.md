@@ -38,7 +38,7 @@
 - 2026-10-27: **シーン名 (Fernandina、Kuju …) が地名にしか見えない問題に対応**。Fig. 2 のキャプションを定義の場所にして「MintPy のテストに使われる公開 InSAR データ (Sentinel-1 / ALOS-1、火山とベイエリア)、Zenodo = 研究データの公開リポジトリ」と書き、block 6 の表のキャプションから block 5 を参照。列 2 のはみ出しは block 4・5 の 1 語ずつで吸収 (判断 34)。続けて **References を登場順に振り直し** (PyTorch [3]、CholeskyQR2 [4,5]) し、帯の 3 段目に番号なしの **"Benchmark data:"** (5 シーンの version DOI、作成者のクレジット) を足した。[6] を 1 行に縮めて帯の高さは据え置き (判断 35)。Galápagos は MintPy のサンプルデータではなく [2] のデータ。正式なデータ引用は [docs/sources.md](docs/sources.md) §データ、想定問答は [docs/qa_prep.md](docs/qa_prep.md) Q3a
 - 2026-10-27: **block 7 の 2 つ目の QR をポスター PDF の Zenodo DOI に差し替え**。Syota さんが下書きで DOI **10.5281/zenodo.23669875** (version DOI) を予約。ラベルは "Poster PDF (Zenodo)"、本リポジトリへの導線はフッターの URL に残す。QR 2 つは OpenCV で読み取りを確認済み。同日 `print/poster_2026-10-27.pdf` を上げて **publish** (<https://zenodo.org/records/23669875>、md5 一致、CC BY 4.0、concept DOI 10.5281/zenodo.23669874)。Description・Keywords・Conference は空欄で公開、あとで足す ([docs/poster_plan.md](docs/poster_plan.md) 判断 36、手順とメタデータ案は [docs/poster_requirements.md](docs/poster_requirements.md) §Zenodo)
 - 2026-10-27: **所属を "Earthsea Wizard Tech Lab, Japan" に** (Zenodo の Creator の所属に揃えた、Syota さんの判断)。`print/poster_2026-10-27.pdf` を作り直した (md5 `8498a31f…`)。Zenodo の `poster.pdf` は旧所属の版 (md5 `b5dcb701…`) なので、**Edit published files で差し替える** (DOI は変わらない)。受理された抄録 ([docs/accepted_abstract.md](docs/accepted_abstract.md)) は凍結なので触らない
-- 2026-10-27: 差し替えのつもりが Zenodo で **New version (v2、10.5281/zenodo.23673961)** になり、QR (v1) の先が旧所属の PDF のままだった。**QR を concept DOI 10.5281/zenodo.23669874 (常に最新版) に変えて** `print/poster_2026-10-27.pdf` を作り直し (md5 `d14b0f21…`、QR は OpenCV で読み取り確認、concept DOI → v2 に解決)、v2 のファイルをこれに差し替える ([docs/poster_plan.md](docs/poster_plan.md) 判断 37、版の一覧は [docs/poster_requirements.md](docs/poster_requirements.md) §Zenodo)
+- 2026-10-27: 差し替えのつもりが Zenodo で **New version (v2、10.5281/zenodo.23673961)** になり、QR (v1) の先が旧所属の PDF のままだった。**QR を concept DOI 10.5281/zenodo.23669874 (常に最新版) に変えて** `print/poster_2026-10-27.pdf` を作り直し (md5 `d14b0f21…`、QR は OpenCV で読み取り確認、concept DOI → v2 に解決)。v2 のファイルをこれに差し替え、API で md5 の一致を確認して `print/` にコミット ([docs/poster_plan.md](docs/poster_plan.md) 判断 37、版の一覧は [docs/poster_requirements.md](docs/poster_requirements.md) §Zenodo)
 
 ## 1. 現在の状態 — **全 7 ブロックの内容が揃った。block 1・2・4・6 の改訂版をレビュー待ち → 10/27〜28 入稿**
 
@@ -105,9 +105,9 @@
    **10/28 までに `make print` して入稿すれば出発 11/6 (金) に間に合う**。地色が左右の端まで届くので、**フチなし印刷か塗り足しの要否**を入稿時に業者へ確認
 5. **印刷直前チェック**: `make check` + `gh pr view 1490 --repo insarlab/MintPy` で
    block 7 の PR 記述を現状に合わせる (merge されていれば書き換え)
-   - **Zenodo**: QR は concept DOI (10.5281/zenodo.23669874 → 最新版 v2)。v2 のファイルを
-     `print/poster_2026-10-27.pdf` (md5 `d14b0f21…`) に差し替え、QR を実機で読んで Zenodo に着くことを
-     確かめてから入稿。Description・Keywords・Conference はあとで足す。
+   - **Zenodo**: QR は concept DOI (10.5281/zenodo.23669874 → 最新版 v2)。v2 のファイルは
+     `print/poster_2026-10-27.pdf` (md5 `d14b0f21…`) に差し替え済み。QR を実機で読んで Zenodo に着くことを
+     確かめてから、同じ PDF を入稿。Description・Keywords・Conference はあとで足す。
      v2 のファイルの差し替えは 2026-11-25 頃まで ([docs/poster_requirements.md](docs/poster_requirements.md) §Zenodo)
 6. **Q&A 準備**: [docs/qa_prep.md](docs/qa_prep.md) を一読。A4 縮刷版を 20 部ほど持参
    (`pdfjam` / `pdftoppm` で縮小) すると立ち話で渡せる
