@@ -51,8 +51,12 @@ make print      # print/poster_<date>.pdf
 
 - [docs/results.md](docs/results.md) の表と系列名で照合してから書く
 - **S1 (同一 GPU で QR→Cholesky、16.5×) を載せるときは 3 条件を必ず添える**:
-  比較の両側 (GPU QR vs GPU Cholesky) / シーン (Fernandina) / solver core の値で
-  step wall は 4.49×
+  比較の両側 (GPU QR vs GPU Cholesky) / シーン (Fernandina) / MintPy が報告する
+  step 時間 (起動除く)。"solver core" とは書かない (読み込み・重み計算も含む)
+- **S1 の step wall 4.49× は載せない**。両側に約 47 s の起動コスト (NAS 上の venv
+  からの torch import) が乗った値で、solver の比較として正当でない
+- 系列ごとに Python 環境が違う (Phase 1〜S2 は numpy 2.4.4、S3 は numpy 1.26.4 で
+  CPU ループが遅い)。詳細は [docs/results.md](docs/results.md) §計測環境の検証
 - **規模依存 (「大きいほど速い」) は主張しない**。S3 の実データで成立しない
 - NISAR の数字は**外挿**。"extrapolated from measured throughput" を必ず添える
 - FORMOSAT-9 は地域文脈のみ。分解能の数字は書かない
@@ -101,7 +105,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 │   └── src/ja/*.ja.svg           # 未英語化の候補 (ビルド対象外)
 ├── scripts/
 │   ├── plot_speedup.py           # Fig. 2 (5 シーン speedup、S3 系列)
-│   └── estimate_scale.py         # NISAR 規模の見積もり (block 8 の数字)
+│   └── estimate_scale.py         # NISAR 規模の見積もり (Q&A 用、ポスターには載せない)
 ├── docs/
 │   ├── project_overview.md       # 何を・誰に・どこで
 │   ├── poster_requirements.md    # A0、搬入/撤去、必須記載、印刷の段取り

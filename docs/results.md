@@ -21,6 +21,10 @@ speedup には**測定条件の違う 3 系列**があり、混ぜると誤り�
 
 - **16.5× を「CPU 比」と書くのは誤り** (過去に一度取り違えて撤回した前科あり)。
   16.5× は「アルゴリズム置換 (QR→Cholesky) の寄与」を同一 GPU で分離した数字。
+- **internal = MintPy が報告する `Time used:`** (Python の起動・トップレベル import を除く。
+  スタックの読み込み・重み計算・書き出しは**含む**)。"solver core" ではない。
+- **S1 の step wall 4.49× は使わない**。両側に約 47 s の起動コストが乗っている
+  (§計測環境の検証)。
 - S2 の 44.4× は「GPU 化 + バッチ化 + アルゴリズム変更」の 3 効果込み。
 - S3 は E2E 実行からの抽出で S1/S2 と測定方法が違う。**規模依存の議論
   (5〜94× のレンジ) は S3 の表だけで閉じる**こと。
@@ -32,13 +36,19 @@ speedup には**測定条件の違う 3 系列**があり、混ぜると誤り�
 
 | Metric | GPU lstsq (QR/gels) | GPU Cholesky | ratio |
 | --- | ---: | ---: | ---: |
-| internal (ソルブ中核) | 228.17 s | **13.83 s** | **16.50×** |
-| step wall | 275.07 s | 61.34 s | 4.49× |
+| internal (MintPy `Time used`、起動除く) | 228.17 s | **13.83 s** | **16.50×** |
+| step wall (**使わない**: 起動 ~47 s 込み) | 275.07 s | 61.34 s | 4.49× |
 | kernel launches / chunk | 3,841,835 | **57** | **67,400×** |
 | kernel time / chunk | 10.41 s | 24.20 ms | 430× |
 | 正規化 RMS max (相互差) | — | — | **1.19e-5** |
 
 - abstract の "16.5×" と "3.8M → 57 kernel launches" はこの表。
+- **chunk は自動設定の 19,403 px** (14 chunk)。3,841,835 ≈ 19,403 + 2 × 1,882,091 + 58,209
+  (`report_solver_comparison.md` §4.3)。旧ポスターの "about 40,000 pixels" と
+  `qr_column_sweep.svg` の "~40,000" は誤り (40,000 は chunk sweep の 1 点)。
+- 素朴な移植 (Phase 1、batched QR) の **1.43×** も internal 同士の比
+  (CPU 367.0 s / torch QR 257.4 s、269,999 px)。wall だと 1.38× (386.09 / 280.39 s)。
+  出典 `report_torch.md`。
 - RMS 1.19e-5 は**条件数二乗の代償だけ**を分離した実測
   ([numerical_method.md](numerical_method.md) §3)。
 
@@ -50,8 +60,13 @@ speedup には**測定条件の違う 3 系列**があり、混ぜると誤り�
 | --- | --- | ---: | ---: | ---: | ---: |
 | GalapagosSenDT128 | 3.4M × 475 kept | 6,189 s | **170.06 s** | **44.4×** | **36.4×** |
 
-- internal = ソルブ中核 / step wall = ステップ全体 (I/O 込み)。差は I/O・転送。
-- 絶対 RMS max ~16 µm (CPU 参照比) — 欲しい変位 (mm 級) より桁違いに小さい。
+- internal = MintPy の `Time used` (読み込み・重み計算込み、起動除く) / step wall =
+  `--dostep` プロセス全体。**差は起動コスト** (CPU 19.7 s、GPU 31 s。NAS 上の fork
+  `.venv` から import するため)。I/O・転送は internal 側に入っている。
+- 解いたピクセル数は 3,399,999 (6 box × 578,000 の全画素)、ifgs は 475 (490 中)。
+- 画素ごとの時系列の絶対 RMS 差 (CPU 参照比): **中央値 0.065 µm**、p99 0.39 µm、**最大 16.4 µm**。
+  参照側の時系列の標準偏差は中央値 16 mm (p99 86 mm)。出典 `reports/galapagos_diff/cpu_vs_torch_r1.json`。
+  正規化 RMS は中央値 3.7e-6、p99 2.1e-5、最大 4.3e-4。
 - Max RSS 3.73 → 5.80 GiB、VRAM peak 7.6/16 GiB (48%)。
 
 ## S3: 5 シーン end-to-end 検証 (「偶然ではない」の裏付け)
@@ -60,13 +75,19 @@ speedup には**測定条件の違う 3 系列**があり、混ぜると誤り�
 / [PR #1490 フォローアップコメント](https://github.com/insarlab/MintPy/pull/1490)
 (2026-05-19 投稿) として公開済み。
 
-| シーン | 処理系 / センサ | px | ifgs (K) | dates (D) | cpu | torch | speedup |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| FernandinaSenDT128 | ISCE2 / S1 (C) | 270 k | 288 | 98 | 645.12 s | 6.88 s | **93.77×** |
-| GalapagosSenDT128 | ISCE2 / S1 (C) | 3.40 M | 490 | 98 | 2976.72 s | 79.40 s | **37.49×** |
-| SanFranBaySenD42 | GMTSAR / S1 (C) | 326 k | 1297 | 333 | 1080.38 s | 17.42 s | **62.02×** |
-| KujuAlosAT422F650 | ROI_PAC / ALOS-1 (L) | 226 k | 167 | 24 | 31.01 s | 4.53 s | **6.85×** |
-| SanFranSenDT42 | ARIA / S1 (C) | 1.04 M | 505 | 114 | 58.85 s | 11.07 s | **5.32×** |
+| シーン | 処理系 / センサ | px (シーン) | px (反転) | ifgs (K) | dates (D) | 重み | cpu | torch | speedup |
+| --- | --- | ---: | ---: | ---: | ---: | --- | ---: | ---: | ---: |
+| FernandinaSenDT128 | ISCE2 / S1 (C) | 270 k | 270 k | 288 | 98 | var | 645.12 s | 6.88 s | **93.77×** |
+| GalapagosSenDT128 | ISCE2 / S1 (C) | 3.40 M | **1.29 M** | 475 (490 中) | 98 | var | 2976.72 s | 79.40 s | **37.49×** |
+| SanFranBaySenD42 | GMTSAR / S1 (C) | 326 k | 234 k | 1297 | 333 | var | 1080.38 s | 17.42 s | **62.02×** |
+| KujuAlosAT422F650 | ROI_PAC / ALOS-1 (L) | 226 k | 226 k | 167 | 24 | var | 31.01 s | 4.53 s | **6.85×** |
+| SanFranSenDT42 | ARIA / S1 (C) | 1.04 M | 758 k | 505 | 114 | **no** | 58.85 s | 11.07 s | **5.32×** |
+
+- cpu / torch は `/usr/bin/time -v` の step wall (sibling venv はローカル SSD なので起動は ~1 s)。
+- **px (反転)** は `invert_network` ログの "number of pixels to invert" の合計。E2E の新規実行では
+  `avgSpatialCoh` がゼロの画素がマスクされる。report の "3.40 M" 等はシーン画素数。
+- **S3 の CPU 基準は他の系列より遅い** (numpy 1.26.4、§計測環境の検証)。系列内は
+  CPU・GPU とも同じ環境なのでフェアだが、S1・S2 と絶対時間を比べないこと。
 
 - **4 処理系 × 2 波長 × 全て Zenodo 公開データ** — abstract の "five-scene
   benchmark spanning four interferometric processors and two radar wavelengths"
@@ -79,28 +100,32 @@ speedup には**測定条件の違う 3 系列**があり、混ぜると誤り�
 Kuju が床、SanFranBay が天井」と書いてあったが、**同じ表の実データと矛盾していた**。
 床は SanFranSen の 5.32×、天井は Fernandina の 93.77× が正しい。
 
-speedup と問題規模には相関がない (Spearman 順位相関):
+speedup と問題規模には相関がない (Spearman 順位相関、2026-10-19 に**実際に反転した
+画素数**と使用 ifgs で再計算。シーン画素数で出した旧値は −0.20 / +0.00 / +0.20):
 
 | 規模指標 | speedup との順位相関 |
 | --- | ---: |
-| ピクセル数 | **−0.20** |
+| 反転したピクセル数 | **−0.10** |
 | per-pixel 演算密度 $KP^2 + P^3/3$ | **+0.00** |
 | 総演算量 (px × per-pixel) | **+0.20** |
 
 表の中に反例が並んでいる:
 
 - 最小級の **Fernandina (270 k px) が最速の 93.77×**
-- 最大の **Galapagos (3.40 M px) は 37.49×** — 最速ではない
-- Fernandina の 4 倍の規模の **SanFranSen (1.04 M px) が最遅の 5.32×**
+- 反転画素数が最大の **Galapagos (1.29 M px) は 37.49×** — 最速ではない
+- Fernandina の 2.8 倍の画素を解く **SanFranSen (758 k px) が最遅の 5.32×**
 
 → 「規模が大きいほど恩恵が大きい」と書くと**同じ表に否定される**。抄録・ポスター
 いずれでもこの主張はしないこと。
 
-**壊れているのは CPU 側ベースラインのばらつき**。GPU 時間は総演算量に対してほぼ単調
-(0.02 / 0.81 / 7.21 / 16.71 / 50.58 TFLOP → 4.53 / 6.88 / 11.07 / 17.42 / 79.40 s) だが、
-CPU 時間は SanFranSen (7.21 TFLOP) が 58.85 s、Fernandina (0.81 TFLOP) が 645.12 s —
-**9 倍の仕事量を 1/11 の時間で**終えている。処理系ごとの有効ピクセル数 (マスク) や
-データレイアウトの差が疑わしいが、未検証。
+**ばらつきの正体は CPU 側の経路の違い** (2026-10-19 にログで確認)。CPU の 1 画素あたり
+時間は Fernandina 2.39 ms・Galapagos 2.31 ms・SanFranBay 4.61 ms (重み付き、画素ごと
+ループ) に対し、Kuju 0.137 ms (重み付きだが $P = 23$ と小さい)、SanFranSen 0.078 ms。
+**SanFranSen は `weightFunc = no` で、MintPy の CPU 経路が画素ごとのループを通らず
+まとめて解く**ため CPU が速く、床の 5.32× になる。Kuju は 1 画素の問題が小さく、GPU 側が
+固定費 (読み込み・起動) 律速。GPU 時間は総演算量 (反転画素ベースで 0.02 / 0.81 / 5.25 /
+6.16 / 36.33 TFLOP → 4.53 / 6.88 / 11.07 / 79.40 / 17.42 s) には沿わず、むしろ読み込む
+スタックの量 (シーン画素 × K、Galapagos が最大) におおむね沿う。
 
 - **規模依存を主張したいときは S2 を使う** (Galapagos 同一シーンの条件統一計測、
   36.4× / 44.4×)。大規模シーンでの効きはこちらで担保できる。
@@ -121,6 +146,39 @@ Galapagos [4743058](https://zenodo.org/records/4743058) /
 SanFranBay [15814132](https://zenodo.org/records/15814132) /
 Kuju [3952917](https://zenodo.org/records/3952917) /
 SanFranSen [4265413](https://zenodo.org/records/4265413)
+
+## 計測環境の検証 (2026-10-19)
+
+ポスターの First attempt と Method のブロック統合時 (2026-10-19) に「同じ Fernandina で S1 の 4.49× と S3 の 93.77× は何が
+違うのか」を、元プロジェクト (`/Volumes/EW-NAS-Atoll/Projects/third-party-projects/MintPy`)
+の `.claude-notes/` と `benchmark/logs_*` の実ログで突き合わせた結果。
+
+| | Phase 1 (04-26) | S1 (05-03) | S2 (05-06) | S3 (05-17〜18) |
+| --- | --- | --- | --- | --- |
+| Python 環境 | fork `.venv` (**NAS 上**) | 同左 | 同左 | sibling venv `~/MintPy_bench/.venv` (**ローカル SSD**) |
+| numpy / scipy | **2.4.4** / 1.17.1 | 同左 | 同左 | **1.26.4** / 1.17.1 (`--system-site-packages`、apt GDAL のため `numpy<2`) |
+| torch / GPU | 2.11.0+cu128 / RTX 5080 | 同左 | 同左 | 同左 |
+| 起動 (wall − internal) | 約 20 s | **約 47 s** (harness が torch を先に import) | CPU 19.7 s / GPU 31 s | **約 1 s** |
+| Fernandina CPU internal | 367.0 s (1.36 ms/px) | — | — | **644.5 s (2.39 ms/px)** |
+
+わかったこと:
+
+1. **S1 の step wall 4.49× は起動コストの産物**。Cholesky の 61 s のうち 47 s が起動。
+   S1 report 自身も「フェアなのは internal の 16.5×」と書いている → ポスターでは使わない。
+2. **S3 の CPU が遅いのは numpy 1.26.4 のため**。`ifgram_inversion.py` の CPU 経路は
+   Phase 1 (`beca1403`) から S3 時点 (`0df5a241`) まで無変更 (差分は `backend`→`solver`
+   の改名と GPU 振り分けの import 先だけ)。scipy は両環境とも 1.17.1 で、scipy は自前の
+   OpenBLAS を同梱するので BLAS の差ではない。1 画素ぶんの処理 (重み付き lstsq + 残差 +
+   temporal coherence) を模したマイクロベンチ (Ubuntu 機、2026-10-19) で
+   **numpy 2.4.4: 1.829 ms/px、numpy 1.26.4: 5.166 ms/px (2.8×)**。実ログの差 (1.76×) と
+   向きが一致し、小配列の numpy 呼び出しが多いマイクロベンチでは差が大きく出る。
+3. **GPU internal の 13.8 s (S1) → 5.9 s (S3) は未解明**。候補は NAS 上の venv からの
+   CUDA ライブラリ遅延ロードが計測区間に入っていたこと、05-03〜05-17 のコード変更。
+4. S3 のセッションノート (`2026-05-17_issue21-phase1-2-e2e-harness.md`) にある
+   「torch 2.11+cu128 + Blackwell の改善で 93.77× に上がった」は**誤り**。セットアップ
+   (04-26) 時点から torch 2.11.0+cu128 / RTX 5080。
+5. **系列をまたいで掛け算しない**。1.43× (Phase 1) × 16.5× (S1) ≈ 24× を S3 の 93.77× と
+   比べると食い違うが、CPU 基準 (numpy)・起動・GPU internal の 3 つが系列ごとに違う。
 
 ## 同じコアの再利用 — `correct_topography` (DEM 残差推定)
 
@@ -185,8 +243,10 @@ $\kappa_2^2 u$ でスケール。
 - κ の tail を作るのは**網の形ではなく重みのダイナミックレンジ** (max(w)/min(w) が 6.6e3〜8.6e4)。
   コヒーレンス床 (ε = 5e-2) 近傍と高コヒーレンスの行が混ざる画素で κ ~ 10³。
 - **誤差スケールの検算**: 最悪 px の κ²u (Fernandina 6.2e-3、Galapagos 3.5e-3、SanFranBay 3.1e-2)
-  に対し、観測された CPU–GPU 差 (≤ 1.19e-5 正規化) は **2〜4 桁下**。κ² の増幅は支配的な
-  誤差源ではなく、効いているのは破綻マージンの方。
+  に対し、S1 (Fernandina、GPU QR vs GPU Cholesky) の差 1.19e-5 正規化は約 2.7 桁下。ただし
+  S2 (Galapagos、CPU vs GPU) の正規化 RMS 最大は 4.3e-4 で、κ²u に対して**約 1 桁下**にとどまる。
+  旧ポスターの「2〜4 桁下」は S1 の値だけを見た言い方で、ポスターからは外した (2026-10-19)。
+  ポスターは絶対値 (中央値 0.06 µm / 最大 16 µm、S2) で語る。
 - **CholeskyQR2 への回答** (report §4): 適用域が同じ (Gram の Cholesky が通ることが前提) なので
   同じ画素で破綻する。利点は Q の直交性で、1 回の LS solve では使わない。tail を硬くするなら
   flag された画素だけ fp64 で再解 (破綻域 6.7e7) か rcond 打ち切り SVD の方が安い。
@@ -230,5 +290,5 @@ SSD 統一、fork `60c9e3ac`。
 | maintainer (yunjunz) の最終コメント | 2026-07-16: ISCE+ short course 後にレビュー再開予定 |
 | PR 内 commit | `86a6aea` solver / `53eec83` requirements-gpu / `118fc34` docs gpu.md + installation §2.4 / `086d162` comment fix |
 
-→ ポスター block 8 は "under review; rebased on the current main (August 2026), GPU unit
+→ ポスター block 7 は "under review; rebased on the current main (August 2026), GPU unit
 tests passing" と書いてある。**印刷直前に再確認**し、merge されていれば書き換える。
