@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 400" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="138 0 690 382" role="img" aria-labelledby="title desc">
   <title id="title">The per-pixel tall-skinny matrix, drawn to scale</title>
   <desc id="desc">The design matrix of one pixel from the benchmark scene, drawn to true proportions: 288 rows (observations, the network edges) by 97 columns (unknowns, acquisition dates minus one). A dashed line after the first 97 rows marks where the number of equations equals the number of unknowns; the remaining 191 rows are redundant observations that average out noise and stiffen the network.</desc>
   <style>
