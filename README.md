@@ -13,6 +13,7 @@ contributed to [MintPy](https://github.com/insarlab/MintPy) via
 | Topic | 02 Space Applications and Services / 0201 Earth Observation and Remote Sensing |
 | Title | Accelerating Open-Source InSAR Time-Series Analysis on Consumer GPUs: A PyTorch-Based Network Inversion Solver for MintPy |
 | Poster size | **A0, 84.1 cm × 118.9 cm** (official requirement) |
+| Poster PDF | [doi:10.5281/zenodo.23669874](https://doi.org/10.5281/zenodo.23669874) (Zenodo, latest version, CC BY 4.0) |
 
 This is the third repository of the series:
 
@@ -32,11 +33,11 @@ The full link index (reports pinned to commits, Zenodo datasets, references) is 
 | Path | Purpose |
 |---|---|
 | `poster.tex` | Poster source (beamerposter, A0 portrait, three columns) |
-| `beamerthemetasti2026.sty` | Flat print theme; palette shared with the figures |
+| `beamerthemetasti2026.sty` | Poster theme: navy masthead with the logo, warm off-white ground, open numbered blocks, references band; palette shared with the figures |
 | `figures/src/*.svg` | Hand-drawn figure sources (English). Converted to PDF by `make` |
 | `figures/src/ja/` | Untranslated Japanese originals kept as candidates (not built) |
 | `scripts/plot_speedup.py` | Generates the five-scene speedup chart from the S3 benchmark series |
-| `scripts/estimate_scale.py` | NISAR-scale compute estimates quoted in block 8 |
+| `scripts/estimate_scale.py` | NISAR-scale compute estimates for the Q&A (`docs/compute_scale.md`) |
 | `docs/` | Working documentation (Japanese): requirements, content plan, benchmark canon, Q&A prep, link index |
 | `print/` | Dated copies of the PDF that actually went to the printer |
 | `Makefile` | `make` / `make preview` / `make check` / `make print` (`make help` lists everything) |
@@ -44,7 +45,8 @@ The full link index (reports pinned to commits, Zenodo datasets, references) is 
 
 ## Build
 
-Requires TeX Live (with `beamerposter` and `qrcode`), librsvg, Python 3 with
+Requires TeX Live (with `beamerposter`, `qrcode`, TikZ and the `sourcesanspro` /
+`sourceserifpro` / `sourcecodepro` fonts), librsvg, Python 3 with
 matplotlib, and poppler for the preview/check targets.
 
 ```bash

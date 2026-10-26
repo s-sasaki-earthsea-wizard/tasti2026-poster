@@ -10,10 +10,10 @@
     .sweep   { stroke: #c8641e; stroke-width: 2.2; }
     .leader  { stroke: #c8641e; stroke-width: 1.2; }
     .leader2 { stroke: #aaa; stroke-width: 1.2; }
-    .step    { fill: #ffffff; stroke: #888; stroke-width: 1.6; }
+    .step    { fill: none; stroke: #888; stroke-width: 1.6; }
     .chain   { stroke: #888; stroke-width: 1.8; }
     .lbl-sm  { fill: #333; font-size: 18.9px; font-weight: 700; }
-    .sub     { fill: #777; font-size: 17.5px; }
+    .sub     { fill: #666; font-size: 17.5px; }
     .cur-lbl { fill: #c8641e; font-size: 18.2px; font-weight: 700; }
     .step-t  { fill: #333; font-size: 16.1px; }
     .dots    { fill: #888; font-size: 30.8px; font-weight: 700; }

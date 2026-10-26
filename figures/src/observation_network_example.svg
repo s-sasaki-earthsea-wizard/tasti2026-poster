@@ -1,31 +1,90 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 55 410 205" role="img" aria-labelledby="title desc">
-  <title id="title">Example observation network (4 dates, 5 pairs)</title>
-  <desc id="desc">A small network of four acquisition dates (vertices t0 to t3) and five interferometric pairs (edges). Besides consecutive dates, two skip pairs (t0 with t2, t1 with t3) are also edges. One edge is one observation.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 52 690 272" role="img" aria-labelledby="title desc">
+  <title id="title">Example observation network, its equations and one pixel's weights</title>
+  <desc id="desc">Left: a small network of four acquisition dates (vertices t0 to t3) and five interferograms (edges), two of them skip pairs (t0 with t2, t1 with t3). Right: each edge, marked by a chip in its colour, gives one equation in the displacements at its two dates, the same for every pixel. A column of bars shows the weight of each equation at one representative pixel, which comes from the interferogram's coherence and differs per pixel; this pixel loses coherence on the two longer skip pairs.</desc>
   <style>
     text { font-family: Georgia, 'Times New Roman', serif; font-style: italic; }
-    .node { fill: #1a6fb5; stroke: #fff; stroke-width: 1.5; }
-    .edge { stroke-width: 4; }
-    .lbl  { fill: #444; font-size: 22px; }
+    .node  { fill: #1a6fb5; stroke: #f6f1e7; stroke-width: 1.5; }
+    .edge  { stroke-width: 4; }
+    .chip  { stroke-width: 6; stroke-linecap: round; }
+    .lbl   { fill: #444; font-size: 22px; }
+    .eq    { fill: #333; font-size: 22px; }
+    .key   { fill: #444; font-size: 18px; font-style: normal; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .note  { font-size: 17px; font-style: normal; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .axis  { stroke: #888; stroke-width: 2; }
+    .track { fill: #ececec; }
+    .bar   { fill: #7a7a7a; }
   </style>
 
-  <!-- edges (interferometric pairs), Okabe-Ito colors matching the matrix row chips -->
+  <!-- ===== Left: the network. Okabe-Ito edge colours are reused by the equation chips ===== -->
   <!-- consecutive dates -->
-  <line class="edge" stroke="#0072B2" x1="80"  y1="210" x2="190" y2="110"/>
-  <line class="edge" stroke="#E69F00" x1="190" y1="110" x2="300" y2="210"/>
-  <line class="edge" stroke="#009E73" x1="300" y1="210" x2="410" y2="110"/>
+  <line class="edge" stroke="#0072B2" x1="40"  y1="190" x2="115" y2="105"/>
+  <line class="edge" stroke="#E69F00" x1="115" y1="105" x2="190" y2="190"/>
+  <line class="edge" stroke="#009E73" x1="190" y1="190" x2="265" y2="105"/>
   <!-- skip pairs (t0-t2, t1-t3) -->
-  <line class="edge" stroke="#D55E00" x1="80"  y1="210" x2="300" y2="210"/>
-  <line class="edge" stroke="#CC79A7" x1="190" y1="110" x2="410" y2="110"/>
+  <line class="edge" stroke="#D55E00" x1="40"  y1="190" x2="190" y2="190"/>
+  <line class="edge" stroke="#CC79A7" x1="115" y1="105" x2="265" y2="105"/>
 
   <!-- nodes (acquisition dates) -->
-  <circle class="node" cx="80"  cy="210" r="9"/>
-  <circle class="node" cx="190" cy="110" r="9"/>
-  <circle class="node" cx="300" cy="210" r="9"/>
-  <circle class="node" cx="410" cy="110" r="9"/>
+  <circle class="node" cx="40"  cy="190" r="9"/>
+  <circle class="node" cx="115" cy="105" r="9"/>
+  <circle class="node" cx="190" cy="190" r="9"/>
+  <circle class="node" cx="265" cy="105" r="9"/>
 
   <!-- node labels -->
-  <text class="lbl" x="80"  y="248" text-anchor="middle">t<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">0</tspan></text>
-  <text class="lbl" x="190" y="88"  text-anchor="middle">t<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">1</tspan></text>
-  <text class="lbl" x="300" y="248" text-anchor="middle">t<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">2</tspan></text>
-  <text class="lbl" x="410" y="88"  text-anchor="middle">t<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">3</tspan></text>
+  <text class="lbl" x="40"  y="228" text-anchor="middle">t<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">0</tspan></text>
+  <text class="lbl" x="115" y="82"  text-anchor="middle">t<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">1</tspan></text>
+  <text class="lbl" x="190" y="228" text-anchor="middle">t<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">2</tspan></text>
+  <text class="lbl" x="265" y="82"  text-anchor="middle">t<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">3</tspan></text>
+
+  <!-- time axis: dates are laid out left to right in acquisition order -->
+  <line class="axis" x1="20" y1="252" x2="280" y2="252"/>
+  <polygon fill="#888" points="292,252 278,246 278,258"/>
+  <text class="key" x="292" y="242" text-anchor="end">time</text>
+
+  <!-- legend -->
+  <circle class="node" cx="28" cy="279" r="8"/>
+  <text class="key" x="44" y="285">acquisition date</text>
+  <line class="edge" stroke="#444" x1="16" y1="307" x2="40" y2="307"/>
+  <text class="key" x="48" y="313">interferogram</text>
+
+  <!-- ===== Right: one equation per edge (shared by every pixel) and its weight (per pixel) ===== -->
+  <!-- rows: chip in the edge colour, equation, weight bar of one representative pixel.
+       The bar lengths are illustrative: this pixel decorrelates on the two longer skip pairs.
+       least_squares_bowl.svg uses the first three of these weights (68, 56, 12 of 80 = t0-t1, t1-t2, t0-t2). -->
+  <g>
+    <line class="chip" stroke="#0072B2" x1="307" y1="72" x2="325" y2="72"/>
+    <text class="eq" x="337" y="79">x<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">1</tspan><tspan dy="-6" dx="7">−&#160;x</tspan><tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">0</tspan><tspan dy="-6" dx="7">≈&#160;d</tspan><tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">01</tspan></text>
+    <rect class="track" x="525" y="64" width="120" height="16"/>
+    <rect class="bar"   x="525" y="64" width="102" height="16"/>
+  </g>
+  <g>
+    <line class="chip" stroke="#E69F00" x1="307" y1="110" x2="325" y2="110"/>
+    <text class="eq" x="337" y="117">x<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">2</tspan><tspan dy="-6" dx="7">−&#160;x</tspan><tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">1</tspan><tspan dy="-6" dx="7">≈&#160;d</tspan><tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">12</tspan></text>
+    <rect class="track" x="525" y="102" width="120" height="16"/>
+    <rect class="bar"   x="525" y="102" width="84" height="16"/>
+  </g>
+  <g>
+    <line class="chip" stroke="#009E73" x1="307" y1="148" x2="325" y2="148"/>
+    <text class="eq" x="337" y="155">x<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">3</tspan><tspan dy="-6" dx="7">−&#160;x</tspan><tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">2</tspan><tspan dy="-6" dx="7">≈&#160;d</tspan><tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">23</tspan></text>
+    <rect class="track" x="525" y="140" width="120" height="16"/>
+    <rect class="bar"   x="525" y="140" width="96" height="16"/>
+  </g>
+  <g>
+    <line class="chip" stroke="#D55E00" x1="307" y1="186" x2="325" y2="186"/>
+    <text class="eq" x="337" y="193">x<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">2</tspan><tspan dy="-6" dx="7">−&#160;x</tspan><tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">0</tspan><tspan dy="-6" dx="7">≈&#160;d</tspan><tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">02</tspan></text>
+    <rect class="track" x="525" y="178" width="120" height="16"/>
+    <rect class="bar"   x="525" y="178" width="18" height="16"/>
+  </g>
+  <g>
+    <line class="chip" stroke="#CC79A7" x1="307" y1="224" x2="325" y2="224"/>
+    <text class="eq" x="337" y="231">x<tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">3</tspan><tspan dy="-6" dx="7">−&#160;x</tspan><tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">1</tspan><tspan dy="-6" dx="7">≈&#160;d</tspan><tspan dy="6" font-size="15" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">13</tspan></text>
+    <rect class="track" x="525" y="216" width="120" height="16"/>
+    <rect class="bar"   x="525" y="216" width="12" height="16"/>
+  </g>
+
+  <!-- footers: what is shared (blue) and what changes per pixel (orange) -->
+  <text class="note" x="380" y="272" text-anchor="middle" fill="#333" font-weight="700">one equation per edge</text>
+  <text class="note" x="380" y="296" text-anchor="middle" fill="#1a6fb5">same for every pixel</text>
+  <text class="note" x="585" y="272" text-anchor="middle" fill="#333" font-weight="700">weight from coherence</text>
+  <text class="note" x="585" y="296" text-anchor="middle" fill="#c8641e">differs per pixel</text>
 </svg>

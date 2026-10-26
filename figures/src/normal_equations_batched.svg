@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 574" role="img" aria-labelledby="title desc">
+  <title id="title">The normal-equation path: every step runs all pixels at once</title>
+  <desc id="desc">Three stages, left to right. 1, Assemble: the weighted design matrix transposed (97 by 288) times the weighted design matrix (288 by 97) equals the 97 by 97 normal matrix; the K = 288 axis is summed away in one matrix product (GEMM), which carries most of the arithmetic and is the operation GPUs are built around. 2, Factorize: the small 97 by 97 matrix is turned into its triangular Cholesky factor by a batched Cholesky, still step by step. 3, Solve: two triangular solves give the unknowns. Below, the same pixels by steps grid as the QR figure: rows are pixel 1, 2, 3 down to 19,403, and every step is one tall blue bar that spans all the rows, one wide bar for the matrix product, seven narrow bars for the Cholesky steps and two for the solves. Bottom: 57 GPU kernel launches per chunk.</desc>
+  <!-- What PR #1490 runs (src/mintpy/ifgram_inversion_gpu.py @ 086d162, _solve_cholesky):
+       Gw = w * G, N = Gw^T @ Gw (one batched GEMM), r = Gw^T @ yw (batched GEMV),
+       torch.linalg.cholesky_ex (cuSOLVER potrfBatched), torch.cholesky_solve.
+       Measured (report_solver_comparison.md @ 039d176, section 4.2): 57 kernels per chunk,
+       every one covering all 19,403 pixels; the Cholesky works through 7 panels of 16 columns
+       (potrf_cta_lower_batch x 7), hence 7 bars; the solve is 2 batched trsv kernels.
+       The arithmetic share of the GEMM stays qualitative here (numbers: docs/qa_prep.md). -->
+  <style>
+    text      { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    .head     { fill: #333; font-size: 23px; font-weight: 700; }
+    .num      { fill: #f6f1e7; font-size: 17px; font-weight: 700; }
+    .sub      { fill: #555; font-size: 18px; }
+    .sub-hit  { fill: #1a6fb5; font-size: 18.5px; font-weight: 700; }
+    .axis     { fill: #555; font-size: 17.5px; }
+    .key      { fill: #555; font-size: 16.5px; }
+    .note     { fill: #333; font-size: 17.5px; font-weight: 700; }
+    .note-sub { fill: #555; font-size: 17px; }
+    .dots     { fill: #666; font-size: 26px; font-weight: 700; }
+    .op       { fill: #666; font-size: 28px; font-weight: 700; }
+    .m        { font-family: Georgia, 'Times New Roman', serif; font-style: italic; fill: #333; font-size: 20px; }
+    .mat      { fill: #1a6fb5; fill-opacity: 0.12; stroke: #1a6fb5; stroke-width: 2.2; }
+    .mat-out  { fill: #1a6fb5; fill-opacity: 0.30; stroke: #1a6fb5; stroke-width: 2.2; }
+    .panel    { fill: #1a6fb5; fill-opacity: 0.45; }
+    .kbar     { stroke: #1a6fb5; stroke-width: 1.8; }
+    .klab     { fill: #1a6fb5; font-size: 17px; font-weight: 700; }
+    .guide    { stroke: #d8cfbf; stroke-width: 1.4; }
+    .bar      { fill: #1a6fb5; fill-opacity: 0.22; stroke: #1a6fb5; stroke-width: 2; }
+    .bar-lab  { fill: #0f2e45; font-size: 22px; font-weight: 700; }
+    .rule     { stroke: #d8cfbf; stroke-width: 1.4; }
+    .metric   { fill: #1a6fb5; font-size: 40px; font-weight: 700; }
+    .metric-lab { fill: #555; font-size: 18px; }
+  </style>
+
+  <defs>
+    <marker id="arw4b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#888"/>
+    </marker>
+  </defs>
+
+  <!-- ============ stage heads ============ -->
+  <circle cx="214" cy="23" r="13" fill="#1a6fb5"/>
+  <text class="num" x="214" y="29" text-anchor="middle">1</text>
+  <text class="head" x="236" y="31">Assemble</text>
+  <text class="sub-hit" x="300" y="56" text-anchor="middle">one matrix product (GEMM)</text>
+
+  <circle cx="530" cy="23" r="13" fill="#1a6fb5"/>
+  <text class="num" x="530" y="29" text-anchor="middle">2</text>
+  <text class="head" x="552" y="31">Factorize</text>
+  <text class="sub" x="590" y="56" text-anchor="middle">batched Cholesky</text>
+
+  <circle cx="746" cy="23" r="13" fill="#1a6fb5"/>
+  <text class="num" x="746" y="29" text-anchor="middle">3</text>
+  <text class="head" x="768" y="31">Solve</text>
+  <text class="sub" x="795" y="56" text-anchor="middle">triangular solves</text>
+
+  <!-- ============ 1: Gw^T (97 x 288) x Gw (288 x 97) = N (97 x 97), 0.45 scale ============ -->
+  <g class="kbar">
+    <line x1="152" y1="116" x2="282" y2="116"/>
+    <line x1="152" y1="110" x2="152" y2="122"/>
+    <line x1="282" y1="110" x2="282" y2="122"/>
+    <line x1="370" y1="85"  x2="370" y2="215"/>
+    <line x1="364" y1="85"  x2="376" y2="85"/>
+    <line x1="364" y1="215" x2="376" y2="215"/>
+  </g>
+  <text class="klab" x="217" y="104" text-anchor="middle">K = 288</text>
+  <text class="klab" x="380" y="155">K</text>
+
+  <rect class="mat" x="152" y="128" width="130" height="44"/>
+  <text class="op"  x="296" y="160" text-anchor="middle">×</text>
+  <rect class="mat" x="314" y="85" width="44" height="130"/>
+  <text class="op"  x="410" y="160" text-anchor="middle">=</text>
+  <rect class="mat-out" x="428" y="128" width="44" height="44"/>
+
+  <text class="m" x="217" y="198" text-anchor="middle">G<tspan font-size="14" dy="5">w</tspan><tspan font-size="14" dx="-9" dy="-16">⊤</tspan></text>
+  <text class="m" x="336" y="240" text-anchor="middle">G<tspan font-size="14" dy="5">w</tspan></text>
+  <text class="m" x="450" y="198" text-anchor="middle">N<tspan font-size="14" dy="5">k</tspan></text>
+
+  <text class="note"     x="300" y="270" text-anchor="middle">The K rows are summed away in one pass:</text>
+  <text class="note-sub" x="300" y="292" text-anchor="middle">most of the arithmetic, in the operation</text>
+  <text class="note-sub" x="300" y="312" text-anchor="middle">GPUs are built around</text>
+
+  <!-- ============ 2: N (97 x 97) -> L, in panels ============ -->
+  <rect class="mat-out" x="512" y="122" width="52" height="52"/>
+  <rect class="panel"   x="512" y="122" width="7.4" height="52"/>
+  <line x1="574" y1="148" x2="604" y2="148" stroke="#888" stroke-width="2.4" marker-end="url(#arw4b)"/>
+  <path class="mat-out" d="M 614 122 L 614 174 L 666 174 Z"/>
+  <text class="m" x="538" y="200" text-anchor="middle">N<tspan font-size="14" dy="5">k</tspan></text>
+  <text class="m" x="632" y="200" text-anchor="middle">L<tspan font-size="14" dy="5">k</tspan></text>
+
+  <text class="note"     x="590" y="270" text-anchor="middle">Only 97 × 97,</text>
+  <text class="note-sub" x="590" y="292" text-anchor="middle">still step by step</text>
+
+  <!-- ============ 3: L -> x ============ -->
+  <path class="mat-out" d="M 752 130 L 752 166 L 788 166 Z"/>
+  <line x1="798" y1="148" x2="822" y2="148" stroke="#888" stroke-width="2.4" marker-end="url(#arw4b)"/>
+  <rect class="mat-out" x="832" y="130" width="10" height="36"/>
+  <text class="m" x="764" y="192" text-anchor="middle">L<tspan font-size="14" dy="5">k</tspan></text>
+  <text class="m" x="837" y="192" text-anchor="middle">x<tspan font-size="14" dy="5">k</tspan></text>
+
+  <!-- ============ the same pixels x steps grid as the QR figure ============ -->
+  <!-- rows: tops at 344, 378, 412 and 480 (as in qr_launch_grid, pitch 34 not 36) -->
+  <text class="axis" x="120" y="361" text-anchor="end">pixel 1</text>
+  <text class="axis" x="120" y="395" text-anchor="end">pixel 2</text>
+  <text class="axis" x="120" y="429" text-anchor="end">pixel 3</text>
+  <text class="dots" x="108" y="463" text-anchor="middle">⋮</text>
+  <text class="axis" x="120" y="497" text-anchor="end">pixel 19,403</text>
+
+  <g class="guide">
+    <line x1="136" y1="355" x2="870" y2="355"/>
+    <line x1="136" y1="389" x2="870" y2="389"/>
+    <line x1="136" y1="423" x2="870" y2="423"/>
+    <line x1="136" y1="491" x2="870" y2="491"/>
+  </g>
+
+  <!-- one step = one bar over every row -->
+  <rect class="bar" x="152" y="338" width="320" height="168"/>
+  <text class="bar-lab" x="312" y="463" text-anchor="middle">GEMM</text>
+
+  <rect class="bar" x="512" y="338" width="16" height="168"/>
+  <rect class="bar" x="538" y="338" width="16" height="168"/>
+  <rect class="bar" x="564" y="338" width="16" height="168"/>
+  <rect class="bar" x="590" y="338" width="16" height="168"/>
+  <rect class="bar" x="616" y="338" width="16" height="168"/>
+  <rect class="bar" x="642" y="338" width="16" height="168"/>
+  <rect class="bar" x="668" y="338" width="16" height="168"/>
+
+  <rect class="bar" x="772" y="338" width="16" height="168"/>
+  <rect class="bar" x="798" y="338" width="16" height="168"/>
+
+  <!-- ============ key and the measured total ============ -->
+  <line class="rule" x1="20" y1="522" x2="860" y2="522"/>
+
+  <text class="metric" x="20" y="564">57</text>
+  <text class="metric-lab" x="76" y="564">launches per chunk</text>
+
+  <rect class="bar" x="512" y="542" width="16" height="24"/>
+  <text class="key" x="538" y="560">one step, for all 19,403 pixels at once</text>
+</svg>

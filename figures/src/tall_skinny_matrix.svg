@@ -1,15 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 400" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="138 0 690 382" role="img" aria-labelledby="title desc">
   <title id="title">The per-pixel tall-skinny matrix, drawn to scale</title>
-  <desc id="desc">The design matrix of one pixel from the benchmark scene, drawn to true proportions: 288 rows (observations, the network edges) by 97 columns (unknowns, acquisition dates minus one). A dashed line after the first 97 rows marks where the number of equations equals the number of unknowns; the remaining 191 rows are redundant observations that average out noise and stiffen the network.</desc>
+  <desc id="desc">The design matrix of one pixel from the benchmark scene, drawn to true proportions: 288 rows (observations, the network edges) by 97 columns (unknowns, acquisition dates minus one). A dashed line after the first 97 rows marks where the number of equations equals the number of unknowns; the remaining 191 rows are redundant observations that average out per-interferogram noise.</desc>
   <style>
     text    { font-family: 'Helvetica Neue', Arial, sans-serif; }
-    .mat    { fill: #ffffff; stroke: #1a6fb5; stroke-width: 2.4; }
+    .mat    { fill: none; stroke: #1a6fb5; stroke-width: 2.4; }
     .dim    { stroke: #888; stroke-width: 1.8; }
     .cut    { stroke: #c8641e; stroke-width: 2; stroke-dasharray: 6 4; }
     .brk    { stroke: #aaa; stroke-width: 1.5; fill: none; }
     .lbl    { fill: #333; font-size: 22.4px; font-weight: 700; }
     .lbl-sm { fill: #333; font-size: 18.9px; font-weight: 700; }
-    .sub    { fill: #777; font-size: 17.5px; }
+    .sub    { fill: #666; font-size: 17.5px; }
     .math   { font-family: Georgia, 'Times New Roman', serif; font-style: italic; }
   </style>
 
@@ -46,7 +46,7 @@
     <text class="sub" x="330" y="117">97 rows = as many as the unknowns</text>
     <path class="brk" d="M 305 163 h 8 v 183 h -8"/>
     <text class="lbl-sm" x="330" y="245">191 more rows: redundant observations</text>
-    <text class="sub" x="330" y="264">averaging noise, stiffening the network</text>
+    <text class="sub" x="330" y="264">averaging out per-interferogram noise</text>
 
     <text class="sub" x="248" y="368" text-anchor="middle">one pixel</text>
   </g>

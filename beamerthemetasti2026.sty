@@ -1,183 +1,252 @@
 % ===========================================================================
 % beamerthemetasti2026.sty -- poster theme for the TASTI 2026 poster
 %
-% A flat, print-oriented beamerposter theme: a solid colour headline, grey
-% column panels with coloured title bars, and a thin footline with the
-% session information. The palette matches the SVG figures in figures/src/
-% (#1a6fb5 blue, #c8641e orange) so the sheet reads as one set.
+% "Deep-sea masthead": a full-bleed navy masthead taken from the Earthsea
+% Wizard logo (logo on a cream disc, serif title, paper-number badge), an
+% orange hairline under it, open blocks separated by navy rules instead of
+% boxes, one tinted panel for the main result, a references band aligned to
+% the column grid, and a navy footer strip. The accents match the SVG figures
+% in figures/src/ (#1a6fb5 blue, #c8641e orange) so the sheet reads as one set.
+% The page is a warm off-white (the logo's cream, diluted) rather than white,
+% to soften the glare of bare paper under venue lighting; the figures avoid
+% white fills so they sit on that ground without patches.
+%
+% Type: Source Serif 4 for display (title, block headings, big numbers),
+% Source Sans 3 for text, Source Code Pro for code. All three ship with
+% TeX Live as Type 1 fonts for pdfLaTeX.
 %
 % Load through `\usetheme{tasti2026}` AFTER `\usepackage{beamerposter}`.
+% The document supplies the content of the hooks \tastiHeadlineRight,
+% \tastiReferences, \tastiFootlineLeft and \tastiFootlineRight.
 % ===========================================================================
-\ProvidesPackage{beamerthemetasti2026}[2026/10/07 TASTI 2026 poster theme]
+\ProvidesPackage{beamerthemetasti2026}[2026/10/26 TASTI 2026 poster theme]
 
 \RequirePackage{xcolor}
 \RequirePackage{calc}
+\RequirePackage{tikz}
+\RequirePackage{microtype}
+\RequirePackage[sfdefault]{sourcesanspro}
+\RequirePackage[semibold]{sourceserifpro}
+\RequirePackage[scale=0.92]{sourcecodepro}
 
 % ---------------------------------------------------------------------------
 % Palette
 % ---------------------------------------------------------------------------
 \definecolor{tastiBlue}{HTML}{1A6FB5}
-\definecolor{tastiBlueDark}{HTML}{11508A}
 \definecolor{tastiOrange}{HTML}{C8641E}
-\definecolor{tastiInk}{HTML}{333333}
-\definecolor{tastiMuted}{HTML}{777777}
-\definecolor{tastiPanel}{HTML}{F3F6FA}
-\definecolor{tastiRule}{HTML}{DDDDDD}
-\definecolor{tastiCode}{HTML}{EEF2F6}
+\definecolor{tastiOrangeText}{HTML}{A9531A}  % orange darkened for 4.5:1 text
+\definecolor{tastiNavy}{HTML}{0F2E45}        % the logo's navy
+\definecolor{tastiNavyRule}{HTML}{3D5A70}
+\definecolor{tastiCream}{HTML}{F1E9DA}       % the logo's cream
+\definecolor{tastiCreamText}{HTML}{E9DCC4}
+\definecolor{tastiMist}{HTML}{B9CBD8}        % secondary text on navy
+\definecolor{tastiSubtitle}{HTML}{A9C7DA}
+\definecolor{tastiInk}{HTML}{1D2A35}
+\definecolor{tastiMuted}{HTML}{4D5B66}
+\definecolor{tastiPaper}{HTML}{F6F1E7}       % page ground: the logo's cream, diluted
+\definecolor{tastiKeypoint}{HTML}{E9DBC1}    % sand, a step darker than the ground
+\definecolor{tastiFeature}{HTML}{E6EDF4}     % tint behind the main result
 
 \mode<presentation>
 
 % ---------------------------------------------------------------------------
+% Geometry (A0: 841 mm wide). One grid serves the columns and the references
+% band, so the document takes its column width from \tastiColWidth.
+% ---------------------------------------------------------------------------
+\newlength{\tastiPageMargin}  \setlength{\tastiPageMargin}{31.75mm}
+\newlength{\tastiGutter}      \setlength{\tastiGutter}{26.5mm}
+\newlength{\tastiColWidth}
+\setlength{\tastiColWidth}{(\paperwidth-2\tastiPageMargin-2\tastiGutter)/3}
+\newlength{\tastiRuleWidth}   \setlength{\tastiRuleWidth}{1.06mm}
+\newlength{\tastiBlockSep}    \setlength{\tastiBlockSep}{1.7em}
+
+\setbeamersize{text margin left=\tastiPageMargin,text margin right=\tastiPageMargin}
+
+% Display faces, used directly rather than through beamer's font slots.
+\newcommand{\tastiDisplay}{\rmfamily\fontseries{semibold}\selectfont}
+\newcommand{\tastiSemibold}{\fontseries{semibold}\selectfont}
+
+% ---------------------------------------------------------------------------
 % Colours
 % ---------------------------------------------------------------------------
-\setbeamercolor{normal text}{fg=tastiInk,bg=white}
+\setbeamercolor{normal text}{fg=tastiInk,bg=tastiPaper}
+\setbeamercolor{background canvas}{bg=tastiPaper}
 \setbeamercolor{structure}{fg=tastiBlue}
-\setbeamercolor{alerted text}{fg=tastiOrange}
-\setbeamercolor{example text}{fg=tastiBlueDark}
-
-\setbeamercolor{headline}{fg=white,bg=tastiBlue}
-\setbeamercolor{title in headline}{fg=white}
-\setbeamercolor{author in headline}{fg=white}
-\setbeamercolor{institute in headline}{fg=white!88!tastiBlue}
-\setbeamercolor{paperno in headline}{fg=tastiBlue,bg=white}
-
-\setbeamercolor{footline}{fg=tastiInk,bg=tastiPanel}
-
-\setbeamercolor{block title}{fg=white,bg=tastiBlue}
-\setbeamercolor{block body}{fg=tastiInk,bg=tastiPanel}
-\setbeamercolor{block title alerted}{fg=white,bg=tastiOrange}
-\setbeamercolor{block body alerted}{fg=tastiInk,bg=tastiOrange!7!white}
-\setbeamercolor{block title example}{fg=white,bg=tastiBlueDark}
-\setbeamercolor{block body example}{fg=tastiInk,bg=tastiPanel}
-
+\setbeamercolor{alerted text}{fg=tastiOrangeText}
 \setbeamercolor{item}{fg=tastiBlue}
-\setbeamercolor{caption name}{fg=tastiMuted}
+\setbeamercolor{headline}{fg=white,bg=tastiNavy}
+\setbeamercolor{headline rule}{bg=tastiOrange}
+\setbeamercolor{footline}{fg=tastiCreamText,bg=tastiNavy}
+\setbeamercolor{feature block}{fg=tastiInk,bg=tastiFeature}
+\setbeamercolor{keypoint}{fg=tastiNavy,bg=tastiKeypoint}
 \setbeamercolor{caption}{fg=tastiMuted}
-\setbeamercolor{code box}{fg=tastiInk,bg=tastiCode}
-\setbeamercolor{bignumber}{fg=tastiBlue}
-\setbeamercolor{keypoint}{fg=tastiInk,bg=tastiOrange!10!white}
 
-% ---------------------------------------------------------------------------
-% Fonts
-% ---------------------------------------------------------------------------
-\setbeamerfont{title in headline}{size={\fontsize{66}{76}\selectfont},series=\bfseries}
-\setbeamerfont{author in headline}{size=\LARGE,series=\bfseries}
-\setbeamerfont{institute in headline}{size=\Large}
-\setbeamerfont{paperno in headline}{size=\large,series=\bfseries}
-\setbeamerfont{block title}{size=\Large,series=\bfseries}
-\setbeamerfont{block body}{size=\normalsize}
+\setbeamerfont{alerted text}{series=\bfseries}
 \setbeamerfont{caption}{size=\small}
-\setbeamerfont{footline}{size=\normalsize}
-\setbeamerfont{bignumber}{size={\fontsize{78}{86}\selectfont},series=\bfseries}
-
-% ---------------------------------------------------------------------------
-% Layout lengths
-% ---------------------------------------------------------------------------
-\newlength{\tastiBlockSep}   \setlength{\tastiBlockSep}{1.2ex}
-\newlength{\tastiBlockPad}   \setlength{\tastiBlockPad}{1.0em}
 
 % ---------------------------------------------------------------------------
 % Templates
 % ---------------------------------------------------------------------------
 \setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{sidebar right}{}  % the logo lives in the masthead only
 \setbeamertemplate{itemize items}[circle]
 \setbeamertemplate{itemize subitem}{--}
-\setbeamertemplate{caption}{\raggedright\usebeamerfont{caption}\usebeamercolor[fg]{caption}\insertcaption\par}
 
-% Blocks: flat title bar + panel body, no rounding, no shadow.
-\setbeamertemplate{block begin}{
-  \vskip\tastiBlockSep
-  \begin{beamercolorbox}[wd=\linewidth,leftskip=\tastiBlockPad,rightskip=\tastiBlockPad,
-                         sep=0.45ex,dp=0.8ex]{block title}%
-    \usebeamerfont*{block title}\insertblocktitle
-  \end{beamercolorbox}%
-  \nointerlineskip
-  \usebeamerfont{block body}%
-  \begin{beamercolorbox}[wd=\linewidth,leftskip=\tastiBlockPad,rightskip=\tastiBlockPad,
-                         sep=0.9ex,vmode]{block body}%
-    \vskip-0.2ex\vbox{}%
-}
-\setbeamertemplate{block end}{
-  \vskip0.4ex
-  \end{beamercolorbox}
-}
-
-\setbeamertemplate{block alerted begin}{
-  \vskip\tastiBlockSep
-  \begin{beamercolorbox}[wd=\linewidth,leftskip=\tastiBlockPad,rightskip=\tastiBlockPad,
-                         sep=0.45ex,dp=0.8ex]{block title alerted}%
-    \usebeamerfont*{block title}\insertblocktitle
-  \end{beamercolorbox}%
-  \nointerlineskip
-  \usebeamerfont{block body}%
-  \begin{beamercolorbox}[wd=\linewidth,leftskip=\tastiBlockPad,rightskip=\tastiBlockPad,
-                         sep=0.9ex,vmode]{block body alerted}%
-    \vskip-0.2ex\vbox{}%
-}
-\setbeamertemplate{block alerted end}{
-  \vskip0.4ex
-  \end{beamercolorbox}
-}
-
-% Headline: title block on the left, paper number badge + QR code on the right.
-% The right-hand content is supplied by the document through \tastiHeadlineRight.
+% Masthead: logo disc | title, subtitle, author, institute | badge.
+% The logo comes from \logo{...}; the badge from \tastiHeadlineRight.
 \providecommand{\tastiHeadlineRight}{}
-\setbeamertemplate{headline}{
-  \leavevmode
-  \begin{beamercolorbox}[wd=\paperwidth]{headline}
-    \vskip1.6ex
-    \begin{columns}[c]
-      \begin{column}{0.025\paperwidth}\end{column}
-      \begin{column}{0.75\paperwidth}
-        \raggedright
-        {\usebeamercolor[fg]{title in headline}\usebeamerfont{title in headline}\inserttitle\par}
-        \vskip1.2ex
-        {\usebeamercolor[fg]{author in headline}\usebeamerfont{author in headline}\insertauthor\par}
-        \vskip0.5ex
-        {\usebeamercolor[fg]{institute in headline}\usebeamerfont{institute in headline}\insertinstitute\par}
-      \end{column}
-      \begin{column}{0.20\paperwidth}
-        \centering
-        \tastiHeadlineRight
-      \end{column}
-      \begin{column}{0.025\paperwidth}\end{column}
-    \end{columns}
-    \vskip1.6ex
-  \end{beamercolorbox}
+\newlength{\tastiDiscDiameter}  \setlength{\tastiDiscDiameter}{111mm}
+\newlength{\tastiBadgeWidth}    \setlength{\tastiBadgeWidth}{111mm}
+\newlength{\tastiHeadGap}       \setlength{\tastiHeadGap}{17mm}
+\newlength{\tastiTitleWidth}
+\setlength{\tastiTitleWidth}{\paperwidth-2\tastiPageMargin-\tastiDiscDiameter-\tastiBadgeWidth-2\tastiHeadGap}
+
+% The bands are stacked in vertical mode (as in beamer's miniframes theme), so
+% the templates must not start with \leavevmode.
+\setbeamertemplate{headline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,leftskip=\tastiPageMargin,rightskip=\tastiPageMargin]{headline}%
+    \vskip19mm
+    \begin{tikzpicture}[baseline=(current bounding box.center)]
+      \fill[tastiCream] (0,0) circle (0.5\tastiDiscDiameter);
+      \node at (0,0) {\insertlogo};
+    \end{tikzpicture}%
+    \hspace{\tastiHeadGap}%
+    \begin{minipage}[c]{\tastiTitleWidth}
+      \raggedright
+      {\tastiDisplay\fontsize{69}{75}\selectfont\color{white}\inserttitle\par}
+      \vskip4.8mm
+      {\rmfamily\itshape\fontsize{45}{52}\selectfont\color{tastiSubtitle}\insertsubtitle\par}
+      \vskip10mm
+      {\tastiSemibold\fontsize{33}{38}\selectfont\color{white}\insertauthor\par}
+      \vskip1.6mm
+      {\fontsize{24}{29}\selectfont\color{tastiMist}\insertinstitute\par}
+    \end{minipage}%
+    \hspace{\tastiHeadGap}%
+    \tastiHeadlineRight
+    \vskip19mm
+  \end{beamercolorbox}%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=3.7mm,dp=0pt]{headline rule}\end{beamercolorbox}%
 }
 
-% Footline: session information, supplied by the document through \tastiFootline.
-\providecommand{\tastiFootline}{}
-\setbeamertemplate{footline}{
-  \leavevmode
-  \begin{beamercolorbox}[wd=\paperwidth,ht=4ex,dp=2ex,leftskip=0.025\paperwidth,rightskip=0.025\paperwidth]{footline}%
-    \usebeamerfont{footline}\tastiFootline
-  \end{beamercolorbox}
+% \tastiBadge{eyebrow}{label}{number}{detail} -- the right-hand masthead badge,
+% set off from the title by a thin vertical rule.
+\newcommand{\tastiBadge}[4]{%
+  \hbox{%
+    {\color{tastiNavyRule}\vrule width 0.53mm}%
+    \hskip14.8mm
+    \begin{minipage}[c]{\tastiBadgeWidth-14.8mm-0.53mm}
+      \raggedright
+      {\tastiSemibold\fontsize{22.5}{27}\selectfont\color{tastiCreamText}\textls[140]{\MakeUppercase{#1}}\par}
+      \vskip5mm
+      {\fontsize{22.5}{27}\selectfont\color{tastiMist}#2\par}
+      \vskip1mm
+      {\bfseries\fontsize{93}{93}\selectfont\color{white}#3\par}
+      \vskip3mm
+      {\fontsize{21}{27}\selectfont\color{tastiMist}#4\par}
+    \end{minipage}}}
+
+% Footline: references band on the column grid, then the navy session strip.
+\providecommand{\tastiReferences}{}
+\providecommand{\tastiFootlineLeft}{}
+\providecommand{\tastiFootlineRight}{}
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,leftskip=\tastiPageMargin,rightskip=\tastiPageMargin]{normal text}%
+    {\color{tastiNavy}\hrule height 0.8mm}%
+    \vskip6mm
+    {\tastiDisplay\fontsize{25.5}{30}\selectfont\color{tastiNavy}References\par}
+    \vskip4mm
+    \tastiReferences
+    \vskip10.6mm
+  \end{beamercolorbox}%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=15mm,dp=10.4mm,leftskip=\tastiPageMargin,rightskip=\tastiPageMargin]{footline}%
+    \fontsize{19.5}{24}\selectfont
+    \tastiFootlineLeft\hfill{\color{tastiMist}\tastiFootlineRight}%
+  \end{beamercolorbox}%
 }
+
+% ---------------------------------------------------------------------------
+% Blocks
+% ---------------------------------------------------------------------------
+% \tastiBlockHeading{number}{title}: the number in large blue serif, the title
+% in navy serif on the same baseline; wrapped title lines hang under the title.
+\newsavebox{\tasti@numbox}
+\newcommand{\tastiBlockHeading}[2]{%
+  \sbox\tasti@numbox{\tastiDisplay\fontsize{44}{44}\selectfont\color{tastiBlue}#1\hspace{0.3em}}%
+  {\tastiDisplay\fontsize{33}{38}\selectfont\color{tastiNavy}\raggedright
+   \hangindent\wd\tasti@numbox\hangafter1\noindent
+   \usebox\tasti@numbox#2\par}}
+
+% posterblock: an open block, a navy rule above and no box.
+\newenvironment{posterblock}[2]{%
+  \par\vskip\tastiBlockSep
+  {\color{tastiNavy}\hrule height \tastiRuleWidth}%
+  \vskip0.55em
+  \tastiBlockHeading{#1}{#2}%
+  \vskip0.3em
+  \raggedright
+}{\par}
+
+% featureblock: the same block set on a tinted panel. Use it once, for the
+% main result, so it is the one filled area on the sheet.
+\newenvironment{featureblock}[2]{%
+  \par\vskip\tastiBlockSep
+  {\color{tastiNavy}\hrule height \tastiRuleWidth}%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\linewidth,leftskip=0.8em,rightskip=0.8em,sep=0.7em,vmode]{feature block}%
+    \tastiBlockHeading{#1}{#2}%
+    \vskip0.3em
+    \raggedright
+}{%
+    \par
+  \end{beamercolorbox}}
 
 % ---------------------------------------------------------------------------
 % Helpers used by the poster body
 % ---------------------------------------------------------------------------
-% \bignumber{36.4x}{step-level speedup} -- a headline figure with a sub-label.
-\newcommand{\bignumber}[2]{%
-  \begin{center}
-    {\usebeamercolor[fg]{bignumber}\usebeamerfont{bignumber}#1\par}
-    \vskip0.2ex
-    {\usebeamercolor[fg]{caption}\usebeamerfont{caption}#2\par}
-  \end{center}}
+% \bignumber[size in pt]{44x}{label} -- a headline figure with a sub-label.
+\newcommand{\bignumber}[3][80]{%
+  \par\vskip0.3em
+  {\centering
+   {\tastiDisplay\fontsize{#1}{#1}\selectfont\color{tastiBlue}#2\par}
+   \vskip0.3em
+   {\usebeamerfont{caption}\usebeamercolor[fg]{caption}#3\par}}
+  \vskip0.3em}
 
-% \keypoint{...} -- a one-line takeaway highlighted in a tinted bar.
+% \keypoint{...} -- a one-line takeaway on a sand bar.
 \newcommand{\keypoint}[1]{%
-  \vskip0.6ex
-  \begin{beamercolorbox}[wd=\linewidth,sep=0.6ex,leftskip=0.6em,rightskip=0.6em]{keypoint}%
-    \bfseries #1
+  \par\vskip0.4em
+  \begin{beamercolorbox}[wd=\linewidth,sep=0.7em,leftskip=0.2em,rightskip=0.2em]{keypoint}%
+    \raggedright\tastiSemibold #1
   \end{beamercolorbox}
-  \vskip0.4ex}
+  \vskip0.3em}
 
 % \figcaption{...} -- caption below a figure inside a block.
 \newcommand{\figcaption}[1]{%
-  \vskip0.3ex
+  \par\vskip0.3em
   {\usebeamerfont{caption}\usebeamercolor[fg]{caption}\raggedright #1\par}
-  \vskip0.4ex}
+  \vskip0.3em}
+
+% \tastiReferenceColumns{refs}{refs}{refs} -- three reference columns on the
+% poster's column grid, filled with \tastiRef entries.
+\newcommand{\tastiReferenceColumns}[3]{%
+  \fontsize{15.5}{21.5}\selectfont\color{tastiInk}%
+  \begin{minipage}[t]{\tastiColWidth}#1\end{minipage}%
+  \hspace{\tastiGutter}%
+  \begin{minipage}[t]{\tastiColWidth}#2\end{minipage}%
+  \hspace{\tastiGutter}%
+  \begin{minipage}[t]{\tastiColWidth}#3\end{minipage}}
+
+% \tastiRef{n}{entry} -- one numbered reference with a hanging indent.
+\newcommand{\tastiRef}[2]{%
+  \par\raggedright\hangindent2em\hangafter1\noindent
+  \makebox[2em][l]{[#1]}#2\par\vskip1.5mm}
+
+% \tastiData{label}{entry} -- an unnumbered entry with a run-in label, for the
+% data sets that follow the numbered references.
+\newcommand{\tastiData}[2]{%
+  \par\raggedright\noindent
+  {\color{tastiNavy}\tastiSemibold #1:} #2\par\vskip1.5mm}
 
 \mode<all>

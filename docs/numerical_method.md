@@ -9,10 +9,13 @@ Abstract の methodology 段落の裏付けと、査読・当日 Q&A への備�
 [vrc-insar-batched-cholesky-LT/docs/numerical_method.md](https://github.com/s-sasaki-earthsea-wizard/vrc-insar-batched-cholesky-LT/blob/main/docs/numerical_method.md)
 が正。ここでは abstract の主張を守るのに必要な範囲で自己完結させる。
 
-実装対応:
+実装対応 (フォーク `main`):
 
 - `src/mintpy/gpu/ifgram_inversion.py` — `estimate_timeseries_batch`, `_solve_cholesky`
 - `src/mintpy/gpu/_common.py` — `solve_normal_equations_batched`, `auto_chunk_size`
+
+upstream PR #1490 (`gpu_torch_solver`、head `086d162`) は同じ計算を単一モジュール
+`src/mintpy/ifgram_inversion_gpu.py` (`_solve_cholesky` L111–127) に置いている。
 
 ---
 
@@ -31,6 +34,10 @@ $$ d_k = G\, x_k + \varepsilon_k $$
 
 $$ \hat{x}_k = \arg\min_x \big\lVert W_k^{1/2}(G x - d_k) \big\rVert_2^2 $$
 
+重みは MintPy の既定 (`weightFunc = var`) で $w = 1/\sigma_\phi^2(\gamma, L)$、つまりコヒーレンス
+$\gamma$ と looks 数 $L$ から見積もった位相分散の逆数 (Tough et al. 1995)。詳細と速度形 (B) との関係は
+[qa_prep.md](qa_prep.md) Q1b。
+
 $G$ は共通だが $d_k, W_k$ はピクセルごとに違う。**「同じ形・違う中身の小さな
 WLS」を全ピクセル分** (Galapagos で 3.4M 回) 解くのが計算の本体で、これが
 GPU バッチ化の的。
@@ -41,8 +48,11 @@ CPU 参照実装はピクセルごとに `scipy.linalg.lstsq` を呼ぶ。QR/SVD
 直接分解するので条件数は $\kappa(G)$ のまま — 数値的には最も安全。しかし:
 
 - per-pixel の薄い QR は逐次 Householder 反復で、GPU バッチと相性が悪い。
-  実測: cuSolver `gels` 経由の GPU batched QR は**チャンクあたり ~3.8M kernel
+  実測: `torch.linalg.lstsq` (CUDA では QR) は**チャンクあたり ~3.8M kernel
   launches** を発行 (Fernandina)、internal speedup は CPU 比 1.43× 止まり。
+  PyTorch 2.11 は K ≤ 256 でしか cuBLAS のバッチ QR を使わず、K = 288 では
+  `geqrf` + `ormqr` を画素ごとにループする (1 画素 198 kernel)。API はバッチでも
+  実行はバッチになっていなかった → [results.md](results.md) §kernel の内訳と実装の裏取り
 - ベースライン計測で `invert_network` は end-to-end の **43.5%** を占有。
 
 → 解法を対称正定値系に落として **batched Cholesky** で叩く方針に転換。
@@ -73,9 +83,15 @@ X = torch.cholesky_solve(r, L)
 教科書 (Golub & Van Loan 等) は「正規方程式を作るな、$\kappa(G^\top G) =
 \kappa(G)^2$」と警告する。本問題でそれが許される理由:
 
-1. **$G$ が良条件**: 網設計行列は $\pm 1$ 構造 (位相定式化) か時間 baseline
-   スケール (速度定式化) で、列数も数十〜数百。冗長網 (`min_redundancy`) で
-   接続が担保される。
+1. **$G$ は実測で良条件**: 5 シーンの条件数サーベイで無重み $\kappa_2(G)$ = 11–55、
+   実際に解いた重みつき系の最悪でも 721 (fp32 Cholesky の破綻点
+   $u^{-1/2} \approx 4.1 \times 10^3$ に対して余裕 ≥ 5.7×、[results.md](results.md))。
+   tail を作るのは網の形ではなく重みのダイナミックレンジ。「冗長網が κ を
+   小さくする」は経験則なので根拠にしない (ポスター判断 24)。
+   幾何的な意味: $G$ は単位球を半軸 $\sigma_i$ の楕円体に潰し、
+   $\kappa_2 = \sigma_{\max}/\sigma_{\min}$。解く = 引き伸ばして戻すので、
+   大きさ $\approx u\,\sigma_{\max}$ のまるめのぼけが短軸方向で最大 $\kappa$ 倍になる。
+   $N = G_w^\top G_w$ は半軸 $\sigma_i^2$ (2 回潰す) なので $\kappa(N) = \kappa(G_w)^2$。
 2. よって $\kappa(G)^2 \cdot \epsilon_{\text{float32}}$ が要求精度に収まる。
 3. **要求精度が緩い**: 欲しい変位はミリ〜サブミリ。実測の正規化 RMS は
    最大 **1.19e-5** で upstream gate < 1e-4 を約 1 桁の余裕で通過。しかもこの
@@ -90,7 +106,7 @@ X = torch.cholesky_solve(r, L)
 
 - **opt-in 設計**: cfg key `mintpy.networkInversion.solver = torch` (CLI
   `--solver`)。既定は cpu で、**CPU 経路は byte-for-byte 不変**。
-- **分離 subpackage**: `src/mintpy/gpu/`。dispatch は 1 箇所のみ。
+- **分離モジュール**: フォーク `main` は `src/mintpy/gpu/`、PR #1490 は `src/mintpy/ifgram_inversion_gpu.py`。dispatch は 1 箇所のみ。
 - **NaN 観測は重み 0 で除外**: $G^\top W G = \sum_i w_i^2 g_i g_i^\top$ から
   該当項が消えるので、行削除と数学的に等価。行数固定のままバッチ化できる。
   temporal coherence 計算では masked 行の $\cos(0)=1$ を引き戻す補正が必要

@@ -13,12 +13,12 @@
     .rule    { stroke: #e6e6e6; stroke-width: 1.4; }
     .head    { fill: #333; font-size: 25px; font-weight: 700; }
     .lbl-sm  { fill: #444; font-size: 20px; font-weight: 700; }
-    .sub     { fill: #777; font-size: 18.8px; }
+    .sub     { fill: #666; font-size: 18.8px; }
     .key     { fill: #888; font-size: 16.2px; }
     .dots    { fill: #888; font-size: 30px; font-weight: 700; }
     .badge   { fill: #c8641e; font-size: 23.8px; font-weight: 700; }
     .metric-lab  { fill: #888; font-size: 16.2px; }
-    .metric-dim  { fill: #999; font-size: 32.5px; font-weight: 700; }
+    .metric-dim  { fill: #888; font-size: 32.5px; font-weight: 700; }
     .metric-hit  { fill: #1a6fb5; font-size: 37.5px; font-weight: 700; }
   </style>
 
@@ -58,7 +58,7 @@
   <rect class="batch" x="475" y="72" width="375" height="126" rx="6"/>
 
   <!-- what the QR path used to chew on, left as a ghost outline at the same true scale -->
-  <rect x="490" y="82" width="97" height="288" fill="#f4f4f4"/>
+  <rect x="490" y="82" width="97" height="288" fill="#1d2a35" fill-opacity="0.04"/>
   <rect class="ghost" x="490" y="82" width="97" height="288"/>
 
   <g>

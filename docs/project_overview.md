@@ -13,7 +13,7 @@ PyTorch GPU solver) の成果を、**TASTI 2026 のポスターセッション**
 | セッション | **ポスター、2026-11-10 11:30–14:00、Tayouan D (3F)** |
 | トピック | 02 Space Applications and Services / **0201 Earth Observation and Remote Sensing** |
 | サイズ | **A0 (84.1 cm × 118.9 cm)** |
-| 発表者 | Syota Sasaki (Earthsea Wizard, Japan) |
+| 発表者 | Syota Sasaki (Earthsea Wizard Tech Lab, Japan) |
 
 ## 聴衆と核心メッセージ
 
@@ -25,7 +25,7 @@ PyTorch GPU solver) の成果を、**TASTI 2026 のポスターセッション**
 3. **正しさの担保** — 速いだけでなく数値一致 gate を 5 シーンで通過
 
 ポスターは抄録より面積があるので、抄録で裏方に回した **条件数の議論** を
-block 5 として表に出す (立ち話で「float32 で大丈夫?」は最頻出のため)。
+block 6 として表に出す (立ち話で「float32 で大丈夫?」は最頻出のため)。
 数学の深掘りは姉妹 LT の
 [numerical_method.md](https://github.com/s-sasaki-earthsea-wizard/vrc-insar-batched-cholesky-LT/blob/main/docs/numerical_method.md)
 が正。
