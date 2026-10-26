@@ -20,11 +20,11 @@ upstream (insarlab/MintPy) と Zenodo は消えない前提。
 | 内容 | ポスターでの使用 | permalink |
 | --- | --- | --- |
 | 18 step baseline、`invert_network` 43.5% | block 1 | [report_baseline.md @ 0a60cd4](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/0a60cd4/reports/report_baseline.md) |
-| GPU batched QR 1.43× | block 3 | [report_torch.md @ 039d176](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/039d176/reports/report_torch.md) |
-| プロファイル (82% が QR、384 万 launches) | block 3 | [report_profile.md @ 039d176](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/039d176/reports/report_profile.md) |
+| GPU batched QR 1.43× | block 4 | [report_torch.md @ 039d176](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/039d176/reports/report_torch.md) |
+| プロファイル (82% が QR、384 万 launches) | block 4 | [report_profile.md @ 039d176](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/039d176/reports/report_profile.md) |
 | **S1** QR vs Cholesky 同一 GPU、16.5× | block 4 | [report_solver_comparison.md @ 039d176](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/039d176/reports/report_solver_comparison.md) |
 | **S2** Galápagos 大シーン、36.4× / 44.4× | block 6 | [report_large_scene.md @ 8bd51d0](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/8bd51d0/reports/report_large_scene.md) |
-| **S3** 5 シーン E2E、5.3–93.8×、数値 gate | block 6, 7 | [report_end_to_end_bench.md @ 0fbf71b](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/0fbf71b/reports/report_end_to_end_bench.md) |
+| **S3** 5 シーン E2E、5.3–93.8×、数値 gate | block 5, 6 | [report_end_to_end_bench.md @ 0fbf71b](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/0fbf71b/reports/report_end_to_end_bench.md) |
 | `correct_topography` 5 シーン、6.15× | block 6 | [dem_error/report_bench_survey.md @ 3f4b8ea](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/3f4b8ea/reports/dem_error/report_bench_survey.md) |
 | **条件数サーベイ** κ₂(G) 11–55 | block 5 | [report_condition_number.md @ d74df50](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/d74df50/reports/report_condition_number.md) |
 | 条件数の計測ツール | — | [tools/measure_design_matrix_cond.py](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/d74df50/tools/measure_design_matrix_cond.py) |
@@ -36,7 +36,7 @@ upstream (insarlab/MintPy) と Zenodo は消えない前提。
 | `src/mintpy/gpu/ifgram_inversion.py` | `estimate_timeseries_batch`, `_solve_cholesky` |
 | `src/mintpy/gpu/_common.py` | `solve_normal_equations_batched`, `auto_chunk_size` |
 | `src/mintpy/gpu/dem_error.py` | `correct_topography` の GPU 経路 |
-| `docs/gpu.md` | ユーザー向け設定方法 (block 8 "Try it" の出典) |
+| `docs/gpu.md` | ユーザー向け設定方法 (block 7 "Try it" の出典) |
 
 ## データ (Zenodo、5 シーン)
 

@@ -59,7 +59,7 @@
 - [ ] タイトル・Paper No. T0043・著者名が上部に大きくある
 - [ ] 所属 "Earthsea Wizard, Japan" とメールアドレスがある
 - [ ] 数値の系列が [results.md](results.md) と一致 (S1 の 3 条件、規模依存なし)
-- [ ] block 8 の PR #1490 の記述が現状と一致 (`gh pr view 1490 --repo insarlab/MintPy`)
+- [ ] block 7 の PR #1490 の記述が現状と一致 (`gh pr view 1490 --repo insarlab/MintPy`)
 - [ ] QR コード 2 つが実機で読める (PR / 本リポジトリ)
 - [ ] 1 m 離れて本文が読める (目安: 本文 ≥ 24 pt、キャプション ≥ 18 pt)
 - [ ] 参加登録済み (2026-10-13 まで)

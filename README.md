@@ -36,7 +36,7 @@ The full link index (reports pinned to commits, Zenodo datasets, references) is 
 | `figures/src/*.svg` | Hand-drawn figure sources (English). Converted to PDF by `make` |
 | `figures/src/ja/` | Untranslated Japanese originals kept as candidates (not built) |
 | `scripts/plot_speedup.py` | Generates the five-scene speedup chart from the S3 benchmark series |
-| `scripts/estimate_scale.py` | NISAR-scale compute estimates quoted in block 8 |
+| `scripts/estimate_scale.py` | NISAR-scale compute estimates for the Q&A (`docs/compute_scale.md`) |
 | `docs/` | Working documentation (Japanese): requirements, content plan, benchmark canon, Q&A prep, link index |
 | `print/` | Dated copies of the PDF that actually went to the printer |
 | `Makefile` | `make` / `make preview` / `make check` / `make print` (`make help` lists everything) |
