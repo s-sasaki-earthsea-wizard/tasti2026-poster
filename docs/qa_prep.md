@@ -32,6 +32,80 @@
   行列の厳密解) のモデル。細い方向が座標軸と斜めなら、短軸の情報は大きな数どうしの差 (桁落ち) に
   しか残らないので、実際に失われるのは長軸の $u$ 倍の大きさ。
 
+## 1b. "What are the weights, exactly? And doesn't MintPy solve for velocities?"
+
+> By default MintPy weights each interferogram by the inverse of the phase
+> variance predicted from its coherence and number of looks, so noisy
+> interferograms count less: textbook weighted least squares. Block 2 draws the
+> equations in displacement form for readability; MintPy actually solves for the
+> velocity in each interval between consecutive dates and sums them up, which
+> gives the same least-squares solution for a connected network. (block 2)
+
+- 実装 (upstream `cc44148`): `weightFunc = auto → var` ([smallbaselineApp.cfg L175](https://github.com/insarlab/MintPy/blob/cc441486e3ca68212dec5deb5b0adf29abaa04f7/src/mintpy/defaults/smallbaselineApp.cfg#L175))。
+  `coherence2weight` が $w = 1/\sigma_\phi^2(\gamma, L)$ を分布散乱体の位相 PDF (Tough et al. 1995) から計算
+  ([decorrelation.py L337–376](https://github.com/insarlab/MintPy/blob/cc441486e3ca68212dec5deb5b0adf29abaa04f7/src/mintpy/simulation/decorrelation.py#L337-L376))。
+  $\gamma < 0.05$ は 0.05 に床、$L$ は `NCORRLOOKS` か `ALOOKS·RLOOKS/1.94` (`var` では 80 で頭打ち)。
+  他の選択肢は `coh` (γ そのもの)、`fim` (Fisher 情報量)、`no` (OLS = Berardino 2002 の古典 SBAS)。
+  行に $\sqrt{w}$ を掛けて `lstsq` (gelsd) に渡す。
+- **対角重み**: 同じ日付を共有する干渉縞どうしの誤差相関は無視している。「分散の逆数の重みは誤差が独立なら BLUE」
+  なので、言うなら「BLUE の対角近似」。
+- **重みが画素ごとのループの原因**: 重みなしなら全観測が有効な画素を `lstsq` 1 回でまとめて解き、重みつきなら
+  `estimating time-series via WLS pixel-by-pixel` のループ
+  ([ifgram_inversion.py L803–870](https://github.com/insarlab/MintPy/blob/cc441486e3ca68212dec5deb5b0adf29abaa04f7/src/mintpy/ifgram_inversion.py#L803-L870))。
+  San Francisco (Sentinel-1) の CPU が速いのはこれ ([results.md](results.md))。
+- **速度形**: `minNormVelocity = auto → yes`。B = A·T (T = 累積和 × diag(Δt)、可逆) なので full rank なら解は同じ。
+  違いが出るのは網が分断して rank が落ちたときの最小ノルム解の意味だけ。フォークの GPU 経路も
+  `G = B if min_norm_velocity else A`。
+- **block 6 の κ は κ(B)** (速度形)。block 2 の ±1 の方程式 (A) の κ とは別物。突っ込まれたら「図は説明用の
+  変位形、計測したのは実際に解いている速度形の行列」。
+- **お椀の図 (`least_squares_bowl`) の数字**: $d_{01} = d_{12} = 1.0$, $d_{02} = 2.6$ (食い違い 0.6) の説明用。描いているのは**代表 1 画素**で、
+  重みは網図のバーの長さ (0.85 / 0.70 / 0.15、長いペア t₀–t₂ が低い)。解は (1.076, 2.169)、残差は (0.076, 0.092, −0.431) で、
+  食い違い 0.6 のうち 0.43 を重みの小さい長いペアに押し付ける。等重みなら解は (1.2, 2.4) で 0.2 ずつ均等 (水準網の網平均と同じ)。
+- **なぜ解が左下の角に寄るか** (Syota さんも最初に引っかかった点。立ち話でも聞かれる): 最小二乗はどの式も「正しい」と決めず、
+  食い違いを重みで分け合う。解は三角形の頂点の重心座標 $\lambda_i \propto 1/w_i$ で決まる (頂点 $i$ = 直線 $i$ を通らない頂点)。
+  t₀–t₂ の重みが小さいと、その直線を通らない頂点 = 短いペア 2 本が交わる角 (1, 2) に重さが集まる (今の図で 0.72)。
+  重みなしなら $\lambda = (1/3, 1/3, 1/3)$ で**厳密に重心** (三角形の係数が ±1 なので残差が同じ大きさになる)、t₀–t₂ の重み → 0 で角そのもの。
+  図では線の太さ = 重みにして、解が「太い 2 本の交わる角」のそばにあることを見せている。
+- **お椀の等高線の縦横比 = κ(G_w)**: $S(x) - S_{\min} = (x-\hat{x})^\top N (x-\hat{x})$ の等高線は半軸 ∝ 1/σᵢ(G_w) の楕円なので、
+  縦横比は σ_max/σ_min = κ(G_w)。block 6 の「単位円を G_w で潰した楕円」(半軸 σᵢ) と同じ偏り。数学好きにはこれで
+  block 2 と block 6 がつながる (図の画素は κ(N) = 4.75、κ(G_w) ≈ 2.18。重みが均等に近いほど丸くなる)
+- LT の `edge_stamp` (「辺がつなぐ 2 頂点の場所だけに値が立つ」) も A 形でしか成り立たない。ポスターに入れるなら注記が要る。
+- 「InSAR 時系列解析の数学的核心」とは言わない。言えるのは「SBAS 型 (MintPy `smallbaselineApp`) の中核 step」まで。
+  PS-InSAR や phase linking は別の数理。
+
+## 1c. "Shouldn't d01 + d12 = d02 hold exactly? Isn't the closure phase zero by construction?"
+
+> For single-look wrapped phase, yes: the three interferograms come from the same
+> three images. What breaks it is what each interferogram goes through on its own.
+> Multilooking averages the phase over neighbouring pixels differently in every
+> pair, and phase unwrapping can add a whole cycle to one of them. Atmosphere and
+> real motion belong to a date, so they cancel around the triangle; that is also
+> why the inversion cannot remove the atmosphere. (block 2)
+
+- ポスターは「loop closure / closure phase」という用語を出さず、「3 日の三角形で足し算が合うはず → 実データは合わない →
+  最適化」の概念だけを書いた (Syota さんの方針)。専門家には口頭で用語を添える。
+- 合わない原因は**干渉縞ごと**のもの: マルチルック後の非相関雑音、アンラップ誤差 (2π の整数倍)、それに土壌水分や植生による
+  系統的な closure phase (De Zan et al. 2015, TGRS)。**大気が原因とは言わない** (日付ごとの量なので一周で消える)。
+- MintPy 自身も閉合を使う: `unwrap_error_phase_closure.py` (三角形の閉合でアンラップ誤差を補正、Yunjun et al. 2019 = 参考文献 [2])、
+  `closure_phase_bias.py` (系統的な閉合のずれの補正)。
+- 添字は $d_{ij}$ = $t_i$ から $t_j$ への動き ($x_j - x_i$)。$d_{20}$ と書くと $-d_{02}$ になるので、ポスターは $d_{01} + d_{12} = d_{02}$。
+- お椀の図の食い違い 0.6 (1.0 + 1.0 ≠ 2.6) は説明のための誇張。実データの閉合のずれはずっと小さい。
+
+## 1d. "Are neighbouring pixels solved together? Doesn't the batch couple them?"
+
+> No. Every pixel is its own weighted least-squares problem, solved alone. The
+> GPU stacks thousands of them into one batch only to run them at the same time;
+> each pixel's matrix is factorized separately. Neighbours enter only before the
+> inversion: coherence, and hence the weights, is estimated over a small window,
+> and all phases are referenced to one reference pixel. (block 2)
+
+- CPU (upstream `cc44148`): 重みありは画素ごとのループで `estimate_timeseries(y=stack_obs[:, idx], weight_sqrt=weight_sqrt[:, idx])`
+  ([ifgram_inversion.py L854–870](https://github.com/insarlab/MintPy/blob/cc441486e3ca68212dec5deb5b0adf29abaa04f7/src/mintpy/ifgram_inversion.py#L854-L870))。
+  重みなしは複数画素を `lstsq` 1 回にまとめるが、右辺を並べただけで画素ごとに独立。
+- GPU: `(n, P, P)` に積んで `cholesky_ex` を 1 回。バッチの要素ごとに独立に分解する (画素間の結合はない)。
+- block 2 の図は一時「画素 1 / 画素 2」を並べ、お椀の図に「画素 1 → 画素 2」の矢印まで描いていた。複数画素をまとめて解くように
+  見えるので 2026-10-26 に**代表 1 画素だけ**に直し、「every pixel repeats this alone」と本文で言う形にした (poster_plan 判断 28・29)。
+
 ## 2. "Why not CholeskyQR2 / a QR-based scheme?"
 
 > CholeskyQR2 needs the same Gram Cholesky to succeed, so it has the same

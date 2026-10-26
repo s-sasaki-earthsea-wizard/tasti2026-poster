@@ -1,6 +1,6 @@
 # 申し送り — TASTI 2026 ポスター (T0043)
 
-最終更新: 2026-10-26 (深夜、block 6 改訂) / 華扇 (Claude Code)
+最終更新: 2026-10-26 (深夜、block 2 の網図に方程式と重み + 「足し算が合わない」の段落 + 最小二乗のお椀の図 (代表 1 画素)・入稿は 10/27〜28) / 華扇 (Claude Code)
 
 > 数字を触るときは [docs/results.md](docs/results.md) (系列混同の禁止事項) を、
 > 構成を触るときは [docs/poster_plan.md](docs/poster_plan.md) を先に読むこと。
@@ -22,17 +22,27 @@
   列 2 のはみ出しを解消。
 - 2026-10-26 (深夜): **block 6 を「潰して戻す」の筋に改訂**。概念図を `condition_number_flatten_restore` に差し替え、
   「冗長網が κ を小さくする」の主張を全箇所から削除 ([docs/poster_plan.md](docs/poster_plan.md) 判断 24)。
+- 2026-10-26 (深夜): **block 2 の網図に「辺 1 本 = 方程式 1 本 (全画素共通)」と「重み = コヒーレンス由来 (画素ごと)」を追加**。
+  MintPy upstream のコードで重みの定義と画素ごとのループの原因を確認 ([docs/poster_plan.md](docs/poster_plan.md) 判断 25、
+  [docs/qa_prep.md](docs/qa_prep.md) Q1b)。続けて **2 枚目の図 `least_squares_bowl`** (網の三角形で「方程式 = 直線 → 食い違う →
+  重みつき二乗和のお椀の底 → 重みが底を動かす」) を追加し、列 1 の文章を削って収めた (判断 26)。さらに 2 枚の図のあいだに
+  **"Why not just solve them?"** の段落 ($d_{01} + d_{12} = d_{02}$ のはずが実データは合わない → 最適化) を入れた (判断 27、qa_prep Q1c)。
+  block 3 の計算量 ($D^3$) を Q&A Q8a へ移した (判断 28)。図は 2 画素の比較をやめて**代表 1 画素だけ**にし、本文で
+  「every pixel repeats this alone」と言う形にした (判断 29)。
+  お椀の図は線の太さ = 重み・ラベルをペアの形にして、「どの式も同格で、重みが食い違いの分け前を決める」を見せる形にした (判断 30)。
+- 2026-10-26: **入稿は 2026-10-27〜28**。業者の計算で 10/27 入稿 → 11/1 発送 (入稿から印刷・発送まで 5 営業日)。
+  発送から到着に 2〜3 日見ても、10/28 入稿で出発 11/6 (金) に間に合う (→ §3)。
 
-## 1. 現在の状態 — **全 7 ブロックの内容が揃った。block 6 改訂版をレビュー待ち → 印刷へ**
+## 1. 現在の状態 — **全 7 ブロックの内容が揃った。block 2・6 の改訂版をレビュー待ち → 10/27〜28 入稿**
 
 | 項目 | 状態 |
 | --- | --- |
 | ポスターサイズ | **A0 縦 (84.1 × 118.9 cm)**。公式要件 ([docs/poster_requirements.md](docs/poster_requirements.md)) |
 | 本体 | `poster.tex` (beamerposter + 自作テーマ `beamerthemetasti2026.sty`)、3 カラム 7 ブロック + References 帯。本文 `scale=1.05` (≈ 26 pt) で 3 カラムとも収まる |
-| 図 | 6 枚: ネットワーク例、tall-skinny 行列、Fig. 1 (QR vs 正規方程式)、条件数の概念図 (潰して戻す)、誤差バジェット (実測値で再作図)、Fig. 2 (5 シーンの CPU→GPU ダンベル、`make figures`)。`qr_column_sweep` は不使用 |
+| 図 | 7 枚: ネットワーク例 (+ 辺ごとの方程式と代表 1 画素の重み)、最小二乗のお椀 (代表 1 画素、三角形 t₀–t₁–t₂)、tall-skinny 行列、Fig. 1 (QR vs 正規方程式)、条件数の概念図 (潰して戻す)、誤差バジェット (実測値で再作図)、Fig. 2 (5 シーンの CPU→GPU ダンベル、`make figures`)。`qr_column_sweep` は不使用 |
 | 数字 | 抄録と同じ系列ルール + **投稿後の新結果** (5 シーン条件数サーベイ、PR の rebase) を反映 |
 | ビルド | `make` → `poster.pdf`。`make preview` で PNG、`make check` で A0 / フォント埋め込み確認 |
-| 印刷 | **未**。業者・紙・納期は未定 (→ §3) |
+| 印刷 | **未**。**2026-10-27〜28 入稿**の予定。10/27 入稿 → 11/1 発送 (業者の計算) (→ §3) |
 | 登録 | **未** (締切 2026-10-13、Syota さんの手作業) |
 
 ### 構成 (3 カラム)
@@ -40,8 +50,8 @@
 | 列 | ブロック | 中身 | 図 |
 | --- | --- | --- | --- |
 | 1 | 1 The bottleneck | 43.5%、結論先出しの keypoint ("This work: 44×"、block 5 を参照) | — (big number) |
-| 1 | 2 Why a least-squares inversion? | 初見向けの導入: 干渉縞 → ネットワーク → 最小二乗 → ピクセルごとの重み | observation_network_example |
-| 1 | 3 The problem | per-pixel WLS、$K \times P$、$n$ の規模、$D^3$ | tall_skinny (viewBox を描画範囲に詰めてカラム幅いっぱい) |
+| 1 | 2 Why a least-squares inversion? | 初見向けの導入: 干渉縞 → ネットワーク → 加重最小二乗 → 重み = コヒーレンスから見積もった位相分散の逆数 (MintPy の既定) → 画素ごとに違うので分解を共有できない。「3 日なら $d_{01} + d_{12} = d_{02}$ のはずが合わない → 最適化」の段落、2 枚目の図で「方程式が食い違う → お椀 ∑wr² の底を取る → 重みが底を動かす」 | observation_network_example (網 + 辺ごとの方程式 + 2 画素の重みのバー) + least_squares_bowl |
+| 1 | 3 The problem | 「各画素が自分のお椀の底を探す」→ per-pixel WLS、$K \times P$、$n$ の規模 ($D^3$ は Q&A Q8a へ) | tall_skinny (viewBox を描画範囲に詰めてカラム幅いっぱい) |
 | 2 | 4 Method: reformulate for the GPU | 素朴な移植 (QR) は **1.43×**・384 万 launches → 正規方程式 + batched Cholesky (厳密算術では同じ解、GEMM + batched Cholesky)、**S1 16.5× (条件つき)** | fig1 |
 | 2 | 5 Results: speed | **グラフが主役** (5 シーンの CPU→GPU wall、ダンベル)、見出し **6,169 s → 139 s (44.4×)**。唯一の淡青の面 (`featureblock`) | fig2 (矢印を青・太線に) |
 | 3 | 6 The accuracy cost | κ = 潰れの偏り (長軸 / 短軸)、解く = 引き伸ばして戻す (まるめのぼけも最大 κ 倍、薄すぎると戻らない) → 正規方程式は 2 回潰す (κ²) → fp32 Cholesky は κ(G_w) ≈ 4.1e3 で破綻 → **実測 κ (5 シーン)** → 誤差 0.06 µm (中央値) / 16 µm (最大)、5 シーンとも gate 通過 | condition_number_flatten_restore + error_budget |
@@ -74,14 +84,17 @@
 ## 3. 次にやること
 
 1. **登録** (2026-10-13 まで): <https://tasti2026.conf.tw/site/mypage53.aspx?pid=127&lang=en&sid=1691>
-2. **block 6 改訂版のレビュー**: Syota さんの確認後にコミット。通ったらカラスノエンドウ・ルスダンに agmsg で回す
-   (特にルスダンに「図の比喩が数学的に言い過ぎていないか」を突いてもらう。論点は §5)
-3. **図の追加検討**: Galapagos の velocity map (MintPy fork で `view.py velocity.h5`) を
+2. **block 2・6 改訂版のレビュー (10/27 中)**: Syota さんの確認後にコミット。通ったらカラスノエンドウ・ルスダンに agmsg で回す
+   (特にルスダンに「図の比喩が数学的に言い過ぎていないか」を突いてもらう。論点は §5。block 2 は
+   「方程式は変位形、MintPy と κ は速度形」の扱いを見てもらう → [docs/qa_prep.md](docs/qa_prep.md) Q1b)
+3. **図の追加検討** (10/27〜28 入稿なら見送りが現実的): Galapagos の velocity map (MintPy fork で `view.py velocity.h5`) を
    block 1 か 6 の目玉にする案。`figures/src/ja/` の `edge_stamp` / `assembly_as_gemm` は
-   「Gram 行列の組み立てが行列積 1 発」の説明用。入れるなら英語化して block 4
+   「Gram 行列の組み立てが行列積 1 発」の説明用。入れるなら英語化して block 4。ただし `edge_stamp` の
+   「辺がつなぐ 2 頂点だけに値が立つ」は変位形 (A) でしか成り立たない (GPU 経路は速度形 B)
 4. **印刷の段取り** ([docs/poster_requirements.md](docs/poster_requirements.md) §印刷):
-   日本で印刷して筒で持参が無難。合成紙 or マット紙、A0、納期 3–5 営業日を見込む。
-   遅くとも **2026-11-01 までに `make print`** して入稿
+   日本で印刷して筒で持参が無難。合成紙 or マット紙、A0。業者は入稿から印刷・発送まで **5 営業日**
+   (即日対応は割増なので避ける)。業者の計算で **10/27 入稿 → 11/1 発送**。発送から到着に 2〜3 日見ても
+   **10/28 までに `make print` して入稿すれば出発 11/6 (金) に間に合う**
 5. **印刷直前チェック**: `make check` + `gh pr view 1490 --repo insarlab/MintPy` で
    block 7 の PR 記述を現状に合わせる (merge されていれば書き換え)
 6. **Q&A 準備**: [docs/qa_prep.md](docs/qa_prep.md) を一読。A4 縮刷版を 20 部ほど持参

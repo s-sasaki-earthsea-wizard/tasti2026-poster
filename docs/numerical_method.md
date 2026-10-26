@@ -31,6 +31,10 @@ $$ d_k = G\, x_k + \varepsilon_k $$
 
 $$ \hat{x}_k = \arg\min_x \big\lVert W_k^{1/2}(G x - d_k) \big\rVert_2^2 $$
 
+重みは MintPy の既定 (`weightFunc = var`) で $w = 1/\sigma_\phi^2(\gamma, L)$、つまりコヒーレンス
+$\gamma$ と looks 数 $L$ から見積もった位相分散の逆数 (Tough et al. 1995)。詳細と速度形 (B) との関係は
+[qa_prep.md](qa_prep.md) Q1b。
+
 $G$ は共通だが $d_k, W_k$ はピクセルごとに違う。**「同じ形・違う中身の小さな
 WLS」を全ピクセル分** (Galapagos で 3.4M 回) 解くのが計算の本体で、これが
 GPU バッチ化の的。
