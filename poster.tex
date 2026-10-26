@@ -112,11 +112,10 @@
 % appear only as slow inter/post-seismic motion: co-seismic offsets are a
 % single-interferogram problem, not a time-series one.
 \begin{posterblock}{1}{The bottleneck}
-  InSAR time-series analysis is a standard tool for tracking slow ground
-  deformation over months to years: volcanic inflation, motion along active
-  faults before and after earthquakes, and land subsidence. With
-  Sentinel-1 acquiring continuously and NISAR~[1] now in orbit, archives
-  grow faster than the throughput of the software that consumes them.
+  InSAR time-series analysis tracks slow ground deformation over months to
+  years: volcanic inflation, motion on active faults before and after
+  earthquakes, land subsidence. Sentinel-1 and NISAR~[1] archives outgrow
+  the software that consumes them.
 
   \bignumber{43.5\,\%}{of a complete MintPy~[2] run (18-step
     \texttt{smallbaselineApp}) is spent in \emph{one} step: the least-squares
@@ -127,56 +126,75 @@
 \end{posterblock}
 
 % Block 2: why the inversion exists at all, for readers new to InSAR. No
-% benchmark numbers. Redundancy averages per-interferogram noise only:
-% atmosphere belongs to a date, so it survives the inversion. The last bullet
-% (per-pixel weights forbid a shared factorization) is the bridge to block 3.
+% benchmark numbers. The network figure maps each edge to one equation
+% (shared by every pixel: G) and to a coherence weight (per pixel: W_k). The
+% "Why not just solve them?" paragraph is the crux for newcomers: around a
+% triangle of dates the interferograms should add up, but noisy ones never
+% do (loop closure, without naming it), so an exact solution does not exist.
+% The misfit is per-interferogram noise (multilook decorrelation, unwrapping
+% errors); atmosphere and real motion belong to a date and cancel around the
+% loop, so never blame the atmosphere here (docs/qa_prep.md Q1c). The bowl
+% figure then shows the same triangle as a minimization and how a weight moves
+% the minimum, for one representative pixel only: two pixels in one figure
+% read as if they were solved together. Bowl numbers are illustrative; its
+% weights are the bars of the network figure. Weight = inverse phase variance from coherence is MintPy's
+% weightFunc = var. Equations are drawn in displacement form; MintPy solves
+% the equivalent interval-velocity form by default (docs/qa_prep.md Q1b). The
+% last bullet (per-pixel weights forbid a shared factorization) is the bridge
+% to block 3.
 \begin{posterblock}{2}{Why a least-squares inversion?}
   \begin{itemize}
-    \item A radar satellite images the same ground on a fixed repeat cycle
-      (12~days for Sentinel-1 and NISAR). An \emph{interferogram}, the phase
-      difference of two images, measures how far the ground moved toward the
-      satellite between those two dates, with millimetre-scale sensitivity.
-    \item Pairs far apart in time or in orbit lose coherence, so the time
-      series is built from many short pairs: a \emph{network} with dates as
-      vertices, interferograms as edges, and more edges than unknown dates.
+    \item An \emph{interferogram}, the phase difference of two radar images
+      of the same ground, measures how far it moved toward the satellite
+      between the two dates, to millimetres.
+    \item Distant pairs lose coherence, so many short pairs form a
+      \emph{network}: dates as vertices, interferograms as edges.
   \end{itemize}
 
   \centering
-  \includegraphics[width=0.6\linewidth]{observation_network_example.pdf}
-  \figcaption{A toy network: four dates and five interferograms. Each edge
-    observes the displacement between its two dates; real networks have tens
-    to hundreds of dates.}
+  \includegraphics[width=\linewidth]{observation_network_example.pdf}
+  \figcaption{$x_i$: displacement at date $t_i$, with $x_0 = 0$ as the
+    reference.}
+
+  \raggedright
+  \textbf{Why not just solve them?}
+  Moving from $t_0$ to $t_1$ and then on to $t_2$ is the same as moving from
+  $t_0$ to $t_2$, so the three interferograms should satisfy
+  \[
+    d_{01} + d_{12} = d_{02} .
+  \]
+  Real interferograms each carry their own noise and never add up exactly.
+  No displacement history fits them all, so the best compromise has to be
+  found by optimization.
+
+  \vspace{0.4em}
+  \centering
+  \includegraphics[width=\linewidth]{least_squares_bowl.pdf}
+  \figcaption{One pixel, illustrative numbers; the weights are the bars above.}
 
   \raggedright
   \begin{itemize}
-    \item Recovering the displacement at every date is then an overdetermined
-      linear problem, solved by least squares; the redundancy averages out
-      the noise of individual interferograms.
-    \item Interferogram quality differs from pixel to pixel, so each pixel
-      weights its equations differently. With shared weights, one
-      factorization would serve every pixel; per-pixel weights turn the
-      inversion into millions of separate small problems.
+    \item Weights come from coherence (inverse phase variance, MintPy's
+      default) and differ per pixel, so every pixel repeats this alone:
+      millions of independent small problems.
   \end{itemize}
 \end{posterblock}
 
 % Block 3: the shape of the problem. Pixel counts: S2 (3.4 M) and
 % compute_scale.md (NISAR frame). D^3 growth: compute_scale.md.
 \begin{posterblock}{3}{The problem: millions of small least-squares systems}
-  Each pixel $k$ poses the same weighted least-squares problem
+  Each pixel $k$ finds the bottom of its own bowl (block~2),
   \[
     \hat{x}_k = \arg\min_{x}\,\bigl\lVert W_k^{1/2}\,(G\,x - d_k)\bigr\rVert_2^2 ,
   \]
-  with $K$ interferograms (network edges) and $P = D - 1$ unknowns for $D$
-  acquisition dates (vertices): the design matrix $G$ is $K \times P$ and
-  shared by every pixel, while the phases $d_k$ and the coherence-based
-  weights $W_k$ change from pixel to pixel. A scene has $n = 10^{5}$ to
-  $10^{8}$ pixels: 3.4~million on the Gal\'apagos scene, about
-  $3 \times 10^{8}$ per NISAR frame.
+  with $K$ interferograms (edges) and $P = D - 1$ unknowns for $D$ dates:
+  $G$ ($K \times P$) is shared by every pixel, the phases $d_k$ and weights
+  $W_k$ are not. A scene has $n = 10^{5}$ to $10^{8}$ pixels: 3.4~million
+  on the Gal\'apagos scene, about $3 \times 10^{8}$ per NISAR frame.
 
   \centering
   \includegraphics[width=\linewidth]{tall_skinny_matrix.pdf}
-  \figcaption{One pixel's system drawn to scale (Fernandina: $K=288$, $P=97$):
-    191 more equations than unknowns.}
+  \figcaption{One pixel's system, to scale (Fernandina: $K=288$, $P=97$).}
 
   \raggedright
   Per-pixel cost is $O(KP^2 + P^3/3)$. As the archive lengthens,

@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 690 312" role="img" aria-labelledby="title desc">
+  <title id="title">From conflicting equations to a least-squares minimum</title>
+  <desc id="desc">For one pixel, the triangle t0-t1-t2 of the toy network, with the first date as reference, gives three equations in two unknowns x1 and x2. Each equation is a straight line in the x1-x2 plane, drawn in the colour of its edge and as thick as its weight: x1 - x0 = 1.0 (blue, thick), x2 - x1 = 1.0 (orange, thick) and x2 - x0 = 2.6 (vermilion, thin: the long pair has a low weight). The short pairs add up to 2.0 while the long pair says 2.6, so the three lines enclose a small shaded triangle instead of meeting in one point. Elliptical rings are contours of the weighted sum of squared misfits for this pixel, a bowl whose bottom, the dot, is the least-squares solution. The long pair takes most of the misfit, so the bottom lies near the crossing of the two thick lines, where the short pairs agree. Every pixel repeats this with its own weights. Numbered notes on the right explain the four steps.</desc>
+  <style>
+    text  { font-family: 'Helvetica Neue', Arial, sans-serif; fill: #333; }
+    .math { font-family: Georgia, 'Times New Roman', serif; font-style: italic; }
+    .eqn  { font-size: 19px; }
+    .step { font-size: 17px; }
+    .head { font-size: 17px; font-weight: 700; }
+    .num  { font-size: 15px; font-weight: 700; fill: #fff; }
+    .halo { paint-order: stroke; stroke: #fff; stroke-width: 5px; stroke-linejoin: round; }
+    .tag  { font-size: 17px; font-weight: 700; }
+    .eqline { stroke-width: 4; stroke-linecap: round; }
+    .ring  { fill: none; stroke: #1a6fb5; stroke-opacity: 0.55; stroke-width: 1.6; }
+    .axis { stroke: #888; stroke-width: 2; }
+  </style>
+  <defs><clipPath id="plot"><rect x="32" y="12" width="296" height="286"/></clipPath>
+  </defs>
+
+  <!-- Numbers: d01 = d12 = 1.0, d02 = 2.6 (misclosure 0.6). Weights are the bar lengths of
+       observation_network_example.svg (0.850, 0.700, 0.150). WLS: x = (1.076, 2.169).
+       Scale: 200 svg units per data unit, both axes. Line width = 1.2 + 6 w.
+       Rings: contours at S_min + 0.02 / 0.06 / 0.12 / 0.20 of the weighted sum of squares;
+       semi-axes sqrt(dS / eigenvalue) along the eigenvectors of N = G^T W G (long axis at -121.7 deg). -->
+  <!-- axes -->
+  <line class="axis" x1="30" y1="300" x2="322" y2="300"/>
+  <polygon fill="#888" points="334,300 320,294 320,306"/>
+  <line class="axis" x1="30" y1="300" x2="30" y2="20"/>
+  <polygon fill="#888" points="30,8 24,22 36,22"/>
+  <text class="math eqn" x="336" y="292" text-anchor="end">x<tspan dy="5" font-size="13" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">1</tspan><tspan dy="-5">​</tspan></text>
+  <text class="math eqn" x="42" y="22">x<tspan dy="5" font-size="13" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">2</tspan><tspan dy="-5">​</tspan></text>
+  <g clip-path="url(#plot)">
+    <!-- no common point: the triangle the three lines enclose -->
+    <polygon fill="#000" fill-opacity="0.08" points="130.0,230.0 130.0,110.0 250.0,110.0"/>
+    <!-- the bowl of this pixel: contours of its weighted sum of squared misfits -->
+    <ellipse class="ring" cx="145.2" cy="196.3" rx="43.8" ry="20.1" transform="rotate(121.7 145.2 196.3)"/>
+    <ellipse class="ring" cx="145.2" cy="196.3" rx="75.8" ry="34.8" transform="rotate(121.7 145.2 196.3)"/>
+    <ellipse class="ring" cx="145.2" cy="196.3" rx="107.2" ry="49.2" transform="rotate(121.7 145.2 196.3)"/>
+    <ellipse class="ring" cx="145.2" cy="196.3" rx="138.4" ry="63.5" transform="rotate(121.7 145.2 196.3)"/>
+    <!-- one line per equation, in the colour of its edge -->
+    <line class="eqline" stroke="#0072B2" x1="130.0" y1="290.0" x2="130.0" y2="20.0" style="stroke-width: 6.3"/>
+    <line class="eqline" stroke="#E69F00" x1="70.0" y1="290.0" x2="320.0" y2="40.0" style="stroke-width: 5.4"/>
+    <line class="eqline" stroke="#D55E00" x1="40.0" y1="110.0" x2="320.0" y2="110.0" style="stroke-width: 2.1"/>
+  </g>
+  <!-- equation labels -->
+  <text class="math eqn halo" x="138.0" y="286">x<tspan dy="5" font-size="13" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">1</tspan><tspan dy="-5">​</tspan> − x<tspan dy="5" font-size="13" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">0</tspan><tspan dy="-5">​</tspan> ≈ 1.0</text>
+  <text class="math eqn halo" x="143" y="97.0">x<tspan dy="5" font-size="13" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">2</tspan><tspan dy="-5">​</tspan> − x<tspan dy="5" font-size="13" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">0</tspan><tspan dy="-5">​</tspan> ≈ 2.6</text>
+  <text class="math eqn halo" x="298.0" y="44.0" text-anchor="end">x<tspan dy="5" font-size="13" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">2</tspan><tspan dy="-5">​</tspan> − x<tspan dy="5" font-size="13" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">1</tspan><tspan dy="-5">​</tspan> ≈ 1.0</text>
+  <!-- the least-squares solution: the bottom of the bowl -->
+  <circle cx="145.2" cy="196.3" r="7.5" fill="#222" stroke="#fff" stroke-width="2"/>
+  <text class="tag halo" x="123.2" y="202.3" text-anchor="end">solution</text>
+
+  <!-- numbered notes -->
+  <text class="head" x="356" y="24">The triangle t<tspan dy="4" font-size="12" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">0</tspan><tspan dy="-4">​</tspan>–t<tspan dy="4" font-size="12" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">1</tspan><tspan dy="-4">​</tspan>–t<tspan dy="4" font-size="12" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">2</tspan><tspan dy="-4">​</tspan> above (x<tspan dy="4" font-size="12" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">0</tspan><tspan dy="-4">​</tspan> = 0)</text>
+  <circle cx="367" cy="56" r="11" fill="#1a6fb5"/>
+  <text class="num" x="367" y="61" text-anchor="middle">1</text>
+  <text class="step" x="386" y="62">Three equations, two unknowns:</text>
+  <text class="step" x="386" y="84">each equation is a line.</text>
+  <circle cx="367" cy="114" r="11" fill="#1a6fb5"/>
+  <text class="num" x="367" y="119" text-anchor="middle">2</text>
+  <text class="step" x="386" y="120">The short pairs add up to 2.0, the</text>
+  <text class="step" x="386" y="142">long pair says 2.6: no common point.</text>
+  <circle cx="367" cy="172" r="11" fill="#1a6fb5"/>
+  <text class="num" x="367" y="177" text-anchor="middle">3</text>
+  <text class="step" x="386" y="178">Least squares takes the bottom of the</text>
+  <text class="step" x="386" y="200">bowl ∑ w r² (squared misfits r, rings).</text>
+  <circle cx="367" cy="230" r="11" fill="#1a6fb5"/>
+  <text class="num" x="367" y="235" text-anchor="middle">4</text>
+  <text class="step" x="386" y="236">The long pair t<tspan dy="4" font-size="12" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">0</tspan><tspan dy="-4">​</tspan>–t<tspan dy="4" font-size="12" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">2</tspan><tspan dy="-4">​</tspan> has a low weight</text>
+  <text class="step" x="386" y="258">(thin line), so it takes most of the</text>
+  <text class="step" x="386" y="280">misfit: the bottom sits near where</text>
+  <text class="step" x="386" y="302">the two short pairs agree.</text>
+</svg>
