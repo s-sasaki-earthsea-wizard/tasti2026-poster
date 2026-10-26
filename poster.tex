@@ -38,9 +38,13 @@
 
 \graphicspath{{figures/}}
 
-% Repository and upstream links (also encoded as QR codes).
+% Upstream PR and the poster's own Zenodo record, both encoded as QR codes.
+% The poster's code carries the concept DOI, which always resolves to the
+% latest version of the record; that version must hold this very PDF
+% (docs/poster_requirements.md, Zenodo). The repository stays reachable
+% through the footline.
 \newcommand{\prurl}{https://github.com/insarlab/MintPy/pull/1490}
-\newcommand{\posterurl}{https://github.com/s-sasaki-earthsea-wizard/tasti2026-poster}
+\newcommand{\posterurl}{https://doi.org/10.5281/zenodo.23669874}
 
 % A margin entry of the conditioning table, in the accent colour.
 \newcommand{\margin}[1]{\textcolor{tastiBlue}{\tastiSemibold #1$\times$}}
@@ -258,7 +262,7 @@
 % quote the S1 step wall (4.49x): ~47 s of start-up sits on both sides. The
 % GEMM's share of the arithmetic stays qualitative (numbers: docs/qa_prep.md).
 % Digest only: no code box and no implementation tips (chunking, rank flags,
-% opt-in key); those live in docs/qa_prep.md and on GitHub (block 7's QR codes).
+% opt-in key); those live in docs/qa_prep.md and on GitHub (block 7's PR QR code).
 \begin{posterblock}{4}{Method: reformulate for the GPU, don't just port}
   \keypoint{Porting the CPU solver to a GPU is not enough: the problem has to
     be recast into a shape the GPU is good at.}
@@ -409,8 +413,10 @@
 % consumer-GPU processing matter. FORMOSAT-9 stays regional context with no
 % resolution figure. No NISAR extrapolation numbers here (repetition of block
 % 3); they live in docs/compute_scale.md and docs/qa_prep.md. Usage details
-% (template keys, install, CPU path unchanged) are left to GitHub via the QR
-% codes, which sit beside the closing sentence. PR status checked 2026-10-07 -- re-check before printing.
+% (template keys, install, CPU path unchanged) are left to GitHub via the PR's
+% QR code; the second QR code is the poster PDF on Zenodo. Both sit beside the
+% closing sentence. PR status checked 2026-10-27 (open, review required) --
+% re-check before printing.
 \begin{posterblock}{7}{Why it matters: SAR data is multiplying}
   \begin{itemize}
     \item NISAR~[1] maps nearly all of Earth's land and ice every 12~days.
@@ -441,7 +447,7 @@
   \begin{minipage}[c]{68mm}
     \centering
     \qrcode[height=52mm]{\posterurl}\\[0.6ex]
-    {\footnotesize Poster and benchmarks}
+    {\footnotesize Poster PDF (Zenodo)}
   \end{minipage}
 \end{posterblock}
 
