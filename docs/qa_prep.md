@@ -113,7 +113,7 @@
 > is orthogonality of Q, which a one-shot least-squares solve never uses. And we
 > measured the QR path on the same GPU: 16.5× slower in MintPy's step time.
 
-- 引用 [3,4] から引けるのは「Gram + Cholesky は level-3 BLAS のみで並列向き」と
+- 引用 [4,5] から引けるのは「Gram + Cholesky は level-3 BLAS のみで並列向き」と
   「κ² の代償は既知」まで。**「CholeskyQR2 と同じだから安全」とは言わない**。
 
 ## 2a. "Why is QR so slow on a GPU? Wouldn't a properly batched QR do as well?" (block 4)
@@ -160,6 +160,28 @@
   総演算量 +0.20。
 - CPU の 1 画素あたり: 重み付きループ 2.3–4.6 ms (Fernandina / Galápagos / SanFranBay)、
   Kuju 0.14 ms、SanFranSen (重みなし) 0.08 ms。[results.md](results.md) §S3。
+
+## 3a. "Fernandina, Kuju ... what are these? Can I get the data?" (block 5, 6)
+
+> They are public InSAR stacks on Zenodo, released under CC BY 4.0. Four of them
+> are MintPy's own example datasets, used in its documentation and test suite.
+> Galápagos is the data published with the MintPy paper [2]. The DOIs are listed under
+> "Benchmark data" at the bottom of the poster, and each one links to the exact
+> version I ran.
+
+- 内訳 (正典: [sources.md](sources.md) §データ): Fernandina (Sentinel-1 DT128、ISCE-2)、
+  Galápagos (Sentinel-1 DT128、ISCE-2、[2] のデータ)、Kuju (ALOS-1 AT422、ROI_PAC)、
+  San Francisco (Sentinel-1 DT42、ARIA)、San Francisco Bay (Sentinel-1 D42、GMTSAR)。
+- Galápagos の Zenodo レコード (4743058) は ALOS と Sentinel-1 の 2 つの stack を含む。
+  使ったのは Sentinel-1 の `GalapagosSenDT128`。
+- ARIA の San Francisco (4265413) は Zenodo 上のタイトルが "InSAR Stack of San Francisco Bay
+  …" で、GMTSAR の San Francisco Bay (15814132) と紛らわしい。ポスターの呼び名は MintPy の
+  データ名 `SanFranSenDT42` / `SanFranBaySenD42` に合わせた。
+- 作成者は 5 件とも Z. Yunjun を含む (ほかに F. Amelung、Y. Aoki、H. Fattahi、X. Xu)。
+- MintPy の `tests/smallbaselineApp.py` は Fernandina・San Francisco・San Francisco Bay・Kuju を
+  走らせる。ただし Fernandina と San Francisco は約 280 MB に切り詰めた別レコード (5498198 / 6662079)、
+  San Francisco Bay は旧版 (12772940) で、Kuju だけがこちらと同じレコード。キャプションの
+  "used to test MintPy" は、Galápagos も [2] で MintPy の補正の検証に使われたデータという意味で 5 件に掛けている。
 
 ## 4. "What about the DEM-error step at only 6×?"
 

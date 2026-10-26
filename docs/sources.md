@@ -53,13 +53,33 @@ upstream (insarlab/MintPy) と Zenodo は消えない前提。
 
 ## データ (Zenodo、5 シーン)
 
-| シーン | 処理系 / バンド | Zenodo |
-| --- | --- | --- |
-| FernandinaSenDT128 | ISCE-2 / C | <https://zenodo.org/records/3952953> |
-| GalapagosSenDT128 | ISCE-2 / C | <https://zenodo.org/records/4743058> |
-| SanFranBaySenD42 | GMTSAR / C | <https://zenodo.org/records/15814132> |
-| KujuAlosAT422F650 | ROI_PAC / L | <https://zenodo.org/records/3952917> |
-| SanFranSenDT42 | ARIA / C | <https://zenodo.org/records/4265413> |
+ポスターでは References 帯の "Benchmark data:" に、シーン名と version DOI の番号だけを載せている
+([poster_plan.md](poster_plan.md) 判断 35)。5 件とも CC BY 4.0。version DOI は使った版を指す
+(concept DOI は最新版に解決されるので使わない)。
+
+| ポスターの呼び名 | データ名 | 処理系 / バンド | 出所 | Zenodo (version DOI) | 版 |
+| --- | --- | --- | --- | --- | --- |
+| Fernandina | FernandinaSenDT128 | ISCE-2 / C | MintPy example | [10.5281/zenodo.3952953](https://doi.org/10.5281/zenodo.3952953) | 1.6 |
+| Galápagos | GalapagosSenDT128 | ISCE-2 / C | [2] のデータ | [10.5281/zenodo.4743058](https://doi.org/10.5281/zenodo.4743058) | 1.1 |
+| San Francisco Bay | SanFranBaySenD42 | GMTSAR / C | MintPy example | [10.5281/zenodo.15814132](https://doi.org/10.5281/zenodo.15814132) | 1.1 |
+| Kuju | KujuAlosAT422F650 | ROI_PAC / L | MintPy example | [10.5281/zenodo.3952917](https://doi.org/10.5281/zenodo.3952917) | 1.4 |
+| San Francisco | SanFranSenDT42 | ARIA / C | MintPy example | [10.5281/zenodo.4265413](https://doi.org/10.5281/zenodo.4265413) | 1.0 |
+
+「MintPy example」は upstream の
+[`docs/demo_dataset.md`](https://github.com/insarlab/MintPy/blob/main/docs/demo_dataset.md) に載っているもの。
+Galápagos はそこになく、[2] (Yunjun et al., 2019) のデータとして公開されたレコード (ALOS と Sentinel-1 の
+2 stack を含む。使ったのは Sentinel-1)。MintPy の README や CLI のヘルプでは使用例の名前として出てくる。
+
+正式なデータ引用 (DataCite の形、Zenodo API で 2026-10-27 に確認):
+
+- Z. Yunjun, F. Amelung (2019). *InSAR stack of Fernandina volcano in Galápagos, Ecuador from Sentinel-1 descending track 128* (Version 1.6) [Data set]. Zenodo. <https://doi.org/10.5281/zenodo.3952953>
+- Z. Yunjun, F. Amelung (2019). *InSAR time-series for Galápagos volcanoes, Ecuador from ALOS and Sentinel-1* (Version 1.1) [Data set]. Zenodo. <https://doi.org/10.5281/zenodo.4743058>
+- Z. Yunjun, F. Amelung, Y. Aoki (2017). *InSAR stack of Kuju volcano in Kyushu, Japan from ALOS ascending track 422 processed with ROI_PAC* (Version 1.4) [Data set]. Zenodo. <https://doi.org/10.5281/zenodo.3952917>
+- H. Fattahi, Z. Yunjun (2020). *InSAR Stack of San Francisco Bay in California from Sentinel-1* (Version 1.0) [Data set]. Zenodo. <https://doi.org/10.5281/zenodo.4265413>
+- X. Xu, Z. Yunjun (2024). *InSAR stack of San Francisco Bay, California from Sentinel-1 descending track 42 processed with GMTSAR* (Version 1.1) [Data set]. Zenodo. <https://doi.org/10.5281/zenodo.15814132>
+
+ARIA の San Francisco (4265413) は Zenodo 上のタイトルが "San Francisco Bay" なので、GMTSAR の
+San Francisco Bay (15814132) と取り違えないこと。
 
 ## 学会
 
@@ -71,16 +91,23 @@ upstream (insarlab/MintPy) と Zenodo は消えない前提。
 | Agenda | <https://tasti2026.conf.tw/site/order/1691/sp_agenda.aspx?pid=901&sid=1691&lang=en> |
 | FAQ | <https://tasti2026.conf.tw/site/mypage53.aspx?pid=23&lang=en&sid=1691> |
 
-## References (ポスター末尾、抄録と同じ番号)
+## References (ポスター末尾、ポスターでの登場順)
+
+抄録と同じ 7 件を、ポスターに出てくる順に振り直した ([poster_plan.md](poster_plan.md) 判断 35)。
+抄録の番号との対応: 抄録 [3] → ポスター [4]、抄録 [4] → [5]、抄録 [5] → [3]。1・2・6・7 は同じ。
 
 1. NASA-ISRO SAR (NISAR) Mission Science Users' Handbook, NASA JPL, 2018.
 2. Z. Yunjun, H. Fattahi, F. Amelung, "Small baseline InSAR time series analysis: Unwrapping error correction and noise reduction," *Computers & Geosciences*, 133, 104331, 2019. <https://doi.org/10.1016/j.cageo.2019.104331>
-3. Y. Yamamoto, Y. Nakatsukasa, Y. Yanagisawa, T. Fukaya, "Roundoff error analysis of the CholeskyQR2 algorithm," *ETNA*, 44, 306–326, 2015.
-4. T. Fukaya, Y. Nakatsukasa, Y. Yanagisawa, Y. Yamamoto, "CholeskyQR2: A simple and communication-avoiding algorithm for computing a tall-skinny QR factorization on a large-scale parallel system," METR 2014-37, The University of Tokyo, 2014.
-5. A. Paszke et al., "PyTorch: An imperative style, high-performance deep learning library," *NeurIPS*, 32, 2019.
-6. Taiwan Space Agency (TASA), FORMOSAT-9 mission. <https://www.tasa.org.tw/en-US/missions/detail/FORMOSAT-9>
+3. A. Paszke et al., "PyTorch: An imperative style, high-performance deep learning library," *NeurIPS*, 32, 2019.
+4. Y. Yamamoto, Y. Nakatsukasa, Y. Yanagisawa, T. Fukaya, "Roundoff error analysis of the CholeskyQR2 algorithm," *ETNA*, 44, 306–326, 2015.
+5. T. Fukaya, Y. Nakatsukasa, Y. Yanagisawa, Y. Yamamoto, "CholeskyQR2: A simple and communication-avoiding algorithm for computing a tall-skinny QR factorization on a large-scale parallel system," METR 2014-37, The University of Tokyo, 2014.
+6. Taiwan Space Agency, FORMOSAT-9. <https://www.tasa.org.tw/en-US/missions/detail/FORMOSAT-9>
 7. S. Sasaki, "Add opt-in torch GPU solver for invert_network," insarlab/MintPy, Pull Request #1490, 2026 (under review). <https://github.com/insarlab/MintPy/pull/1490>
 
-文献 3, 4 の PDF は抄録 repo の `docs/` にあった (git 管理外)。必要なら再取得:
+その後に番号なしで **Benchmark data:** InSAR stacks on Zenodo by Z. Yunjun and co-authors,
+DOI 10.5281/zenodo.⟨n⟩: Fernandina 3952953, Galápagos 4743058 (data of [2]), Kuju 3952917,
+San Francisco 4265413, San Francisco Bay 15814132. (正式な引用は §データ)
+
+文献 4, 5 の PDF は抄録 repo の `docs/` にあった (git 管理外)。必要なら再取得:
 ETNA 44 は <https://etna.math.kent.edu/>、METR 2014-37 は東大 数理情報学専攻の
 Technical Report ページ。

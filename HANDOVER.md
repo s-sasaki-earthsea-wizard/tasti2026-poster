@@ -1,6 +1,6 @@
 # 申し送り — TASTI 2026 ポスター (T0043)
 
-最終更新: 2026-10-27 (block 4 を図 2 枚に・block 1 の 43.5 % を 18 step の横棒に・地色を暖色に・入稿は 10/27〜28) / 華扇 (Claude Code)
+最終更新: 2026-10-27 (シーン名の定義・文献の番号の振り直しとベンチマークのデータ・block 4 を図 2 枚に・block 1 の 43.5 % を 18 step の横棒に・地色を暖色に・入稿は 10/27〜28) / 華扇 (Claude Code)
 
 > 数字を触るときは [docs/results.md](docs/results.md) (系列混同の禁止事項) を、
 > 構成を触るときは [docs/poster_plan.md](docs/poster_plan.md) を先に読むこと。
@@ -35,6 +35,7 @@
 - 2026-10-27: **地色を白から暖色 `#F6F1E7` に**。Design キャンバス (<https://claude.ai/artifact/QvYydebUjnjpBA6sngrUWC>、非公開) で 4 案を比べて Oat を採用し、keypoint・featureblock の色と図の白い塗りも合わせた ([docs/poster_plan.md](docs/poster_plan.md) 判断 31)。テカリ対策の本命は紙 (マット) の指定
 - 2026-10-27: **block 1 の big number を 18 step の 100% 積み上げ横棒に**。invert_network だけ橙で名指しし、その真上に 43.5 %。残り 17 step は灰の区画で "the other 17 steps" (load_data は名指ししない)。秒数は載せず、44× を掛けた「after」の棒も描かない ([docs/poster_plan.md](docs/poster_plan.md) 判断 32、内訳は [docs/results.md](docs/results.md) §Baseline 18 step の内訳、Q&A は [docs/qa_prep.md](docs/qa_prep.md) Q15)
 - 2026-10-27: **block 4 を図 2 枚に分けて文章を半分以下に**。`qr_launch_grid` (QR: 画素ごと・反射 1 つずつ、起動のほうが計算より長い、3,841,835) と `normal_equations_batched` (① GEMM で K 行を畳む ② 97 × 97 のバッチ Cholesky ③ 解く、どの段も全画素を 1 発、57) を同じ「画素 × 段」の格子で描いた。Syota さんの依頼で LT ではなく **PR #1490 の実装と PyTorch 2.11 のソースで裏取り**: `lstsq` は K ≤ 256 でしか cuBLAS のバッチ QR を使わず、K = 288 では画素ごとのループ (旧図の "Batching leaves the P steps per matrix" は不正確)、Gram は `Gw_T @ Gw` のバッチ GEMM (スタンプ帳ではない)。GEMM の割合 (93.5 %) などは Q&A Q2a ([docs/poster_plan.md](docs/poster_plan.md) 判断 33、[docs/results.md](docs/results.md) §kernel の内訳と実装の裏取り)
+- 2026-10-27: **シーン名 (Fernandina、Kuju …) が地名にしか見えない問題に対応**。Fig. 2 のキャプションを定義の場所にして「MintPy のテストに使われる公開 InSAR データ (Sentinel-1 / ALOS-1、火山とベイエリア)、Zenodo = 研究データの公開リポジトリ」と書き、block 6 の表のキャプションから block 5 を参照。列 2 のはみ出しは block 4・5 の 1 語ずつで吸収 (判断 34)。続けて **References を登場順に振り直し** (PyTorch [3]、CholeskyQR2 [4,5]) し、帯の 3 段目に番号なしの **"Benchmark data:"** (5 シーンの version DOI、作成者のクレジット) を足した。[6] を 1 行に縮めて帯の高さは据え置き (判断 35)。Galápagos は MintPy のサンプルデータではなく [2] のデータ。正式なデータ引用は [docs/sources.md](docs/sources.md) §データ、想定問答は [docs/qa_prep.md](docs/qa_prep.md) Q3a
 
 ## 1. 現在の状態 — **全 7 ブロックの内容が揃った。block 1・2・4・6 の改訂版をレビュー待ち → 10/27〜28 入稿**
 
@@ -59,7 +60,7 @@
 | 2 | 5 Results: speed | **グラフが主役** (5 シーンの CPU→GPU wall、ダンベル)、見出し **6,169 s → 139 s (44.4×)**。唯一の淡青の面 (`featureblock`) | fig2 (矢印を青・太線に) |
 | 3 | 6 The accuracy cost | κ = 潰れの偏り (長軸 / 短軸)、解く = 引き伸ばして戻す (まるめのぼけも最大 κ 倍、薄すぎると戻らない) → 正規方程式は 2 回潰す (κ²) → fp32 Cholesky は κ(G_w) ≈ 4.1e3 で破綻 → **実測 κ (5 シーン)** → 誤差 0.06 µm (中央値) / 16 µm (最大)、5 シーンとも gate 通過 | condition_number_flatten_restore + error_budget |
 | 3 | 7 Why it matters | NISAR・小型 SAR・FORMOSAT-9 でデータ増 → 民生 GPU の意義、PR は under review、QR ×2 | QR |
-| 全幅 | References | 抄録と同じ 7 件。footline の上にカラムの格子に揃えた 3 段組 | — |
+| 全幅 | References | 抄録と同じ 7 件を登場順に振り直し + 番号なしの "Benchmark data:" (5 シーンの Zenodo DOI)。footline の上にカラムの格子に揃えた 3 段組 | — |
 
 ### 抄録から**増えた**もの (ポスターで初出)
 
