@@ -270,7 +270,7 @@
   \[
     N_k\,x_k = r_k, \qquad N_k = G^{\!\top} W_k\, G, \quad r_k = G^{\!\top} W_k\, d_k ,
   \]
-  the same least-squares solution in exact arithmetic (its accuracy cost:
+  the same solution in exact arithmetic (its accuracy cost:
   block~6), in single precision with PyTorch~[5] and no custom GPU code.
 
   \centering
@@ -295,10 +295,12 @@
 % rows labelled by pixels actually inverted, so its Galapagos (1.29 M px after
 % masking) is not mistaken for the 3.4 M-pixel S2 run. No size dependence!
 % DEM-error (6.2x) and the 18-step run live in docs/qa_prep.md Q4 and the
-% caption.
+% caption. The caption is where the scene names are defined: four are
+% MintPy's example datasets and Galapagos is the data of [2] (docs/sources.md),
+% and Zenodo is glossed for readers who have not met it.
 \begin{featureblock}{5}{Results: speed}
   Every speedup is measured against the CPU reference path on one consumer
-  workstation GPU (NVIDIA GeForce RTX~5080, 16~GB).
+  GPU (NVIDIA GeForce RTX~5080, 16~GB).
 
   \bignumber[68]{6{,}169 s $\rightarrow$ 139 s}{Gal\'apagos scene, 3.4~million
     pixels $\times$ 475 retained interferograms: \textbf{44.4$\times$} as
@@ -308,10 +310,13 @@
   \centering
   \includegraphics[width=\linewidth]{fig2_speedup.pdf}
   \figcaption{Wall time of the network-inversion step in complete 18-step
-    runs on five public scenes (four processors, two radar wavelengths, all on
-    Zenodo), with the pixels left after masking. On the log axis the arrow
-    length is the speedup. No size dependence is claimed: the ranking does not
-    follow pixel count.}
+    runs on five public InSAR datasets used to test MintPy: Sentinel-1
+    (C-band) or ALOS-1 (L-band) stacks over volcanoes and the San Francisco
+    Bay Area, from four processors, all on Zenodo, an open repository for
+    research data.
+    Pixels are those left after masking.
+    On the log axis the arrow length is the speedup.
+    No size dependence is claimed: the ranking does not follow pixel count.}
 \end{featureblock}
 
 \end{column}
@@ -370,7 +375,8 @@
     San Francisco     & 51.1 & (run unweighted) & \margin{80} \\
     \bottomrule[0.8mm]
   \end{tabular}\par}
-  \figcaption{Float64 SVD on 2{,}100 sampled pixels per scene. Margin is the
+  \figcaption{The five scenes of the speed chart (block~5).
+    Float64 SVD on 2{,}100 sampled pixels per scene. Margin is the
     distance from the worst $\kappa$ of the system actually solved to the
     breakdown point, $4.1 \times 10^{3}$.}
 
