@@ -107,8 +107,15 @@
 % ===========================================================================
 \begin{column}{\tastiColWidth}
 
-% Block 1: the hotspot and the headline result. 43.5 % is report_baseline.md;
-% 44x is S2 internal (same number as the block 5 big number). Earthquakes
+% Block 1: the hotspot and the headline result. The share bar is the 18
+% steps of a complete CPU run, largest first, sized by the step time MintPy
+% reports (interpreter start-up excluded): report_baseline.md @ 0a60cd4,
+% Fernandina, 500.8 s in total, invert_network 218.0 s = 43.5 %. Percentages
+% only: these seconds are the Phase 1 baseline and must not sit next to the
+% S2 seconds of block 5. Only the inversion is named; load_data (17.7 %, the
+% second segment) is inflated by reading from a network share and is left to
+% docs/qa_prep.md. 44x is S2 internal (same number as the block 5 big
+% number); never apply it to this bar, that would mix series. Earthquakes
 % appear only as slow inter/post-seismic motion: co-seismic offsets are a
 % single-interferogram problem, not a time-series one.
 \begin{posterblock}{1}{The bottleneck}
@@ -117,9 +124,35 @@
   earthquakes, land subsidence. Sentinel-1 and NISAR~[1] archives outgrow
   the software that consumes them.
 
-  \bignumber{43.5\,\%}{of a complete MintPy~[2] run (18-step
-    \texttt{smallbaselineApp}) is spent in \emph{one} step: the least-squares
-    inversion of the interferogram network, solved pixel by pixel on the CPU}
+  % One unit of x is one second of the 500.8 s total, so the bar spans the
+  % column. A ground-coloured hairline closes every step but the last; the
+  % hairlines are overlays because the ones after the 0.1 s steps would
+  % otherwise poke past the column edge.
+  \par\vskip0.6em
+  \begin{tikzpicture}[x=\linewidth/500.8, y=1mm]
+    \fill[tastiOrange] (0,0) rectangle (218.0,11);
+    \fill[tastiMuted!35!tastiPaper] (218.0,0) rectangle (500.8,11);
+    \def\tastiStepEnd{0}
+    \foreach \t [count=\i] in {218.0, 88.6, 43.9, 25.8, 25.1, 17.7, 16.4,
+        15.4, 14.9, 9.1, 8.8, 7.3, 5.1, 2.1, 1.5, 0.9, 0.1, 0.1} {
+      \pgfmathsetmacro\tastiStepEnd{\tastiStepEnd+\t}
+      \global\let\tastiStepEnd\tastiStepEnd
+      \ifnum\i<18
+        \draw[tastiPaper, line width=0.6mm, overlay]
+          (\tastiStepEnd,-0.5) -- ++(0,12);
+      \fi
+    }
+    \node[anchor=south, inner sep=0pt, text=tastiOrangeText,
+      font=\tastiDisplay\fontsize{80}{80}\selectfont] at (109.0,14) {43.5\,\%};
+    \node[anchor=north west, inner sep=0pt, text=tastiOrangeText,
+      font=\tastiSemibold] at (0,-3) {One step: the network inversion};
+    \node[anchor=north east, inner sep=0pt, text=tastiMuted]
+      at (500.8,-3) {the other 17 steps};
+  \end{tikzpicture}
+  \figcaption{Step times of a complete MintPy~[2] run (all 18 steps of
+    \texttt{smallbaselineApp}, Fernandina scene, on the CPU), as reported by
+    MintPy with interpreter start-up excluded. The network inversion is a
+    least-squares problem, solved pixel by pixel.}
 
   \keypoint{This work: that step now runs 44$\times$ faster on one consumer
     GeForce GPU (block~5), switched on by a single template option.}
