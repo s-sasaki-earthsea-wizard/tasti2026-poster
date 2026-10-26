@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 412" role="img" aria-labelledby="title desc">
+  <title id="title">The condition number as flatten-and-restore</title>
+  <desc id="desc">A matrix maps a circle to an ellipse; the condition number kappa is the long axis over the short axis. Every computed result carries a rounding blur of the same size in every direction. Solving undoes the flattening and stretches the blur along with the shape. Top row: a mild flattening (kappa = 4) is recovered as the original circle with its blur stretched four times, still small. Bottom row: when the short axis is thinner than the blur (kappa at or above 1/u), the stretched blur swamps the shape and the flattened direction is lost.</desc>
+  <style>
+    text      { font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .shape    { fill: #1a6fb5; fill-opacity: 0.12; stroke: #1a6fb5; stroke-width: 2.5; }
+    .ghost    { fill: none; stroke: #1a6fb5; stroke-opacity: 0.55; stroke-width: 2.2; stroke-dasharray: 7 5; }
+    .blur     { fill: none; stroke: #c8641e; stroke-opacity: 0.4; stroke-width: 5; }
+    .arrow    { stroke: #888; stroke-width: 2.5; }
+    .head     { fill: #333; font-size: 23px; font-weight: 700; }
+    .row-ok   { fill: #1a6fb5; font-size: 23px; font-weight: 700; }
+    .row-bad  { fill: #c8641e; font-size: 23px; font-weight: 700; }
+    .note     { fill: #555; font-size: 18.5px; }
+    .m        { font-family: Georgia, 'Times New Roman', serif; font-style: italic; }
+    .sym      { font-family: 'Arial Unicode MS', 'Apple Symbols', sans-serif; }
+  </style>
+
+  <defs>
+    <marker id="arw4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#888"/>
+    </marker>
+    <!-- the stretched blur of the bottom row runs past the frame, so it fades at both ends -->
+    <linearGradient id="smear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0"    stop-color="#c8641e" stop-opacity="0.06"/>
+      <stop offset="0.25" stop-color="#c8641e" stop-opacity="0.32"/>
+      <stop offset="0.75" stop-color="#c8641e" stop-opacity="0.32"/>
+      <stop offset="1"    stop-color="#c8641e" stop-opacity="0.06"/>
+    </linearGradient>
+  </defs>
+
+  <!-- column heads: original -> flattened by the matrix -> restored by solving -->
+  <text class="head" x="110" y="24" text-anchor="middle">Original</text>
+  <text class="head" x="400" y="24" text-anchor="middle">Flattened by the matrix</text>
+  <text class="head" x="690" y="24" text-anchor="middle">Restored by solving</text>
+
+  <!-- ============== TOP ROW: mild flattening, kappa = 4 ============== -->
+  <text class="row-ok" x="20" y="58">Mildly flattened (<tspan class="m">κ</tspan> = 4)</text>
+  <text class="row-ok" x="690" y="58" text-anchor="middle">Recovered</text>
+
+  <circle class="shape" cx="110" cy="130" r="50"/>
+  <line class="arrow" x1="178" y1="130" x2="328" y2="130" marker-end="url(#arw4)"/>
+
+  <!-- short axis = long axis / 4; the blur band is drawn at the same width in both rows -->
+  <ellipse class="shape" cx="400" cy="130" rx="50" ry="12.5"/>
+  <ellipse class="blur"  cx="400" cy="130" rx="50" ry="12.5"/>
+  <text class="note" x="400" y="210" text-anchor="middle"><tspan class="m">κ</tspan> = long axis ÷ short axis</text>
+
+  <line class="arrow" x1="472" y1="130" x2="614" y2="130" marker-end="url(#arw4)"/>
+
+  <!-- restoring stretches the flattened direction by kappa, and the blur with it -->
+  <circle cx="690" cy="130" r="50" fill="#1a6fb5" fill-opacity="0.12"/>
+  <ellipse class="blur" cx="690" cy="130" rx="50" ry="12.5" transform="translate(690,130) scale(1,4) translate(-690,-130)"/>
+  <circle cx="690" cy="130" r="50" fill="none" stroke="#1a6fb5" stroke-width="2.5"/>
+  <text class="note" x="690" y="210" text-anchor="middle">blur grew ×4, still small</text>
+
+  <!-- ============== BOTTOM ROW: flattened below the blur, kappa >~ 1/u ============== -->
+  <text class="row-bad" x="20" y="252">Flattened too far (<tspan class="m">κ</tspan> <tspan class="sym">≳</tspan> 1/<tspan class="m">u</tspan>)</text>
+  <text class="row-bad" x="690" y="252" text-anchor="middle">Lost</text>
+
+  <circle class="shape" cx="110" cy="322" r="50"/>
+  <line class="arrow" x1="178" y1="322" x2="328" y2="322" marker-end="url(#arw4)"/>
+
+  <!-- short axis thinner than the blur band -->
+  <ellipse class="shape" cx="400" cy="322" rx="50" ry="1"/>
+  <ellipse class="blur"  cx="400" cy="322" rx="50" ry="1"/>
+  <text class="note" x="400" y="402" text-anchor="middle">short axis &lt; rounding blur</text>
+
+  <line class="arrow" x1="472" y1="322" x2="614" y2="322" marker-end="url(#arw4)"/>
+
+  <!-- the blur stretched by a huge kappa: taller than the frame, the circle is lost in it -->
+  <rect x="636" y="264" width="108" height="116" fill="url(#smear)"/>
+  <circle class="ghost" cx="690" cy="322" r="50"/>
+  <text class="note" x="690" y="402" text-anchor="middle">blur swamps the shape</text>
+
+  <!-- legend: the rounding blur -->
+  <rect x="14" y="390" width="30" height="12" fill="#c8641e" fill-opacity="0.4"/>
+  <text class="note" x="50" y="402">rounding blur (enlarged)</text>
+</svg>

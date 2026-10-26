@@ -175,8 +175,8 @@
 
   \centering
   \includegraphics[width=\linewidth]{tall_skinny_matrix.pdf}
-  \figcaption{One pixel's system drawn to scale (Fernandina: $K=288$, $P=97$).
-    The 191 redundant rows are what make the network well-conditioned (block~6).}
+  \figcaption{One pixel's system drawn to scale (Fernandina: $K=288$, $P=97$):
+    191 more equations than unknowns.}
 
   \raggedright
   Per-pixel cost is $O(KP^2 + P^3/3)$. As the archive lengthens,
@@ -270,31 +270,40 @@
 % ===========================================================================
 \begin{column}{\tastiColWidth}
 
-% Block 6: accuracy. Logic for a non-specialist: what kappa means -> why the
-% normal equations are the textbook bad choice -> the cost matters only if it
-% reaches what InSAR resolves -> measured. Table: report_condition_number.md
+% Block 6: accuracy. Logic for a non-specialist: what kappa means (a matrix
+% flattens the unit circle into an ellipse, solving stretches it back and the
+% rounding blur with it; too flat and the short axis is lost) -> the normal
+% equations flatten twice, so the textbook bad choice is a mathematical fact
+% -> the cost matters only if it reaches what InSAR resolves -> measured.
+% No claim that a denser network lowers kappa: that is a rule of thumb, and
+% the measured tail comes from the weights. Table: report_condition_number.md
 % @ d74df50. Error: S2 Galapagos diff JSON (per-pixel RMS vs CPU, median
 % 0.065 um, max 16.4 um). Gate: S3 numerical section (5/5 on final
 % products). This block absorbed the former "numerical agreement" block; the
 % radar-coordinate caveat and CholeskyQR2 are left to docs/qa_prep.md.
 % The CPU reference is scipy.linalg.lstsq (default driver gelsd, SVD-based).
 \begin{posterblock}{6}{The accuracy cost: micrometres, against millimetre signals}
-  The \emph{condition number} $\kappa$ of a matrix measures how strongly it can
-  amplify small errors, such as rounding, on their way into the solution:
-  $\kappa \approx 1$ passes them through, a large $\kappa$ magnifies them.
+  A matrix flattens some directions more than others; its
+  \emph{condition number} $\kappa$ is how flat, the longest axis over the
+  shortest.
+  Solving stretches them back, rounding error included, up to $\kappa$ times.
 
   \centering
-  \includegraphics[width=0.85\linewidth]{network_redundancy_conditioning.pdf}
-  \figcaption{$\kappa(G)$ is how unevenly $G$ stretches different directions.
-    A redundant SBAS network supports every direction and keeps $\kappa$ small.}
+  \includegraphics[width=0.9\linewidth]{condition_number_flatten_restore.pdf}
+  \figcaption{The rounding blur is the same size in every direction:
+    $u \approx 6 \times 10^{-8}$ of the longest axis in single precision.
+    A short axis thinner than that
+    ($\kappa \gtrsim 1/u \approx 1.7 \times 10^{7}$) cannot be restored.}
 
   \raggedright
-  Forming the normal equations squares it, $\kappa(N_k) = \kappa(G_w)^2$ with
-  $G_w = W_k^{1/2} G$. That is why textbooks solve least squares with QR or
-  SVD, as the CPU path does, and in single precision Cholesky fails outright once $\kappa(G_w)$ nears
-  $4 \times 10^{3}$. The cost is worth paying only if the extra error stays
-  below what InSAR can resolve, so we measured both the conditioning of real
-  networks and the error of the result.
+  The normal equations flatten twice: $N_k = G_w^{\top} G_w$ with
+  $G_w = W_k^{1/2} G$, so $\kappa(N_k) = \kappa(G_w)^2$, and single-precision
+  Cholesky fails outright once $\kappa(G_w)$ nears
+  $u^{-1/2} \approx 4.1 \times 10^{3}$.
+  That is why textbooks solve least squares with QR or SVD, as the CPU path
+  does.
+  The cost is worth paying only if real networks stay clear of that point and
+  the extra error stays below what InSAR resolves, so we measured both.
 
   \par\vskip0.4em
   \centering
