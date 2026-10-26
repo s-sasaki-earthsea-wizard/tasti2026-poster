@@ -28,12 +28,13 @@ import argparse
 from dataclasses import dataclass, field
 
 # --- 実測キャリブレーション (docs/results.md 冒頭の表) -----------------------
-# GalapagosSenDT128: 3.4M px x 490 pair (98 date), internal 時間
+# GalapagosSenDT128 (S2): 3.4M px x 475 retained pairs (98 dates), MintPy
+# internal time (interpreter start-up excluded), not the step wall.
 CAL_PIXELS = 3_400_000
-CAL_PAIRS = 490
+CAL_PAIRS = 475
 CAL_DATES = 98
-CAL_CPU_SEC = 6189.0
-CAL_GPU_SEC = 170.06
+CAL_CPU_SEC = 6169.3
+CAL_GPU_SEC = 139.0
 
 # 入力スタックは unwrapPhase と coherence の 2 本を float32 で読む
 BYTES_PER_SAMPLE = 4
@@ -188,10 +189,10 @@ def build_presets() -> list[Scenario]:
     # NISAR: 約 17,350 x 17,600 px、12 日回帰 -> 1 年で約 30 枚
     nisar_px = 17_350 * 17_600
     return [
-        Scenario("Kuju (実測)", 226_000, 24, pairs=167, note="ALOS-1, speedup 6.85x"),
-        Scenario("Fernandina (実測)", 270_000, 98, pairs=288, note="S1, speedup 93.8x"),
+        Scenario("Kuju (実測)", 226_000, 24, pairs=167, note="ALOS-1, S3 speedup 6.85x"),
+        Scenario("Fernandina (実測)", 270_000, 98, pairs=288, note="Sentinel-1, S3 speedup 93.8x"),
         Scenario("Galapagos (実測/校正元)", CAL_PIXELS, CAL_DATES, pairs=CAL_PAIRS,
-                 note="S1, speedup 44.4x (internal)"),
+                 note="Sentinel-1, S2 speedup 44.4x (internal)"),
         Scenario("NISAR 1frame x 1yr (conn4)", nisar_px, 30, conn=4),
         Scenario("NISAR 1frame x 1yr (conn5)", nisar_px, 30, conn=5, note="主線"),
         Scenario("NISAR 1frame x 1yr (full網)", nisar_px, 30, pairs=30 * 29 // 2),
