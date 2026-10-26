@@ -8,7 +8,10 @@ RTX 5080 (16 GB).
 The chart is a dumbbell on a log time axis: one grey dot for the CPU, one
 blue dot for the GPU, and an arrow from CPU to GPU. On a log axis the length
 of the arrow is the speedup itself, which a bar drawn from an arbitrary
-origin would not show.
+origin would not show. It is the main result of the poster, so the arrows
+carry the accent colour at a heavier weight than the hand-drawn figures, and
+the speedups are set large in the headline navy. (No bold: matplotlib reads
+only the first face of macOS's HelveticaNeue.ttc.)
 
 Source of record:
     mintpy-benchmark ``reports/report_end_to_end_bench.md`` @ commit ``0fbf71b``
@@ -41,13 +44,15 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402  (must follow the backend selection)
 
 # Palette shared with the SVG figures so the whole poster reads as one set.
-# The GPU carries the accent; the CPU is context, so it stays grey.
+# The GPU and the arrow (the speedup) carry the accent; the CPU is context, so
+# it stays grey. NAVY is the poster's headline colour (beamerthemetasti2026).
 GPU_COLOR = "#1a6fb5"
 CPU_COLOR = "#8994a0"
-ARROW_COLOR = "#b4bcc4"
-TEXT_COLOR = "#333333"
-MUTED_COLOR = "#666666"
-GRID_COLOR = "#e4e4e4"
+ARROW_COLOR = "#7fabd6"
+NAVY_COLOR = "#0f2e45"
+TEXT_COLOR = "#1d2a35"
+MUTED_COLOR = "#4d5b66"
+GRID_COLOR = "#dfe4e8"
 
 # S3 series. Fields: scene, processor, band, pixels actually inverted (after
 # masking), note, CPU step wall [s], torch step wall [s].
@@ -129,17 +134,17 @@ def build_figure(font_scale: float = 1.5) -> plt.Figure:
             xy=(gpu, index),
             xytext=(cpu, index),
             arrowprops={
-                "arrowstyle": "-|>,head_length=0.6,head_width=0.3",
+                "arrowstyle": "-|>,head_length=0.7,head_width=0.38",
                 "color": ARROW_COLOR,
-                "linewidth": 2.4,
-                "shrinkA": 7,
-                "shrinkB": 8,
+                "linewidth": 5.0,
+                "shrinkA": 9,
+                "shrinkB": 10,
             },
             zorder=2,
         )
-        ax.scatter([cpu], [index], s=fs(70), color=CPU_COLOR, edgecolor="white",
+        ax.scatter([cpu], [index], s=fs(100), color=CPU_COLOR, edgecolor="white",
                    linewidth=1.5, zorder=3)
-        ax.scatter([gpu], [index], s=fs(70), color=GPU_COLOR, edgecolor="white",
+        ax.scatter([gpu], [index], s=fs(150), color=GPU_COLOR, edgecolor="white",
                    linewidth=1.5, zorder=4)
         # Times sit on the dot line (GPU to the left of its dot, CPU to the
         # right of its dot) so nothing collides with the next row's label;
@@ -151,7 +156,7 @@ def build_figure(font_scale: float = 1.5) -> plt.Figure:
                     textcoords="offset points", ha="left", va="center",
                     fontsize=fs(8.5), color=MUTED_COLOR)
         ax.text(1.0, index, f"{cpu / gpu:.1f}×", transform=label_x, ha="right",
-                va="center", fontsize=fs(11.5), color=TEXT_COLOR)
+                va="center", fontsize=fs(13.5), color=NAVY_COLOR)
 
     ax.set_xscale("log")
     ax.set_xlim(1.0, 60000.0)
@@ -161,8 +166,8 @@ def build_figure(font_scale: float = 1.5) -> plt.Figure:
     ax.set_xlabel("Step wall time (log scale)", fontsize=fs(10.5), color=TEXT_COLOR)
 
     handles = [
-        plt.Line2D([], [], marker="o", linestyle="", color=CPU_COLOR, markersize=8),
-        plt.Line2D([], [], marker="o", linestyle="", color=GPU_COLOR, markersize=8),
+        plt.Line2D([], [], marker="o", linestyle="", color=CPU_COLOR, markersize=10),
+        plt.Line2D([], [], marker="o", linestyle="", color=GPU_COLOR, markersize=12),
     ]
     ax.legend(handles, ["CPU (reference)", "GPU (torch solver)"], loc="lower center",
               bbox_to_anchor=(0.5, 1.0), ncol=2, fontsize=fs(9.5), frameon=False)
@@ -198,7 +203,8 @@ def main() -> None:
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     figure = build_figure(font_scale=args.font_scale)
-    figure.savefig(args.output, bbox_inches="tight", pad_inches=0.02)
+    # Transparent background: the poster sets this chart on a tinted panel.
+    figure.savefig(args.output, bbox_inches="tight", pad_inches=0.02, transparent=True)
     print(f"wrote {args.output}")
 
 
