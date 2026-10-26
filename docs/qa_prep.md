@@ -266,11 +266,28 @@
 - Kuju と San Francisco (ARIA)。Kuju の geocoded velocity はマスク後 1.38e-7 で通過。
 - ポスターの旧 block 7 の但し書きの受け皿 (2026-10-26)。
 
+## 15. "What is the big grey segment? If this step is 44× faster, how much faster is the whole run?"
+
+> The second segment is loading the interferograms, which is pure I/O, and in
+> this run the data sat on a network share, so it is inflated. On a local disk
+> the inversion's share would be larger, so 43.5 % is the conservative figure.
+> The rest are many steps of a few percent each. For the whole run, the
+> inversion alone caps the gain: even at zero seconds the run would be at most
+> about 1.8 times faster. The same GPU core also runs the DEM-error
+> correction; beyond that, what is left is I/O and many small steps.
+
+- 横棒は [results.md](results.md) §Baseline 18 step の内訳 (Fernandina、CPU、internal)。2 位は load_data 88.6 s (17.7%)、
+  CIFS 共有 (1 GbE) 越しの読み込み
+- **44× を掛けて全体の短縮を出さない**: 44× は S2 (Galápagos)、横棒は Fernandina の Phase 1 baseline。
+  言えるのはこの run の中の Amdahl の上限 1 / (1 − 0.435) ≈ 1.8× だけ (correct_topography も入れて約 1.9×)
+- wall で割ると 24.0% になるのは step ごとの起動 (`--dostep` で 18 回) が母数に入るため。
+  通常の 1 プロセス実行では起動は 1 回 (→ Q7 と同じ理屈)
+
 ## 持って行く数字 (暗記用)
 
 | 数字 | 意味 | 系列 |
 | --- | --- | --- |
-| 43.5 % | `invert_network` の占有率 (Fernandina baseline) | — |
+| 43.5 % | `invert_network` の占有率 (Fernandina baseline、internal)。2 位 load_data 17.7 % (NAS の I/O)。全体の短縮の上限 ≈ 1.8× | — |
 | 1.43× | GPU batched QR の CPU 比 (internal、Fernandina) | Phase 1 |
 | 16.5× | 同一 GPU の QR→Cholesky、MintPy の step 時間 (起動除く、Fernandina) | S1 |
 | 3,841,835 → 57 | kernel launches / chunk (19,403 px) | S1 |

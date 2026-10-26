@@ -19,7 +19,7 @@ upstream (insarlab/MintPy) と Zenodo は消えない前提。
 
 | 内容 | ポスターでの使用 | permalink |
 | --- | --- | --- |
-| 18 step baseline、`invert_network` 43.5% | block 1 | [report_baseline.md @ 0a60cd4](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/0a60cd4/reports/report_baseline.md) |
+| 18 step baseline、`invert_network` 43.5% と 18 step の internal 内訳 (横棒) | block 1 | [report_baseline.md @ 0a60cd4](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/0a60cd4/reports/report_baseline.md) |
 | GPU batched QR 1.43× | block 4 | [report_torch.md @ 039d176](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/039d176/reports/report_torch.md) |
 | プロファイル (82% が QR、384 万 launches) | block 4 | [report_profile.md @ 039d176](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/039d176/reports/report_profile.md) |
 | **S1** QR vs Cholesky 同一 GPU、16.5× | block 4 | [report_solver_comparison.md @ 039d176](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/039d176/reports/report_solver_comparison.md) |

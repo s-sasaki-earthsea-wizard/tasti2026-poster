@@ -1,6 +1,6 @@
 # 申し送り — TASTI 2026 ポスター (T0043)
 
-最終更新: 2026-10-27 (地色を白から暖色 `#F6F1E7` に・入稿は 10/27〜28) / 華扇 (Claude Code)
+最終更新: 2026-10-27 (block 1 の 43.5 % を 18 step の横棒に・地色を暖色に・入稿は 10/27〜28) / 華扇 (Claude Code)
 
 > 数字を触るときは [docs/results.md](docs/results.md) (系列混同の禁止事項) を、
 > 構成を触るときは [docs/poster_plan.md](docs/poster_plan.md) を先に読むこと。
@@ -33,6 +33,7 @@
 - 2026-10-26: **入稿は 2026-10-27〜28**。業者の計算で 10/27 入稿 → 11/1 発送 (入稿から印刷・発送まで 5 営業日)。
   発送から到着に 2〜3 日見ても、10/28 入稿で出発 11/6 (金) に間に合う (→ §3)。
 - 2026-10-27: **地色を白から暖色 `#F6F1E7` に**。Design キャンバス (<https://claude.ai/artifact/QvYydebUjnjpBA6sngrUWC>、非公開) で 4 案を比べて Oat を採用し、keypoint・featureblock の色と図の白い塗りも合わせた ([docs/poster_plan.md](docs/poster_plan.md) 判断 31)。テカリ対策の本命は紙 (マット) の指定
+- 2026-10-27: **block 1 の big number を 18 step の 100% 積み上げ横棒に**。invert_network だけ橙で名指しし、その真上に 43.5 %。残り 17 step は灰の区画で "the other 17 steps" (load_data は名指ししない)。秒数は載せず、44× を掛けた「after」の棒も描かない ([docs/poster_plan.md](docs/poster_plan.md) 判断 32、内訳は [docs/results.md](docs/results.md) §Baseline 18 step の内訳、Q&A は [docs/qa_prep.md](docs/qa_prep.md) Q15)
 
 ## 1. 現在の状態 — **全 7 ブロックの内容が揃った。block 2・6 の改訂版をレビュー待ち → 10/27〜28 入稿**
 
@@ -40,7 +41,7 @@
 | --- | --- |
 | ポスターサイズ | **A0 縦 (84.1 × 118.9 cm)**。公式要件 ([docs/poster_requirements.md](docs/poster_requirements.md)) |
 | 本体 | `poster.tex` (beamerposter + 自作テーマ `beamerthemetasti2026.sty`)、3 カラム 7 ブロック + References 帯。本文 `scale=1.05` (≈ 26 pt) で 3 カラムとも収まる |
-| 図 | 7 枚: ネットワーク例 (+ 辺ごとの方程式と代表 1 画素の重み)、最小二乗のお椀 (代表 1 画素、三角形 t₀–t₁–t₂)、tall-skinny 行列、Fig. 1 (QR vs 正規方程式)、条件数の概念図 (潰して戻す)、誤差バジェット (実測値で再作図)、Fig. 2 (5 シーンの CPU→GPU ダンベル、`make figures`)。`qr_column_sweep` は不使用 |
+| 図 | 7 枚 + block 1 の横棒 (`poster.tex` 内の TikZ): ネットワーク例 (+ 辺ごとの方程式と代表 1 画素の重み)、最小二乗のお椀 (代表 1 画素、三角形 t₀–t₁–t₂)、tall-skinny 行列、Fig. 1 (QR vs 正規方程式)、条件数の概念図 (潰して戻す)、誤差バジェット (実測値で再作図)、Fig. 2 (5 シーンの CPU→GPU ダンベル、`make figures`)。`qr_column_sweep` は不使用 |
 | 数字 | 抄録と同じ系列ルール + **投稿後の新結果** (5 シーン条件数サーベイ、PR の rebase) を反映 |
 | ビルド | `make` → `poster.pdf`。`make preview` で PNG、`make check` で A0 / フォント埋め込み確認 |
 | 印刷 | **未**。**2026-10-27〜28 入稿**の予定。10/27 入稿 → 11/1 発送 (業者の計算) (→ §3) |
@@ -50,7 +51,7 @@
 
 | 列 | ブロック | 中身 | 図 |
 | --- | --- | --- | --- |
-| 1 | 1 The bottleneck | 43.5%、結論先出しの keypoint ("This work: 44×"、block 5 を参照) | — (big number) |
+| 1 | 1 The bottleneck | 43.5% を 18 step の横棒 (invert_network だけ橙) の上に、結論先出しの keypoint ("This work: 44×"、block 5 を参照) | 横棒 (TikZ) |
 | 1 | 2 Why a least-squares inversion? | 初見向けの導入: 干渉縞 → ネットワーク → 加重最小二乗 → 重み = コヒーレンスから見積もった位相分散の逆数 (MintPy の既定) → 画素ごとに違うので分解を共有できない。「3 日なら $d_{01} + d_{12} = d_{02}$ のはずが合わない → 最適化」の段落、2 枚目の図で「方程式が食い違う → お椀 ∑wr² の底を取る → 重みが底を動かす」 | observation_network_example (網 + 辺ごとの方程式 + 2 画素の重みのバー) + least_squares_bowl |
 | 1 | 3 The problem | 「各画素が自分のお椀の底を探す」→ per-pixel WLS、$K \times P$、$n$ の規模 ($D^3$ は Q&A Q8a へ) | tall_skinny (viewBox を描画範囲に詰めてカラム幅いっぱい) |
 | 2 | 4 Method: reformulate for the GPU | 素朴な移植 (QR) は **1.43×**・384 万 launches → 正規方程式 + batched Cholesky (厳密算術では同じ解、GEMM + batched Cholesky)、**S1 16.5× (条件つき)** | fig1 |

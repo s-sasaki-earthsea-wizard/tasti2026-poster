@@ -254,6 +254,46 @@ $\kappa_2^2 u$ でスケール。
   切断された部分網は rank 落ち (κ = ∞) になりうる。それは `cholesky_ex` の info で拾う母集団で、
   κ の議論の外 (CholeskyQR2 でも同じ)。
 
+### Baseline 18 step の内訳 (2026-10-27、block 1 の横棒)
+
+出典: [`report_baseline.md` @ 0a60cd4](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/0a60cd4/reports/report_baseline.md)
+§3。Fernandina、CPU、2026-04-26 (Phase 1 の環境: NAS 上の fork `.venv`、numpy 2.4.4)。
+入力データは CIFS 共有 (1 GbE) 上。各 step を `--dostep` で別プロセスとして実行。
+抄録の 43.5% と同じ run。ポスターでは**横棒の幅にだけ使い、秒数は載せない**。
+
+| 順 | step | internal (s) | 割合 | 備考 |
+| --: | --- | --: | --: | --- |
+| 1 | **invert_network** | **218.0** | **43.5%** | ポスターで名指しする唯一の step |
+| 2 | load_data | 88.6 | 17.7% | I/O。CIFS 越しで膨らんでいる → ポスターでは名指ししない |
+| 3 | modify_network | 43.9 | 8.8% | |
+| 4 | residual_RMS | 25.8 | 5.1% | |
+| 5 | quick_overview | 25.1 | 5.0% | |
+| 6 | reference_date | 17.7 | 3.5% | |
+| 7 | deramp | 16.4 | 3.3% | |
+| 8 | reference_point | 15.4 | 3.1% | |
+| 9 | correct_topography | 14.9 | 3.0% | GPU 化済み (block 5 の補足、Galápagos 6.15×) |
+| 10 | google_earth | 9.1 | 1.8% | |
+| 11 | geocode | 8.8 | 1.8% | |
+| 12 | correct_troposphere | 7.3 | 1.5% | |
+| 13 | velocity | 5.1 | 1.0% | |
+| 14 | correct_SET | 2.1 | 0.4% | |
+| 15 | correct_ionosphere | 1.5 | 0.3% | 設定なし |
+| 16 | correct_LOD | 0.9 | 0.2% | Sentinel-1 では skip |
+| 17 | correct_unwrap_error | 0.1 | ≈0 | 無効 |
+| 18 | hdfeos5 | 0.1 | ≈0 | 無効 |
+| | **計** | **500.8** | 100% | |
+
+- **母数は internal の合計**。wall の合計 991.0 s には step ごとの起動 (約 20〜30 s × 18、計 489.5 s) が
+  乗っていて、wall で割ると invert_network は 237.85 / 991.0 = **24.0%**。通常の 1 プロセス実行では
+  起動は 1 回なので、internal の割合の方が実態に近い。ポスターのキャプションは
+  "as reported by MintPy with interpreter start-up excluded"
+- **43.5% は控えめな値**: load_data がローカル SSD なら母数が減り、invert_network の割合は上がる
+- **この割合に 44× (S2) を掛けて全体の短縮を計算しない**。シーン (Fernandina vs Galápagos)・
+  環境が違う系列の掛け算になる。この run の中だけで言えるのは「invert_network が 0 s になっても
+  全体は最大 1 / (1 − 0.435) ≈ **1.8×**」(Amdahl の上限)。correct_topography も含めると約 1.9×
+- §計測環境の検証 の「Fernandina CPU internal 367.0 s (1.36 ms/px)」とは別の run。画素あたりに直すと
+  baseline は 218.0 s / 157,667 有効画素 = 1.38 ms/px で整合する (差は反転した画素数と見られる)
+
 ### `correct_topography` 5 シーン (block 5 の補足)
 
 出典: [`dem_error/report_bench_survey.md` @ 3f4b8ea](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/3f4b8ea/reports/dem_error/report_bench_survey.md)。
