@@ -53,6 +53,9 @@ NAVY_COLOR = "#0f2e45"
 TEXT_COLOR = "#1d2a35"
 MUTED_COLOR = "#4d5b66"
 GRID_COLOR = "#dfe4e8"
+# The feature-block tint behind the chart (tastiFeature), so the dot
+# outlines read as gaps rather than white rings.
+PANEL_COLOR = "#e6edf4"
 
 # S3 series. Fields: scene, processor, band, pixels actually inverted (after
 # masking), note, CPU step wall [s], torch step wall [s].
@@ -142,9 +145,9 @@ def build_figure(font_scale: float = 1.5) -> plt.Figure:
             },
             zorder=2,
         )
-        ax.scatter([cpu], [index], s=fs(100), color=CPU_COLOR, edgecolor="white",
+        ax.scatter([cpu], [index], s=fs(100), color=CPU_COLOR, edgecolor=PANEL_COLOR,
                    linewidth=1.5, zorder=3)
-        ax.scatter([gpu], [index], s=fs(150), color=GPU_COLOR, edgecolor="white",
+        ax.scatter([gpu], [index], s=fs(150), color=GPU_COLOR, edgecolor=PANEL_COLOR,
                    linewidth=1.5, zorder=4)
         # Times sit on the dot line (GPU to the left of its dot, CPU to the
         # right of its dot) so nothing collides with the next row's label;

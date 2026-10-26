@@ -8,7 +8,7 @@
     .step { font-size: 17px; }
     .head { font-size: 17px; font-weight: 700; }
     .num  { font-size: 15px; font-weight: 700; fill: #fff; }
-    .halo { paint-order: stroke; stroke: #fff; stroke-width: 5px; stroke-linejoin: round; }
+    .halo { paint-order: stroke; stroke: #f6f1e7; stroke-width: 5px; stroke-linejoin: round; }
     .tag  { font-size: 17px; font-weight: 700; }
     .eqline { stroke-width: 4; stroke-linecap: round; }
     .ring  { fill: none; stroke: #1a6fb5; stroke-opacity: 0.55; stroke-width: 1.6; }
@@ -47,7 +47,7 @@
   <text class="math eqn halo" x="143" y="97.0">x<tspan dy="5" font-size="13" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">2</tspan><tspan dy="-5">​</tspan> − x<tspan dy="5" font-size="13" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">0</tspan><tspan dy="-5">​</tspan> ≈ 2.6</text>
   <text class="math eqn halo" x="298.0" y="44.0" text-anchor="end">x<tspan dy="5" font-size="13" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">2</tspan><tspan dy="-5">​</tspan> − x<tspan dy="5" font-size="13" font-style="normal" font-family="Helvetica Neue, Arial, sans-serif">1</tspan><tspan dy="-5">​</tspan> ≈ 1.0</text>
   <!-- the least-squares solution: the bottom of the bowl -->
-  <circle cx="145.2" cy="196.3" r="7.5" fill="#222" stroke="#fff" stroke-width="2"/>
+  <circle cx="145.2" cy="196.3" r="7.5" fill="#222" stroke="#f6f1e7" stroke-width="2"/>
   <text class="tag halo" x="123.2" y="202.3" text-anchor="end">solution</text>
 
   <!-- numbered notes -->

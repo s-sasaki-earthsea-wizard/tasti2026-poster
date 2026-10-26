@@ -4,7 +4,7 @@
   <style>
     text        { font-family: 'Helvetica Neue', Arial, sans-serif; }
     .title      { fill: #333; font-size: 25px; font-weight: 700; }
-    .tick       { fill: #777; font-size: 17px; }
+    .tick       { fill: #666; font-size: 17px; }
     .axis       { stroke: #bbb; stroke-width: 1.5; }
     .grid       { stroke: #eee; stroke-width: 1; }
     .sig        { stroke: #1a6fb5; stroke-width: 3; }

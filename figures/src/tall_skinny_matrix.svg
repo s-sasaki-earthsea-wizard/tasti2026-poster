@@ -3,13 +3,13 @@
   <desc id="desc">The design matrix of one pixel from the benchmark scene, drawn to true proportions: 288 rows (observations, the network edges) by 97 columns (unknowns, acquisition dates minus one). A dashed line after the first 97 rows marks where the number of equations equals the number of unknowns; the remaining 191 rows are redundant observations that average out per-interferogram noise.</desc>
   <style>
     text    { font-family: 'Helvetica Neue', Arial, sans-serif; }
-    .mat    { fill: #ffffff; stroke: #1a6fb5; stroke-width: 2.4; }
+    .mat    { fill: none; stroke: #1a6fb5; stroke-width: 2.4; }
     .dim    { stroke: #888; stroke-width: 1.8; }
     .cut    { stroke: #c8641e; stroke-width: 2; stroke-dasharray: 6 4; }
     .brk    { stroke: #aaa; stroke-width: 1.5; fill: none; }
     .lbl    { fill: #333; font-size: 22.4px; font-weight: 700; }
     .lbl-sm { fill: #333; font-size: 18.9px; font-weight: 700; }
-    .sub    { fill: #777; font-size: 17.5px; }
+    .sub    { fill: #666; font-size: 17.5px; }
     .math   { font-family: Georgia, 'Times New Roman', serif; font-style: italic; }
   </style>
 

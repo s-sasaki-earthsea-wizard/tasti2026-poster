@@ -7,6 +7,9 @@
 % boxes, one tinted panel for the main result, a references band aligned to
 % the column grid, and a navy footer strip. The accents match the SVG figures
 % in figures/src/ (#1a6fb5 blue, #c8641e orange) so the sheet reads as one set.
+% The page is a warm off-white (the logo's cream, diluted) rather than white,
+% to soften the glare of bare paper under venue lighting; the figures avoid
+% white fills so they sit on that ground without patches.
 %
 % Type: Source Serif 4 for display (title, block headings, big numbers),
 % Source Sans 3 for text, Source Code Pro for code. All three ship with
@@ -40,7 +43,9 @@
 \definecolor{tastiSubtitle}{HTML}{A9C7DA}
 \definecolor{tastiInk}{HTML}{1D2A35}
 \definecolor{tastiMuted}{HTML}{4D5B66}
-\definecolor{tastiFeature}{HTML}{E9F0F7}     % tint behind the main result
+\definecolor{tastiPaper}{HTML}{F6F1E7}       % page ground: the logo's cream, diluted
+\definecolor{tastiKeypoint}{HTML}{E9DBC1}    % sand, a step darker than the ground
+\definecolor{tastiFeature}{HTML}{E6EDF4}     % tint behind the main result
 
 \mode<presentation>
 
@@ -64,8 +69,8 @@
 % ---------------------------------------------------------------------------
 % Colours
 % ---------------------------------------------------------------------------
-\setbeamercolor{normal text}{fg=tastiInk,bg=white}
-\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{normal text}{fg=tastiInk,bg=tastiPaper}
+\setbeamercolor{background canvas}{bg=tastiPaper}
 \setbeamercolor{structure}{fg=tastiBlue}
 \setbeamercolor{alerted text}{fg=tastiOrangeText}
 \setbeamercolor{item}{fg=tastiBlue}
@@ -73,7 +78,7 @@
 \setbeamercolor{headline rule}{bg=tastiOrange}
 \setbeamercolor{footline}{fg=tastiCreamText,bg=tastiNavy}
 \setbeamercolor{feature block}{fg=tastiInk,bg=tastiFeature}
-\setbeamercolor{keypoint}{fg=tastiNavy,bg=tastiCream}
+\setbeamercolor{keypoint}{fg=tastiNavy,bg=tastiKeypoint}
 \setbeamercolor{caption}{fg=tastiMuted}
 
 \setbeamerfont{alerted text}{series=\bfseries}
@@ -209,7 +214,7 @@
    {\usebeamerfont{caption}\usebeamercolor[fg]{caption}#3\par}}
   \vskip0.3em}
 
-% \keypoint{...} -- a one-line takeaway on a cream bar.
+% \keypoint{...} -- a one-line takeaway on a sand bar.
 \newcommand{\keypoint}[1]{%
   \par\vskip0.4em
   \begin{beamercolorbox}[wd=\linewidth,sep=0.7em,leftskip=0.2em,rightskip=0.2em]{keypoint}%

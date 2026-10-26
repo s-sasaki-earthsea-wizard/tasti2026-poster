@@ -3,7 +3,7 @@
   <desc id="desc">Left: a small network of four acquisition dates (vertices t0 to t3) and five interferograms (edges), two of them skip pairs (t0 with t2, t1 with t3). Right: each edge, marked by a chip in its colour, gives one equation in the displacements at its two dates, the same for every pixel. A column of bars shows the weight of each equation at one representative pixel, which comes from the interferogram's coherence and differs per pixel; this pixel loses coherence on the two longer skip pairs.</desc>
   <style>
     text { font-family: Georgia, 'Times New Roman', serif; font-style: italic; }
-    .node  { fill: #1a6fb5; stroke: #fff; stroke-width: 1.5; }
+    .node  { fill: #1a6fb5; stroke: #f6f1e7; stroke-width: 1.5; }
     .edge  { stroke-width: 4; }
     .chip  { stroke-width: 6; stroke-linecap: round; }
     .lbl   { fill: #444; font-size: 22px; }
