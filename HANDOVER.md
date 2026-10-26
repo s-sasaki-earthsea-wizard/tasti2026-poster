@@ -36,6 +36,9 @@
 - 2026-10-27: **block 1 の big number を 18 step の 100% 積み上げ横棒に**。invert_network だけ橙で名指しし、その真上に 43.5 %。残り 17 step は灰の区画で "the other 17 steps" (load_data は名指ししない)。秒数は載せず、44× を掛けた「after」の棒も描かない ([docs/poster_plan.md](docs/poster_plan.md) 判断 32、内訳は [docs/results.md](docs/results.md) §Baseline 18 step の内訳、Q&A は [docs/qa_prep.md](docs/qa_prep.md) Q15)
 - 2026-10-27: **block 4 を図 2 枚に分けて文章を半分以下に**。`qr_launch_grid` (QR: 画素ごと・反射 1 つずつ、起動のほうが計算より長い、3,841,835) と `normal_equations_batched` (① GEMM で K 行を畳む ② 97 × 97 のバッチ Cholesky ③ 解く、どの段も全画素を 1 発、57) を同じ「画素 × 段」の格子で描いた。Syota さんの依頼で LT ではなく **PR #1490 の実装と PyTorch 2.11 のソースで裏取り**: `lstsq` は K ≤ 256 でしか cuBLAS のバッチ QR を使わず、K = 288 では画素ごとのループ (旧図の "Batching leaves the P steps per matrix" は不正確)、Gram は `Gw_T @ Gw` のバッチ GEMM (スタンプ帳ではない)。GEMM の割合 (93.5 %) などは Q&A Q2a ([docs/poster_plan.md](docs/poster_plan.md) 判断 33、[docs/results.md](docs/results.md) §kernel の内訳と実装の裏取り)
 - 2026-10-27: **シーン名 (Fernandina、Kuju …) が地名にしか見えない問題に対応**。Fig. 2 のキャプションを定義の場所にして「MintPy のテストに使われる公開 InSAR データ (Sentinel-1 / ALOS-1、火山とベイエリア)、Zenodo = 研究データの公開リポジトリ」と書き、block 6 の表のキャプションから block 5 を参照。列 2 のはみ出しは block 4・5 の 1 語ずつで吸収 (判断 34)。続けて **References を登場順に振り直し** (PyTorch [3]、CholeskyQR2 [4,5]) し、帯の 3 段目に番号なしの **"Benchmark data:"** (5 シーンの version DOI、作成者のクレジット) を足した。[6] を 1 行に縮めて帯の高さは据え置き (判断 35)。Galápagos は MintPy のサンプルデータではなく [2] のデータ。正式なデータ引用は [docs/sources.md](docs/sources.md) §データ、想定問答は [docs/qa_prep.md](docs/qa_prep.md) Q3a
+- 2026-10-27: **block 7 の 2 つ目の QR をポスター PDF の Zenodo DOI に差し替え**。Syota さんが下書きで DOI **10.5281/zenodo.23669875** (version DOI) を予約。ラベルは "Poster PDF (Zenodo)"、本リポジトリへの導線はフッターの URL に残す。QR 2 つは OpenCV で読み取りを確認済み。同日 `print/poster_2026-10-27.pdf` を上げて **publish** (<https://zenodo.org/records/23669875>、md5 一致、CC BY 4.0、concept DOI 10.5281/zenodo.23669874)。Description・Keywords・Conference は空欄で公開、あとで足す ([docs/poster_plan.md](docs/poster_plan.md) 判断 36、手順とメタデータ案は [docs/poster_requirements.md](docs/poster_requirements.md) §Zenodo)
+- 2026-10-27: **所属を "Earthsea Wizard Tech Lab, Japan" に** (Zenodo の Creator の所属に揃えた、Syota さんの判断)。`print/poster_2026-10-27.pdf` を作り直した (md5 `8498a31f…`)。Zenodo の `poster.pdf` は旧所属の版 (md5 `b5dcb701…`) なので、**Edit published files で差し替える** (DOI は変わらない)。受理された抄録 ([docs/accepted_abstract.md](docs/accepted_abstract.md)) は凍結なので触らない
+- 2026-10-27: 差し替えのつもりが Zenodo で **New version (v2、10.5281/zenodo.23673961)** になり、QR (v1) の先が旧所属の PDF のままだった。**QR を concept DOI 10.5281/zenodo.23669874 (常に最新版) に変えて** `print/poster_2026-10-27.pdf` を作り直し (md5 `d14b0f21…`、QR は OpenCV で読み取り確認、concept DOI → v2 に解決)、v2 のファイルをこれに差し替える ([docs/poster_plan.md](docs/poster_plan.md) 判断 37、版の一覧は [docs/poster_requirements.md](docs/poster_requirements.md) §Zenodo)
 
 ## 1. 現在の状態 — **全 7 ブロックの内容が揃った。block 1・2・4・6 の改訂版をレビュー待ち → 10/27〜28 入稿**
 
@@ -59,7 +62,7 @@
 | 2 | 4 Method: reformulate for the GPU | 素朴な移植 (`torch.linalg.lstsq` の QR) は **1.43×** → 4a: 画素ごと・反射 1 つずつで 3,841,835 launches、起動のほうが計算より長い → 正規方程式 (厳密算術では同じ解) → 4b: ① GEMM ② 97 × 97 のバッチ Cholesky ③ 解く、どの段も全画素を 1 発で 57 launches → **S1 16.5× (条件つき)** | qr_launch_grid + normal_equations_batched |
 | 2 | 5 Results: speed | **グラフが主役** (5 シーンの CPU→GPU wall、ダンベル)、見出し **6,169 s → 139 s (44.4×)**。唯一の淡青の面 (`featureblock`) | fig2 (矢印を青・太線に) |
 | 3 | 6 The accuracy cost | κ = 潰れの偏り (長軸 / 短軸)、解く = 引き伸ばして戻す (まるめのぼけも最大 κ 倍、薄すぎると戻らない) → 正規方程式は 2 回潰す (κ²) → fp32 Cholesky は κ(G_w) ≈ 4.1e3 で破綻 → **実測 κ (5 シーン)** → 誤差 0.06 µm (中央値) / 16 µm (最大)、5 シーンとも gate 通過 | condition_number_flatten_restore + error_budget |
-| 3 | 7 Why it matters | NISAR・小型 SAR・FORMOSAT-9 でデータ増 → 民生 GPU の意義、PR は under review、QR ×2 | QR |
+| 3 | 7 Why it matters | NISAR・小型 SAR・FORMOSAT-9 でデータ増 → 民生 GPU の意義、PR は under review、QR ×2 (PR / Zenodo のポスター PDF) | QR |
 | 全幅 | References | 抄録と同じ 7 件を登場順に振り直し + 番号なしの "Benchmark data:" (5 シーンの Zenodo DOI)。footline の上にカラムの格子に揃えた 3 段組 | — |
 
 ### 抄録から**増えた**もの (ポスターで初出)
@@ -102,6 +105,10 @@
    **10/28 までに `make print` して入稿すれば出発 11/6 (金) に間に合う**。地色が左右の端まで届くので、**フチなし印刷か塗り足しの要否**を入稿時に業者へ確認
 5. **印刷直前チェック**: `make check` + `gh pr view 1490 --repo insarlab/MintPy` で
    block 7 の PR 記述を現状に合わせる (merge されていれば書き換え)
+   - **Zenodo**: QR は concept DOI (10.5281/zenodo.23669874 → 最新版 v2)。v2 のファイルを
+     `print/poster_2026-10-27.pdf` (md5 `d14b0f21…`) に差し替え、QR を実機で読んで Zenodo に着くことを
+     確かめてから入稿。Description・Keywords・Conference はあとで足す。
+     v2 のファイルの差し替えは 2026-11-25 頃まで ([docs/poster_requirements.md](docs/poster_requirements.md) §Zenodo)
 6. **Q&A 準備**: [docs/qa_prep.md](docs/qa_prep.md) を一読。A4 縮刷版を 20 部ほど持参
    (`pdfjam` / `pdftoppm` で縮小) すると立ち話で渡せる
 

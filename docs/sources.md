@@ -14,6 +14,7 @@ upstream (insarlab/MintPy) と Zenodo は消えない前提。
 | 抄録 (受理版) | <https://github.com/s-sasaki-earthsea-wizard/tasti2026-abstract> |
 | LT スライド (図の出典) | <https://github.com/s-sasaki-earthsea-wizard/vrc-insar-batched-cholesky-LT> |
 | 本リポジトリ | <https://github.com/s-sasaki-earthsea-wizard/tasti2026-poster> |
+| ポスター PDF (Zenodo、concept DOI = block 7 の QR) | <https://doi.org/10.5281/zenodo.23669874> (常に最新版、CC BY 4.0。v1 <https://doi.org/10.5281/zenodo.23669875> = 旧所属、v2 <https://doi.org/10.5281/zenodo.23673961> = 印刷版。2026-10-27 公開) |
 
 ## ベンチマーク report (commit 固定、2026-10-07 時点の最新)
 

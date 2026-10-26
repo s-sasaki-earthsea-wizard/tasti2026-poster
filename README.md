@@ -13,6 +13,7 @@ contributed to [MintPy](https://github.com/insarlab/MintPy) via
 | Topic | 02 Space Applications and Services / 0201 Earth Observation and Remote Sensing |
 | Title | Accelerating Open-Source InSAR Time-Series Analysis on Consumer GPUs: A PyTorch-Based Network Inversion Solver for MintPy |
 | Poster size | **A0, 84.1 cm × 118.9 cm** (official requirement) |
+| Poster PDF | [doi:10.5281/zenodo.23669874](https://doi.org/10.5281/zenodo.23669874) (Zenodo, latest version, CC BY 4.0) |
 
 This is the third repository of the series:
 
