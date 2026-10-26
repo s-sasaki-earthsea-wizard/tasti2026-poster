@@ -67,6 +67,7 @@ make print      # print/poster_<date>.pdf
 - Python: PEP 8、関数名 snake_case、Docstring は Google Style
 - LaTeX: 1 文 1 行 (semantic line breaks)。ブロックの先頭にコメントで意図を書く
 - SVG: `<text>` 要素に英語を直書き。パレットは `#1a6fb5` (青) / `#c8641e` (橙)
+- SVG の塗りに白 (`#fff`) を使わない (ポスターの地は `#F6F1E7`)。下を隠さない面は `none`、縁取り・ハローは地色 `#f6f1e7`。灰色の補足文字は `#666` 以上の濃さ
 
 ### Git 運用
 
@@ -99,7 +100,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ├── LICENSE                       # MIT
 ├── Makefile                      # make / figures / preview / check / print / clean
 ├── poster.tex                    # ポスター本体 (beamerposter, A0 縦, 3 カラム)
-├── beamerthemetasti2026.sty      # テーマ (紺のマストヘッド + ロゴ、罫線のブロック、References 帯。図と同じパレット)
+├── beamerthemetasti2026.sty      # テーマ (紺のマストヘッド + ロゴ、暖色の地 #F6F1E7、罫線のブロック、References 帯。図と同じパレット)
 ├── figures/
 │   ├── images/                   # ロゴ (earthsea-wizard-logo.png、マストヘッドで使用)
 │   ├── src/*.svg                 # 英語化済み図 (make が PDF 化)
