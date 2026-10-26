@@ -99,8 +99,9 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ├── LICENSE                       # MIT
 ├── Makefile                      # make / figures / preview / check / print / clean
 ├── poster.tex                    # ポスター本体 (beamerposter, A0 縦, 3 カラム)
-├── beamerthemetasti2026.sty      # テーマ (図と同じパレット)
+├── beamerthemetasti2026.sty      # テーマ (紺のマストヘッド + ロゴ、罫線のブロック、References 帯。図と同じパレット)
 ├── figures/
+│   ├── images/                   # ロゴ (earthsea-wizard-logo.png、マストヘッドで使用)
 │   ├── src/*.svg                 # 英語化済み図 (make が PDF 化)
 │   └── src/ja/*.ja.svg           # 未英語化の候補 (ビルド対象外)
 ├── scripts/

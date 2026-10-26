@@ -32,7 +32,7 @@ The full link index (reports pinned to commits, Zenodo datasets, references) is 
 | Path | Purpose |
 |---|---|
 | `poster.tex` | Poster source (beamerposter, A0 portrait, three columns) |
-| `beamerthemetasti2026.sty` | Flat print theme; palette shared with the figures |
+| `beamerthemetasti2026.sty` | Poster theme: navy masthead with the logo, open numbered blocks, references band; palette shared with the figures |
 | `figures/src/*.svg` | Hand-drawn figure sources (English). Converted to PDF by `make` |
 | `figures/src/ja/` | Untranslated Japanese originals kept as candidates (not built) |
 | `scripts/plot_speedup.py` | Generates the five-scene speedup chart from the S3 benchmark series |
@@ -44,7 +44,8 @@ The full link index (reports pinned to commits, Zenodo datasets, references) is 
 
 ## Build
 
-Requires TeX Live (with `beamerposter` and `qrcode`), librsvg, Python 3 with
+Requires TeX Live (with `beamerposter`, `qrcode`, TikZ and the `sourcesanspro` /
+`sourceserifpro` / `sourcecodepro` fonts), librsvg, Python 3 with
 matplotlib, and poppler for the preview/check targets.
 
 ```bash

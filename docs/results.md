@@ -214,7 +214,7 @@ sibling repo (mintpy-benchmark) は将来 private 化の可能性があるため
 
 ## 投稿後の追加結果 (抄録には未反映、ポスターで初出)
 
-### 設計行列の条件数サーベイ (2026-08-06、block 5)
+### 設計行列の条件数サーベイ (2026-08-06、block 6)
 
 出典: [`report_condition_number.md` @ d74df50](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/d74df50/reports/report_condition_number.md)
 (harness: `tools/measure_design_matrix_cond.py`)。
@@ -254,7 +254,7 @@ $\kappa_2^2 u$ でスケール。
   切断された部分網は rank 落ち (κ = ∞) になりうる。それは `cholesky_ex` の info で拾う母集団で、
   κ の議論の外 (CholeskyQR2 でも同じ)。
 
-### `correct_topography` 5 シーン (block 6 の補足)
+### `correct_topography` 5 シーン (block 5 の補足)
 
 出典: [`dem_error/report_bench_survey.md` @ 3f4b8ea](https://github.com/s-sasaki-earthsea-wizard/mintpy-benchmark/blob/3f4b8ea/reports/dem_error/report_bench_survey.md)。
 SSD 統一、fork `60c9e3ac`。

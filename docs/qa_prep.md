@@ -10,7 +10,7 @@
 > is 721, while float32 Cholesky only breaks down near 4,000. Against the CPU
 > reference on the large scene, the per-pixel RMS difference is 0.06 µm for the
 > median pixel and 16 µm for the worst, against millimetre-level InSAR
-> precision. (block 5)
+> precision. (block 6)
 
 - 「速度のために精度を捨てた」ではなく「この問題の条件数では float32 で十分だと
   見積もった上で選んだ」が正しい言い方。
@@ -149,7 +149,7 @@
 > subpackage, and leaves the CPU path byte-for-byte unchanged.
 
 - ポスターの block 4 から外した実装 Tips の受け皿 (2026-10-19)。chunk は Q6、
-  欠測 (ゼロ重み = 行削除) は block 4 本文、DEM 誤差への流用は block 6。
+  欠測 (ゼロ重み = 行削除) は block 4 本文、DEM 誤差への流用は block 5 (2026-10-26 の入れ替え前は 6)。
 
 ## 14. "Do the CPU and GPU products agree everywhere?"
 
