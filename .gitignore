@@ -31,3 +31,6 @@ __pycache__/
 .claude-notes/
 .agent/
 .codex/
+
+# E-reader exports of the docs (e.g. `pandoc docs/foo.md -o docs/foo.epub`)
+*.epub
