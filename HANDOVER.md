@@ -109,7 +109,8 @@
      `print/poster_2026-10-27.pdf` (md5 `d14b0f21…`) に差し替え済み。QR を実機で読んで Zenodo に着くことを
      確かめてから、同じ PDF を入稿。Description・Keywords・Conference はあとで足す。
      v2 のファイルの差し替えは 2026-11-25 頃まで ([docs/poster_requirements.md](docs/poster_requirements.md) §Zenodo)
-6. **Q&A 準備**: [docs/qa_prep.md](docs/qa_prep.md) を一読。A4 縮刷版を 20 部ほど持参
+6. **Q&A 準備**: 当日用の説明原稿と想定問答は [docs/poster_talk.md](docs/poster_talk.md) (日英併記、InSAR 初心者向けと専門家向けに分けた。2026-11-09)。
+   深掘りは [docs/qa_prep.md](docs/qa_prep.md)。A4 縮刷版を 20 部ほど持参
    (`pdfjam` / `pdftoppm` で縮小) すると立ち話で渡せる
 
 ## 4. 運用メモ

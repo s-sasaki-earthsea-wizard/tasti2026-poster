@@ -116,6 +116,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 │   ├── numerical_method.md       # 手法の数理 (WLS / 正規方程式 / Cholesky / 条件数)
 │   ├── compute_scale.md          # NISAR スケール外挿
 │   ├── qa_prep.md                # ポスターセッションの想定問答
+│   ├── poster_talk.md            # 当日の説明原稿と想定問答 (日英併記、初心者向け / 専門家向け)
 │   ├── accepted_abstract.md      # 受理された抄録のメタデータ (凍結)
 │   └── sources.md                # 全リンク集 (permalink)
 └── print/                        # 実際に印刷した PDF (日付つき)
